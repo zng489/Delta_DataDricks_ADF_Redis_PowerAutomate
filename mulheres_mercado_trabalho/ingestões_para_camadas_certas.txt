@@ -1,0 +1,8 @@
+source_ipca = "{uri}/raw/crw/ibge/ipca/".format(uri=var_adls_uri)
+trs/ibge/ipca/
+
+raw_deflatores_path='{uri}/raw/crw/ibge/deflatores'.format(uri=var_adls_uri)
+refazer a ingestão
+
+nomes_bruto = spark.read.csv(caminho_data_lake + '/uds/oni/observatorio_nacional/mulheres_industria_fnme/tabelas_auxiliares/nomes.csv', header = True)
+refazer a ingestão
