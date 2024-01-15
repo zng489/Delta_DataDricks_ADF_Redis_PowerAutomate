@@ -40,34 +40,6 @@ adf = json.loads(re.sub("\'", '\"', dbutils.widgets.get("adf")))
 
 # COMMAND ----------
 
-# READING FILES IN DATALAKE
-# buscaArquivoDeConfiguracao
-
-
-def buscaArquivoDeConfiguracao(dls, tmp, LND):
-  area_ = 'false'
-  try:
-    '''
-    file = "API_TOKEN.csv"
-    file_path = LND + "/trello_oni/config/" + file
-    # Download the file to a local temporary directory
-    with dls.get_file_client(f"{file_path}") as file_client:
-      with open(file=os.path.join(tmp, file), mode="wb") as local_file:
-        download = file_client.download_file()
-        local_file.write(download.readall())
-      print(f"{file} downloaded from Azure Data Lake Storage.")
-    area_ = pd.read_csv(tmp + file, delimiter=";")
-    '''
-    var_adls_uri = 'abfss://datalake@cnibigdatadlsgen2.dfs.core.windows.net'
-    path = '{uri}/uds/uniepro/oni/trello/API_TOKEN.csv'.format(uri=var_adls_uri)
-    area_ = spark.read.format("csv").option("header","true").option("sep", ";").load(path)
-    area_ = area_.toPandas()
-  except Exception as e:
-    #print(f"Error while downloading {file}: {e}")
-    return None
-  return area_
-
-
 def __to_parquet(df, parquet_output):
   parquet_output = parquet_output + '.parquet'
   try:
@@ -77,57 +49,8 @@ def __to_parquet(df, parquet_output):
     if os.path.exists(parquet_output):
       os.remove(parquet_output)
 
-
 def __escreve_arquivo(LND, adl, df, output):
-  # __to_csv(df, output)
   __to_parquet(df, output)
-  '''TEMPORARY
-  # UPLOAD
-  try:
-    parquet_output = output + '.parquet'
-    __upload_files(LND, adl, parquet_output)
-    #print('SUCESSO: __upload_files: {0}'.format(parquet_output))
-    logging.info('SUCESSO: __upload_files: {0}'.format(parquet_output))
-  except Exception as e:
-    #print('ERROR: __upload_files: {0} - LOG: {1}'.format(parquet_output, e))
-    logging.info('ERROR: __upload_files: {0} - LOG: {1}'.format(parquet_output, e))
-  '''
-
-
-# READING FILES FROM OUT
-# buscaArquivoDeQuadros não é mais utilizado
-def buscaArquivoDeQuadros():
-  area_ = 'false'
-  try:
-    file = "quadros.csv"
-    '''TEMPORARY
-    file_path = LND + "/trelloi/config/" + file
-    # Download the file to a local temporary directory
-    with dls.get_file_client(f"{file_path}") as file_client:
-        with open(file=os.path.join(tmp, file), mode="wb") as local_file:
-            download = file_client.download_file()
-            local_file.write(download.readall())
-        print(f"{file} downloaded from Azure Data Lake Storage.")
-    '''
-    ############### IT'LL DELETED    
-    #tmp = 'C:/Users/zhang.yuan/Desktop/bot_trello/'
-    var_adls_uri = 'abfss://datalake@cnibigdatadlsgen2.dfs.core.windows.net'
-    path = '{uri}/uds/uniepro/trello/trello/config/quadros.csv'.format(uri=var_adls_uri)
-    df = spark.read.format("csv").option("header","false").load(path)
-    df = df.toPandas()
-    df = df[['_c1','_c4']].rename(columns={"_c1": 1, "_c4": 4})
-    area_ = df
-
-    #area_ = pd.read_csv(tmp + file, delimiter=",", header=None, usecols=[1,4])
-    area_.columns = ['id', 'data']
-    #print(tmp + file)
-
-  except Exception as e:
-      #print(f"Error while downloading {file}: {e}")
-      return None
-      
-  return area_
-
 
 def limpaUnicode(df, campo):
   df[campo] = df[campo].str.replace("\u2705", "")
@@ -147,41 +70,6 @@ def limpaUnicode(df, campo):
   
   return df
 
-
-#def main(**kwargs):
-#
-#  '''TEMPORARY
-#  bot = initialize()
-#  LND: str = bot.lnd
-#  adl: FileSystemClient = bot.adl
-#
-#  tmp = '/tmp/trello_oni/'
-#  os.makedirs(tmp, mode=0o777, exist_ok=True)
-#
-#  configs = buscaArquivoDeConfiguracao(authenticate_datalake(), tmp, LND)
-#  for index, config in configs.iterrows():
-#    if config["AREA"] == 'UNIEPRO':
-#      logging.info(config["AREA"])
-#      run(
-#          AREA=config["AREA"],
-#          CHAVE=config["CHAVE"],
-#          TOKEN=config["TOKEN"],
-#          USUARIO=config["USUARIO"],
-#          bot=bot,
-#          LND=LND,
-#          adl=adl,
-#          tmp=tmp,
-#          **kwargs,
-#          )
-
-    
-#  run(
-#    AREA= 'UNIEPRO',
-#    CHAVE='890f4ae4256649cc46abc7a07ccec631',
-#    TOKEN='9cdcdff3bb81109f050445d3f438692e716bd754f5aced0a52f5f90cf8818e5e',
-#    USUARIO='observatorionacional.trello@cni.com.br', **kwargs,
-#    )
-
 # COMMAND ----------
 
 def detalhe_card_customfields(key, token, idCard, area_):
@@ -200,7 +88,6 @@ def detalhe_card_customfields(key, token, idCard, area_):
     df1 = df1.rename(columns={'value.text': 'value_text'})
     df1 = df1.rename(columns={'value.date': 'value_date'})
   except Exception as e:
-      #print('detalhe_card_customfields: Card: {0} - ERRO:{1}'.format(idCard, e))
       logging.info('detalhe_card_customfields: Card: {0} - ERRO:{1}'.format(idCard, e))
   return df1
 
@@ -214,7 +101,6 @@ def detalhe_customfields(key, token, idCard, idCustomField, area_):
   t.mount('https://', adapter)
   response = t.get(url_api_board.format(idCustomField, key, token), verify=False)
   df1 = pd.DataFrame()
-
   try:
     dados = response.json()
     df = pd.json_normalize(dados)
@@ -222,29 +108,20 @@ def detalhe_customfields(key, token, idCard, idCustomField, area_):
     df['area'] = area_
     df1 = df
   except Exception as e:
-      #print('detalhe_customfields: Card: {0} - CustomField: {1}  - ERRO:{2}'.format(idCard, idCustomField, e))
       logging.info('detalhe_customfields: Card: {0} - CustomField: {1}  - ERRO:{2}'.format(idCard, idCustomField, e))
-
   return df1
 
 # COMMAND ----------
 
-AREA= 'UNIEPRO'
-CHAVE='890f4ae4256649cc46abc7a07ccec631'
-TOKEN='9cdcdff3bb81109f050445d3f438692e716bd754f5aced0a52f5f90cf8818e5e'
-USUARIO='observatorionacional.trello@cni.com.br'
+path = "{uri}{lnd}/crw/trello/config/API_TOKEN.csv".format(uri=var_adls_uri, lnd = dls['folders']['landing'])
+trello = spark.read.format("csv").option("header", "true").option("sep", ";").load(path, mode="FAILFAST")
+trello = trello.filter(trello["AREA"] == "UNIEPRO").collect()
 
-'''TEMPORARY
-bot=kwargs.get('bot')
-LND=kwargs.get('LND')
-adl=kwargs.get('adl')
-tmp=kwargs.get('tmp')
-'''
-
-#print('AREA:{0} - TOKEN:{1} - CHAVE:{2} - USUARIO:{3}'.format(kwargs.get('AREA'), kwargs.get('TOKEN'), kwargs.get('CHAVE'), kwargs.get('USUARIO')))
-#key = kwargs.get('CHAVE')
-#token = kwargs.get('TOKEN')
-#idMember = kwargs.get('USUARIO')
+for row in trello:
+    AREA = row[0]
+    TOKEN = row[1]
+    CHAVE = row[2]
+    USUARIO = row[3]
 
 area = AREA
 key = CHAVE
@@ -253,11 +130,6 @@ idMember = USUARIO
 area = AREA
 area_ = AREA
 
-# Busca idMember para consultas
-# get_member_token()
-
-# Function
-# get_member_token()
 url_api_board = "https://api.trello.com/1/members/me?key={0}&token={1}";
 t = requests.Session()
 response = t.get(url_api_board.format(key, token), verify=False)
@@ -272,45 +144,21 @@ try:
   df1 = df1.astype({'idMemberReferrer': 'string', 'idBoards': 'string', 'idOrganizations': 'string'})
   df1 = df1.rename(columns={'id': 'idMember'})
 except Exception as e:
-  #print('get_member_token: area:{0} - ERROR: {1}'.format(area_, e))
   logging.info('get_member_token: area:{0} - ERROR: {1}'.format(area_, e))
 
 membro = df1
 idMember = membro['idMember'][0]
 idMember
 
-time.sleep(10)
+time.sleep(8)
 
 # COMMAND ----------
 
-tmp = 'trello/'
-# cria os diretorio para armazenar os arquivos
-tmp_customfields = tmp + 'trello__customfields'
-
-tmp_log = tmp + 'trello__log'
-
-os.makedirs(tmp, mode=0o777, exist_ok=True)
+tmp_customfields = 'trello__customfields'
 os.makedirs(tmp_customfields, mode=0o777, exist_ok=True)
-os.makedirs(tmp_log, mode=0o777, exist_ok=True)
-
-
-#logging.basicConfig(filename='/tmp/oni/trello/trello/log_trello.log', level=logging.INFO, filemode='w')
-#logging.info('Iniciando Processo: ' + str(datetime.today()))
-
-# remove subdiretorio
-# tmp_organizations = tmp
-# tmp_board = tmp
-# tmp_card = tmp
-# tmp_member = tmp
-# tmp_actions = tmp
-# tmp_list = tmp
-# tmp_customfields = tmp
-# tmp_checklist = tmp
-
 
 output = "{file}.parquet"
 
-# OBJETOS DE APOIO
 LISTA_CUSTOMFIELDS = pd.DataFrame(columns=[
     "area",
     "idBoard",
@@ -345,26 +193,17 @@ LISTA_CHECKLIST_IN_CARDS = pd.DataFrame(columns=[
     "pos"
 ])
 
-time.sleep(10)
+time.sleep(8)
 
 # COMMAND ----------
 
- # ENTERPRISE
 dados_enterprise = membro
 filename = 'enterprise_' + area
-#dados_enterprise.to_parquet(tmp_enterprise + output.format(file=filename))
-#dados_enterprise_ = spark.createDataFrame(dados_enterprise)
-#dados_enterprise_.repartition(10).write.option("encoding", "ISO-8859-1").option('header','true').parquet(f'{var_adls_uri}/uds/uniepro/oni/{tmp_enterprise}/', mode='overwrite')
 
-dados_enterprise
-
-time.sleep(10)
+time.sleep(8)
 
 # COMMAND ----------
 
-
-# LISTA DE BOARDS
-# detalhe_lista_boards_por_members()
 url_api_board = "https://api.trello.com/1/members/{0}/boards?key={1}&token={2}&cards=all";
 t = requests.Session()
 df1 = pd.DataFrame()
@@ -389,30 +228,20 @@ try:
   df1 = df1.astype({'idEnterprise':'string'})
   df1 = df1.rename(columns={'id': 'idBoard'})
 except Exception as e:
-  #print('detalhe_lista_boards_por_members: ERROR: {1}'.format(e))
   logging.info('detalhe_lista_boards_por_members:  ERROR: {1}'.format(e))
 
 dados = df1
 dados['idEnterprise'] = membro['idEnterprise'][0]
-# '5ffeef183c014e442d7bbb0c'
 if len(dados) > 0:
   filename = 'lista_boards_' + area
-  #dados.to_parquet(tmp_board + output.format(file=filename))
-  '''TEMPORARY
-  __escreve_arquivo(LND, authenticate_datalake(), dados, tmp_board + output.format(file=filename))
-  '''
-  #dados_ = spark.createDataFrame(dados)
-  #dados_.repartition(10).write.option("encoding", "ISO-8859-1").option('header','true').parquet(f'{var_adls_uri}/uds/uniepro/oni/{tmp_board}/', mode='overwrite')
 
 dados['idEnterprise'][0]
 
-time.sleep(10)
+time.sleep(8)
 
 # COMMAND ----------
 
-# PARA CADA BOARD BUSCA DOS CARDS
 for row in dados.itertuples():
-  #coletar dados somente do quadro de demandas e quadro de compras
   if row.idBoard == '63e3ea369ba56d741da36330' or row.idBoard == '61e6b049b7ca7305318c5180': 
     idBoard = row.idBoard
     nome_board = row.name
@@ -445,17 +274,14 @@ for row in dados.itertuples():
       "card_old_due",
       "card_due",
       "data_dateLastEdited"])
-  
 
     if shortLink_board != '-1':
-      #print('BOARD: {0}'.format(nome_board))
       print(idBoard)
       print(nome_board)
       print(shortLink_board)
       print(idOrganizations)      
       logging.info('BOARD: {0}'.format(nome_board))
       
-      # BUSCA CARDS PARA O BOARD
       url_api_board = "https://api.trello.com/1/boards/{0}/Cards?key={1}&token={2}&cards=all";
       t = requests.Session()
       response = t.get(url_api_board.format(shortLink_board, key, token), verify=False)
@@ -493,67 +319,42 @@ for row in dados.itertuples():
         '''print(
           'detalhe_board_cards: idBoard:{0} - shortLink_board:{1} -  ERROR: {2}'.format(idBoard, shortLink_board, e))'''
         logging.info('detalhe_board_cards: idBoard:{0} - shortLink_board:{1} -  ERROR: {2}'.format(idBoard, shortLink_board, e))
-
-
-
       board_card = df1
       if len(board_card) > 0:
-        #print('CARDS: {0} IN BOARD {1}'.format(len(board_card), nome_board))
         logging.info('CARDS: {0} IN BOARD {1}'.format(len(board_card), nome_board))
         filename = 'boards_cards_' + shortLink_board
-        #__escreve_arquivo(LND, authenticate_datalake(), board_card, tmp_card + output.format(file=filename))
-        #board_card.repartition(10).to_parquet(tmp_card + output.format(file=filename))
-        #board_card_ = spark.createDataFrame(board_card)
-        #board_card_.repartition(10).write.option("encoding", "ISO-8859-1").option('header','true').parquet(f'{var_adls_uri}/uds/uniepro/oni/{tmp_card}/', mode='overwrite')
-
-      # PARA CADA CARD BUSCA : LIST ,CUSTOMFIELDS ,CHECKLISTS
       for cards in board_card.itertuples():
         idCard = cards.idCard
         idChecklist = cards.idChecklists
-
-
-
         dados_customfields_in_card = detalhe_card_customfields(key, token, idCard, area)
         if len(dados_customfields_in_card) > 0:
-          #print("CUSTOM: {0} IN CARD {1}".format(len(dados_customfields_in_card), idCard))
           logging.info("CUSTOM: {0} IN CARD {1}".format(len(dados_customfields_in_card), idCard))
-          # ITEM DENTRO DO CUSTOM FIELD
           for custom in dados_customfields_in_card.itertuples():
             dados_customfields_detalhes = detalhe_customfields(key, token, custom.idCard, custom.idCustomField, area)   
             if len(dados_customfields_detalhes) > 0:
-              #print("CUSTOM ITEM: {0} IN CARD {1}".format(len(dados_customfields_detalhes), idCard))
               logging.info(
                   "CUSTOM ITEM: {0} IN CARD {1}".format(len(dados_customfields_detalhes), idCard))
-              # TRATA RESULTADO
               custom_idboard_ = idBoard
               custom_idcard_ = dados_customfields_detalhes['idCard'][0]
               custom_idCustomField_ = dados_customfields_detalhes['id'][0]
               custom_name_ = dados_customfields_detalhes['name'][0]
               custom_type_ = dados_customfields_detalhes['type'][0]
               custom_area = dados_customfields_detalhes['area'][0]
-
               custom_options_ = ''
               custom_value = ''
               custom_idValue = ''
-
               if custom_type_ == 'list':
                 custom_options_ = dados_customfields_detalhes['options'][0]
                 custom_idValue = custom.idValue
-
-                # SELECIONA APENAS ITEM ESCOLHIDO
                 df_options = pd.json_normalize(custom_options_)
                 df_options = df_options.rename(columns={'value.text': 'value_text'})
                 for option_item in df_options.itertuples():
                   if option_item.id == custom_idValue:
                     custom_value = option_item.value_text
-
               if custom_type_ == 'text':
                   custom_value = custom.value_text
               if custom_type_ == 'date':
                   custom_value = custom.value_date
-
-                  #print('idCustomField: {0} name:{1} type:{2} value:{3}'.format(custom_idCustomField_,custom_name_,custom_type_,custom_value))
-
               logging.info('idCustomField: {0} name:{1} type:{2} value:{3}'.format(custom_idCustomField_,
                                                                                     custom_name_,
                                                                                     custom_type_,
@@ -579,14 +380,4 @@ schema = "oni/trello"
 table = "customfields"
 upload_file(spark=spark, dbutils=dbutils, df=_LISTA_CUSTOMFIELDS_, schema=schema, table=table)
 
-
-
 shutil.rmtree(tmp_customfields)
-
-# COMMAND ----------
-
-LISTA_CUSTOMFIELDS_.count()
-
-# COMMAND ----------
-
-
