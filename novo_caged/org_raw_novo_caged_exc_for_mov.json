@@ -1,0 +1,198 @@
+{
+	"name": "org_raw_novo_caged_exc_for_mov",
+	"properties": {
+		"activities": [
+			{
+				"name": "Start",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "End",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "org_raw_novo_caged_exc_novo",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "org_raw_novo_caged_for_novo",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "org_raw_novo_caged_mov_novo",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "org_raw_novo_caged_exc_novo",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_novo_caged_exc_novo",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"tables": {
+							"value": "@pipeline().parameters.tables.org_raw_novo_caged_exc_novo",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@pipeline().parameters.databricks.org_raw_novo_caged_exc_novo",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "org_raw_novo_caged_for_novo",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_novo_caged_for_novo",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"tables": {
+							"value": "@pipeline().parameters.tables.org_raw_novo_caged_for_novo",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@pipeline().parameters.databricks.org_raw_novo_caged_for_novo",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "org_raw_novo_caged_mov_novo",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_novo_caged_mov_novo",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"tables": {
+							"value": "@pipeline().parameters.tables.org_raw_novo_caged_mov_novo",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@pipeline().parameters.databricks.org_raw_novo_caged_mov_novo",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"tables": {
+				"type": "object",
+				"defaultValue": {
+					"org_raw_novo_caged_exc_novo": {
+						"schema": "me",
+						"table": "novo_caged_exc",
+						"table_1": "caged",
+						"prm_path": "/prm/usr/me_novo_caged/FIEC_me_novo_caged_exc_mapeamento_unificado_raw.xlsx"
+					},
+					"org_raw_novo_caged_for_novo": {
+						"schema": "me",
+						"table": "novo_caged_for",
+						"table_1": "caged",
+						"prm_path": "/prm/usr/me_novo_caged/FIEC_me_novo_caged_for_mapeamento_unificado_raw.xlsx"
+					},
+					"org_raw_novo_caged_mov_novo": {
+						"schema": "me",
+						"table": "novo_caged_mov",
+						"table_1": "caged",
+						"prm_path": "/prm/usr/me_novo_caged/FIEC_me_novo_caged_mov_mapeamento_unificado_raw.xlsx"
+					}
+				}
+			},
+			"databricks": {
+				"type": "object",
+				"defaultValue": {
+					"org_raw_novo_caged_exc_novo": {
+						"notebook": "/oni/me/org_raw_me_novo_caged_exc"
+					},
+					"org_raw_novo_caged_for_novo": {
+						"notebook": "/oni/me/org_raw_me_novo_caged_for"
+					},
+					"org_raw_novo_caged_mov_novo": {
+						"notebook": "/oni/me/org_raw_me_novo_caged_mov"
+					}
+				}
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			},
+			"ach_tables": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "raw/crw/oni/me"
+		},
+		"annotations": []
+	}
+}
