@@ -1,0 +1,223 @@
+{
+	"name": "lnd_org_raw_trello_adb",
+	"properties": {
+		"activities": [
+			{
+				"name": "lnd_org_raw_trello_enterprise_board_organizations_adb",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_trello_enterprise_board_organizations_adb",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"bot_params": {
+							"value": "@pipeline().parameters.bot_params.enterprise_board_organizations",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_trello_member_actions_card_adb",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_trello_member_actions_card_adb",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"bot_params": {
+							"value": "@pipeline().parameters.bot_params.member_actions_card",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "Start",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "Wait",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "lnd_org_raw_trello_enterprise_board_organizations_adb",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_trello_member_actions_card_adb",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_trello_list_checklist_adb",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_trello_customfields_adb",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd_org_raw_trello_list_checklist_adb",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_trello_list_checklist_adb",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"bot_params": {
+							"value": "@pipeline().parameters.bot_params.list_checklist",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_trello_customfields_adb",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_trello_customfields_adb",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"bot_params": {
+							"value": "@pipeline().parameters.bot_params.customfields",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			},
+			"bot_params": {
+				"type": "object",
+				"defaultValue": {
+					"enterprise_board_organizations": {
+						"resource": "databricks",
+						"location": "brazilsouth",
+						"reload": "false",
+						"reset": "false",
+						"override": "false",
+						"memory_in_gb": "8",
+						"cpu": "4.0"
+					},
+					"member_actions_card": {
+						"resource": "databricks",
+						"location": "brazilsouth",
+						"reload": "false",
+						"reset": "false",
+						"override": "false",
+						"memory_in_gb": "8",
+						"cpu": "4.0"
+					},
+					"list_checklist": {
+						"resource": "databricks",
+						"location": "brazilsouth",
+						"reload": "false",
+						"reset": "false",
+						"override": "false",
+						"memory_in_gb": "8",
+						"cpu": "4.0"
+					},
+					"customfields": {
+						"resource": "databricks",
+						"location": "brazilsouth",
+						"reload": "false",
+						"reset": "false",
+						"override": "false",
+						"memory_in_gb": "8",
+						"cpu": "4.0"
+					}
+				}
+			}
+		},
+		"folder": {
+			"name": "lnd/crw/oni/trello"
+		},
+		"annotations": []
+	}
+}
