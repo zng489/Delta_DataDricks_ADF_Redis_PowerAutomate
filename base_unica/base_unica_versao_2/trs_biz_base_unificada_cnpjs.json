@@ -1,0 +1,133 @@
+{
+	"name": "trs_biz_base_unificada_cnpjs",
+	"properties": {
+		"activities": [
+			{
+				"name": "business__0__switch_env",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "business__0__switch_env",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"table": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "{'adf_factory_name': '@{pipeline().DataFactory}', 'adf_pipeline_name': '@{pipeline().Pipeline}', 'adf_pipeline_run_id': '@{pipeline().RunId}',  'adf_trigger_id': '@{pipeline().TriggerId}', 'adf_trigger_name': '@{pipeline().TriggerName}', 'adf_trigger_time': '@{pipeline().TriggerTime}',  'adf_trigger_type': '@{pipeline().TriggerType}'}",
+							"type": "Expression"
+						},
+						"user_parameters": {
+							"value": "@pipeline().parameters.user_parameters",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "alerta_falha",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "business__0__switch_env",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "send_email",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"email_users": {
+							"value": "@array('monitoramento_observatorio@cni.com.br')",
+							"type": "Expression"
+						},
+						"email_groups": {
+							"value": "@array('')",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\",  \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\",  \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "Fail1",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "alerta_falha",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Falha",
+					"errorCode": "500"
+				}
+			}
+		],
+		"parameters": {
+			"tables": {
+				"type": "object",
+				"defaultValue": {
+					"copy_sqldw": "false",
+					"cadastro_estbl_path": "rfb_cnpj/cadastro_estbl_f",
+					"cadastro_empresa_path": "rfb_cnpj/cadastro_empresa_f",
+					"cadastro_simples_path": "rfb_cnpj/cadastro_simples_f",
+					"rais_estab_path": "me/rais_estabelecimento",
+					"siafi": "oni/governo_federal/orcamento_da_uniao/rfb/siafi",
+					"exportadoras": "oni/mdic/comex/emp_bras_exp_imp/exportadoras",
+					"importadoras": "oni/mdic/comex/emp_bras_exp_imp/importadoras",
+					"class_inten_tec": "oni/ocde/ativ_econ/int_tec/class_inten_tec",
+					"cnaes_contrib": "oni/observatorio_nacional/cnae/ger_arrec_fin/cnaes_contrib",
+					"cnae_ncm": "oni/ibge/ativ_econ/class_produto/cnae_ncm",
+					"cnae_isic": "oni/ibge/ativ_econ/class_internacionais/cnae_isic",
+					"path_destination": "oni/base_unica_cnpjs/cnpjs_rfb_rais",
+					"destination": "/oni/base_unica_cnpjs/cnpjs_rfb_rais",
+					"databricks": {
+						"notebook": "/biz/oni/base_unica_cnpjs/trs_biz_base_unificada_cnpjs"
+					}
+				}
+			},
+			"user_parameters": {
+				"type": "object",
+				"defaultValue": {
+					"null": "null"
+				}
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "biz/oni/base_unica_cnpjs"
+		},
+		"annotations": []
+	}
+}
