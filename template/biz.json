@@ -120,7 +120,8 @@
 				}
 			},
 			"sqldw_copy": {
-				"type": "bool"
+				"type": "bool",
+				"defaultValue": false
 			},
 			"sqldw_grant": {
 				"type": "string"
