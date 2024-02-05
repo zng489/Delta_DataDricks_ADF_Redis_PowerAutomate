@@ -1,3 +1,8 @@
+
+tmp/dev/uld/oni/pesquisas/scg/absenteismo/
+tmp/dev/uld/oni/pesquisas/scg/bdd_imagem/
+tmp/dev/uld/oni/pesquisas/scg/microdados_topofmind/
+
 org_raw_absenteismo.py
 {"notebook":"oni/pesquisas/scg/org_raw_absenteismo"}
 ["{ 'namespace': '/oni', 'file_folder': '/pesquisas/scg/absenteismo', 'file_folder_raw':'/oni/pesquisas/scg/absenteismo', 'extension': 'csv', 'column_delimiter': ';', 'encoding': 'UTF-8', 'null_value': '' }"]
