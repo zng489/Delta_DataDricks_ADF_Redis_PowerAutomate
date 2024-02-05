@@ -1,0 +1,136 @@
+org_raw_absenteismo.py
+
+try:
+  var_file = json.loads(re.sub("\'", '\"', dbutils.widgets.get("file")))
+  var_dls = json.loads(re.sub("\'", '\"', dbutils.widgets.get("dls")))
+  var_adf = json.loads(re.sub("\'", '\"', dbutils.widgets.get("adf")))
+except: 
+  var_adf = {"adf_factory_name":"cnibigdatafactory","adf_pipeline_name":"org_raw_tse_resultados_2022","adf_pipeline_run_id":"181ed1d1-3bce-471e-b9fb-f2062f021296","adf_trigger_id":"9a3958e25cd44c95bb1be066e9ee53d2","adf_trigger_name":"Sandbox","adf_trigger_time":"2023-08-18T21:16:02.5764238Z","adf_trigger_type":"Manual"}
+  
+  var_dls = {"folders":{"landing":"/tmp/dev/uld","error":"/tmp/dev/err","staging":"/tmp/dev/stg","log":"/tmp/dev/log","raw":"/tmp/dev/raw","archive":"/tmp/dev/ach"},"systems":{"raw":"usr"},"path_prefix":"/tmp/dev/"}
+  
+  var_file = { 'namespace': '/oni', 'file_folder': '/pesquisas/scg/absenteismo', 'file_folder_raw':'/oni/pesquisas/scg/absenteismo', 'extension': 'csv', 'column_delimiter': ';', 'encoding': 'UTF-8', 'null_value': '' }
+
+
+
+org_raw_bdd_imagem.py
+
+try:
+  var_file = json.loads(re.sub("\'", '\"', dbutils.widgets.get("file")))
+  var_dls = json.loads(re.sub("\'", '\"', dbutils.widgets.get("dls")))
+  var_adf = json.loads(re.sub("\'", '\"', dbutils.widgets.get("adf")))
+except: 
+  var_adf = {"adf_factory_name":"cnibigdatafactory","adf_pipeline_name":"org_raw_tse_resultados_2022","adf_pipeline_run_id":"181ed1d1-3bce-471e-b9fb-f2062f021296","adf_trigger_id":"9a3958e25cd44c95bb1be066e9ee53d2","adf_trigger_name":"Sandbox","adf_trigger_time":"2023-08-18T21:16:02.5764238Z","adf_trigger_type":"Manual"}
+  
+  var_dls = {"folders":{"landing":"/tmp/dev/uld","error":"/tmp/dev/err","staging":"/tmp/dev/stg","log":"/tmp/dev/log","raw":"/tmp/dev/raw","archive":"/tmp/dev/ach"},"systems":{"raw":"usr"},"path_prefix":"/tmp/dev/"}
+  
+  var_file = { 'namespace': '/oni', 'file_folder': '/pesquisas/scg/bdd_imagem', 'file_folder_raw':'/oni/pesquisas/scg/bdd_imagem', 'extension': 'csv', 'column_delimiter': ';', 'encoding': 'UTF-8',
+              'null_value': ''}
+
+
+org_raw_microdados_topofmind.py
+
+try:
+  var_file = json.loads(re.sub("\'", '\"', dbutils.widgets.get("file")))
+  var_dls = json.loads(re.sub("\'", '\"', dbutils.widgets.get("dls")))
+  var_adf = json.loads(re.sub("\'", '\"', dbutils.widgets.get("adf")))
+except: 
+  var_adf = {"adf_factory_name":"cnibigdatafactory","adf_pipeline_name":"org_raw_tse_resultados_2022","adf_pipeline_run_id":"181ed1d1-3bce-471e-b9fb-f2062f021296","adf_trigger_id":"9a3958e25cd44c95bb1be066e9ee53d2","adf_trigger_name":"Sandbox","adf_trigger_time":"2023-08-18T21:16:02.5764238Z","adf_trigger_type":"Manual"}
+  
+  var_dls = {"folders":{"landing":"/tmp/dev/uld","error":"/tmp/dev/err","staging":"/tmp/dev/stg","log":"/tmp/dev/log","raw":"/tmp/dev/raw","archive":"/tmp/dev/ach"},"systems":{"raw":"usr"},"path_prefix":"/tmp/dev/"}
+  
+  var_file = { 'namespace': '/oni', 'file_folder': '/pesquisas/scg/microdados_topofmind', 'file_folder_raw':'/oni/pesquisas/scg/microdados_topofmind', 'extension': 'csv', 'column_delimiter': ';', 'encoding': 'UTF-8',
+              'null_value': ''}
+
+
+===================================================
+===================================================
+===================================================
+
+raw_trs_absenteismo.py
+
+try:
+  table = json.loads(re.sub("\'", '\"', dbutils.widgets.get("tables")))
+  dls = json.loads(re.sub("\'", '\"', dbutils.widgets.get("dls")))
+  adf = json.loads(re.sub("\'", '\"', dbutils.widgets.get("adf")))
+except:
+  table = {"schema":"oni/pesquisas/scg","table":"absenteismo"}
+
+  adf = {"adf_factory_name":"cnibigdatafactory","adf_pipeline_name":"raw_trs_pnadc_a_visita5_f","adf_pipeline_run_id":"04a40e47-07bd-4415-a3a9-2b77158f490b","adf_trigger_id":"7adb91d09feb444d9c383c002feea0d0","adf_trigger_name":"Sandbox","adf_trigger_time":"2023-06-28T13:41:09.760834Z","adf_trigger_type":"Manual"}
+  
+  dls = {"folders":{"landing":"/tmp/dev/lnd","error":"/tmp/dev/err","archive":"/tmp/dev/ach","staging":"/tmp/dev/stg","log":"/tmp/dev/log","raw":"/tmp/dev/raw","trusted":"/tmp/dev/trs","business":"/tmp/dev/biz","prm":"/tmp/dev/prm","historico":"/tmp/dev/hst"},"path_prefix":"tmp","uld":{"folders":{"landing":"/tmp/dev/uld","error":"/tmp/dev/err","staging":"/tmp/dev/stg","log":"/tmp/dev/log","raw":"/tmp/dev/raw","archive":"/tmp/dev/ach"},"systems":{"raw":"usr"},"path_prefix":"/tmp/dev/"},"systems":{"raw":"usr"}}
+
+
+
+raw_trs_bdd_imagem.py
+
+try:
+  table = json.loads(re.sub("\'", '\"', dbutils.widgets.get("tables")))
+  dls = json.loads(re.sub("\'", '\"', dbutils.widgets.get("dls")))
+  adf = json.loads(re.sub("\'", '\"', dbutils.widgets.get("adf")))
+except:
+  table = {"schema":"oni/pesquisas/scg","table":"bdd_imagem"}
+
+  adf = {"adf_factory_name":"cnibigdatafactory","adf_pipeline_name":"raw_trs_pnadc_a_visita5_f","adf_pipeline_run_id":"04a40e47-07bd-4415-a3a9-2b77158f490b","adf_trigger_id":"7adb91d09feb444d9c383c002feea0d0","adf_trigger_name":"Sandbox","adf_trigger_time":"2023-06-28T13:41:09.760834Z","adf_trigger_type":"Manual"}
+  
+  dls = {"folders":{"landing":"/tmp/dev/lnd","error":"/tmp/dev/err","archive":"/tmp/dev/ach","staging":"/tmp/dev/stg","log":"/tmp/dev/log","raw":"/tmp/dev/raw","trusted":"/tmp/dev/trs","business":"/tmp/dev/biz","prm":"/tmp/dev/prm","historico":"/tmp/dev/hst"},"path_prefix":"tmp","uld":{"folders":{"landing":"/tmp/dev/uld","error":"/tmp/dev/err","staging":"/tmp/dev/stg","log":"/tmp/dev/log","raw":"/tmp/dev/raw","archive":"/tmp/dev/ach"},"systems":{"raw":"usr"},"path_prefix":"/tmp/dev/"},"systems":{"raw":"usr"}}
+
+
+raw_trs_microdados_topofmind.py
+
+try:
+  table = json.loads(re.sub("\'", '\"', dbutils.widgets.get("tables")))
+  dls = json.loads(re.sub("\'", '\"', dbutils.widgets.get("dls")))
+  adf = json.loads(re.sub("\'", '\"', dbutils.widgets.get("adf")))
+except:
+  table = {"schema":"oni/pesquisas/scg","table":"microdados_topofmind"}
+
+  adf = {"adf_factory_name":"cnibigdatafactory","adf_pipeline_name":"raw_trs_pnadc_a_visita5_f","adf_pipeline_run_id":"04a40e47-07bd-4415-a3a9-2b77158f490b","adf_trigger_id":"7adb91d09feb444d9c383c002feea0d0","adf_trigger_name":"Sandbox","adf_trigger_time":"2023-06-28T13:41:09.760834Z","adf_trigger_type":"Manual"}
+  
+  dls = {"folders":{"landing":"/tmp/dev/lnd","error":"/tmp/dev/err","archive":"/tmp/dev/ach","staging":"/tmp/dev/stg","log":"/tmp/dev/log","raw":"/tmp/dev/raw","trusted":"/tmp/dev/trs","business":"/tmp/dev/biz","prm":"/tmp/dev/prm","historico":"/tmp/dev/hst"},"path_prefix":"tmp","uld":{"folders":{"landing":"/tmp/dev/uld","error":"/tmp/dev/err","staging":"/tmp/dev/stg","log":"/tmp/dev/log","raw":"/tmp/dev/raw","archive":"/tmp/dev/ach"},"systems":{"raw":"usr"},"path_prefix":"/tmp/dev/"},"systems":{"raw":"usr"}}
+
+
+
+===================================================
+===================================================
+===================================================
+
+trs_biz_absenteismo.py
+
+table = {"copy_sqldw":"false",
+ "params":"oni/pesquisas/scg/absenteismo",
+ "path_destination":"oni/painel_indicadores_scg/absenteismo",
+ "destination":"/oni/painel_indicadores_scg/absenteismo",
+ "databricks":{"notebook":"/biz/oni/painel_indicadores_scg/trs_biz_absenteismo"}}
+
+adf = {"adf_factory_name":"cnibigdatafactory","adf_pipeline_name":"trs_biz_rfb_cno","adf_pipeline_run_id":"c158e9dd-98df-4f7b-a64d-d13c76669868","adf_trigger_id":"67c514a7245449b984eb4aadd55bfbff","adf_trigger_name":"Sandbox","adf_trigger_time":"2023-08-22T21:22:42.5769844Z","adf_trigger_type":"Manual"}
+ 
+dls = {"folders":{"landing":"/tmp/dev/lnd","error":"/tmp/dev/err","archive":"/tmp/dev/ach","staging":"/tmp/dev/stg","log":"/tmp/dev/log","raw":"/tmp/dev/raw","trusted":"/tmp/dev/trs","business":"/tmp/dev/biz","prm":"/tmp/dev/prm","historico":"/tmp/dev/hst"},"path_prefix":"tmp","uld":{"folders":{"landing":"/tmp/dev/uld","error":"/tmp/dev/err","staging":"/tmp/dev/stg","log":"/tmp/dev/log","raw":"/tmp/dev/raw","archive":"/tmp/dev/ach"},"systems":{"raw":"usr"},"path_prefix":"/tmp/dev/"},"systems":{"raw":"usr"}}
+
+
+
+trs_biz_bdd_imagem.py
+
+table = {"copy_sqldw":"false",
+ "params":"oni/pesquisas/scg/bdd_imagem",
+ "path_destination":"oni/painel_indicadores_scg/bdd_imagem",
+ "destination":"/oni/painel_indicadores_scg/bdd_imagem",
+ "databricks":{"notebook":"/biz/oni/painel_indicadores_scg/trs_biz_bdd_imagem"}}
+
+adf = {"adf_factory_name":"cnibigdatafactory","adf_pipeline_name":"trs_biz_rfb_cno","adf_pipeline_run_id":"c158e9dd-98df-4f7b-a64d-d13c76669868","adf_trigger_id":"67c514a7245449b984eb4aadd55bfbff","adf_trigger_name":"Sandbox","adf_trigger_time":"2023-08-22T21:22:42.5769844Z","adf_trigger_type":"Manual"}
+ 
+dls = {"folders":{"landing":"/tmp/dev/lnd","error":"/tmp/dev/err","archive":"/tmp/dev/ach","staging":"/tmp/dev/stg","log":"/tmp/dev/log","raw":"/tmp/dev/raw","trusted":"/tmp/dev/trs","business":"/tmp/dev/biz","prm":"/tmp/dev/prm","historico":"/tmp/dev/hst"},"path_prefix":"tmp","uld":{"folders":{"landing":"/tmp/dev/uld","error":"/tmp/dev/err","staging":"/tmp/dev/stg","log":"/tmp/dev/log","raw":"/tmp/dev/raw","archive":"/tmp/dev/ach"},"systems":{"raw":"usr"},"path_prefix":"/tmp/dev/"},"systems":{"raw":"usr"}}
+
+
+
+trs_biz_microdados_topofmind.py
+
+table = {"copy_sqldw":"false",
+ "params":"oni/pesquisas/scg/microdados_topofmind",
+ "path_destination":"oni/painel_indicadores_scg/microdados_topofmind",
+ "destination":"/oni/painel_indicadores_scg/microdados_topofmind",
+ "databricks":{"notebook":"/biz/oni/painel_indicadores_scg/trs_biz_microdados_topofmind"}}
+
+adf = {"adf_factory_name":"cnibigdatafactory","adf_pipeline_name":"trs_biz_rfb_cno","adf_pipeline_run_id":"c158e9dd-98df-4f7b-a64d-d13c76669868","adf_trigger_id":"67c514a7245449b984eb4aadd55bfbff","adf_trigger_name":"Sandbox","adf_trigger_time":"2023-08-22T21:22:42.5769844Z","adf_trigger_type":"Manual"}
+ 
+dls = {"folders":{"landing":"/tmp/dev/lnd","error":"/tmp/dev/err","archive":"/tmp/dev/ach","staging":"/tmp/dev/stg","log":"/tmp/dev/log","raw":"/tmp/dev/raw","trusted":"/tmp/dev/trs","business":"/tmp/dev/biz","prm":"/tmp/dev/prm","historico":"/tmp/dev/hst"},"path_prefix":"tmp","uld":{"folders":{"landing":"/tmp/dev/uld","error":"/tmp/dev/err","staging":"/tmp/dev/stg","log":"/tmp/dev/log","raw":"/tmp/dev/raw","archive":"/tmp/dev/ach"},"systems":{"raw":"usr"},"path_prefix":"/tmp/dev/"},"systems":{"raw":"usr"}}
