@@ -1,5 +1,16 @@
 
 
+
+adf = {"adf_factory_name":"cnibigdatafactory","adf_pipeline_name":"lnd_org_raw_trello_enterprise_board_organizations","adf_pipeline_run_id":"3fdd924e-d24d-4644-bc5e-68cb000d7849","adf_trigger_id":"6e3289dc8859437888605e22c1ba7e40","adf_trigger_name":"Sandbox","adf_trigger_time":"2024-01-08T13:22:21.2585028Z","adf_trigger_type":"Manual"}
+
+bot_name = org_raw_trello_enterprise_board_organizations
+
+dls = {"folders":{"landing":"/tmp/dev/lnd","error":"/tmp/dev/err","archive":"/tmp/dev/ach","staging":"/tmp/dev/stg","log":"/tmp/dev/log","raw":"/tmp/dev/raw","trusted":"/tmp/dev/trs","business":"/tmp/dev/biz","prm":"/tmp/dev/prm","historico":"/tmp/dev/hst"},"path_prefix":"tmp","uld":{"folders":{"landing":"/tmp/dev/uld","error":"/tmp/dev/err","staging":"/tmp/dev/stg","log":"/tmp/dev/log","raw":"/tmp/dev/raw","archive":"/tmp/dev/ach"},"systems":{"raw":"usr"},"path_prefix":"/tmp/dev/"},"systems":{"raw":"usr"}}
+
+env = "{\"env\":\"dev\"}"
+
+
+
 lnd_org_raw_trello_customfields_adb ==> settings | bot_params | string | @pipeline().parameters.bot_params.customfields
 
 bot_params --> object --> {"organizations":{"resource":"databricks","location":"brazilsouth","reload":"false","reset":"false","override":"false","memory_in_gb":"8","cpu":"4.0"},"member_actions_card":{"resource":"databricks","location":"brazilsouth","reload":"false","reset":"false","override":"false","memory_in_gb":"8","cpu":"4.0"},"list_checklist":{"resource":"databricks","location":"brazilsouth","reload":"false","reset":"false","override":"false","memory_in_gb":"8","cpu":"4.0"},"customfields":{"resource":"databricks","location":"brazilsouth","reload":"false","reset":"false","override":"false","memory_in_gb":"8","cpu":"4.0"}}
