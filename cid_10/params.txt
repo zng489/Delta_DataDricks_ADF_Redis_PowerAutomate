@@ -1,0 +1,49 @@
+try:
+  var_file = json.loads(re.sub("\'", '\"', dbutils.widgets.get("file")))
+  var_dls = json.loads(re.sub("\'", '\"', dbutils.widgets.get("dls")))
+  var_adf = json.loads(re.sub("\'", '\"', dbutils.widgets.get("adf")))
+except: 
+  var_adf = {"adf_factory_name":"cnibigdatafactory","adf_pipeline_name":"org_raw_tse_resultados_2022","adf_pipeline_run_id":"181ed1d1-3bce-471e-b9fb-f2062f021296","adf_trigger_id":"9a3958e25cd44c95bb1be066e9ee53d2","adf_trigger_name":"Sandbox","adf_trigger_time":"2023-08-18T21:16:02.5764238Z","adf_trigger_type":"Manual"}
+  
+  var_dls = {"folders":{"landing":"/tmp/dev/uld","error":"/tmp/dev/err","staging":"/tmp/dev/stg","log":"/tmp/dev/log","raw":"/tmp/dev/raw","archive":"/tmp/dev/ach"},"systems":{"raw":"usr"},"path_prefix":"/tmp/dev/"}
+  
+  var_file = { 'namespace': '/oni', 'file_folder': '/oms/cid_10/capitulos', 'file_folder_raw':'/oni/oms/cid_10/capitulos', 'extension': 'csv', 'column_delimiter': ';', 'encoding': 'UTF-8', 'null_value': '' }
+
+
+
+
+try:
+  var_file = json.loads(re.sub("\'", '\"', dbutils.widgets.get("file")))
+  var_dls = json.loads(re.sub("\'", '\"', dbutils.widgets.get("dls")))
+  var_adf = json.loads(re.sub("\'", '\"', dbutils.widgets.get("adf")))
+except: 
+  var_adf = {"adf_factory_name":"cnibigdatafactory","adf_pipeline_name":"org_raw_tse_resultados_2022","adf_pipeline_run_id":"181ed1d1-3bce-471e-b9fb-f2062f021296","adf_trigger_id":"9a3958e25cd44c95bb1be066e9ee53d2","adf_trigger_name":"Sandbox","adf_trigger_time":"2023-08-18T21:16:02.5764238Z","adf_trigger_type":"Manual"}
+  
+  var_dls = {"folders":{"landing":"/tmp/dev/uld","error":"/tmp/dev/err","staging":"/tmp/dev/stg","log":"/tmp/dev/log","raw":"/tmp/dev/raw","archive":"/tmp/dev/ach"},"systems":{"raw":"usr"},"path_prefix":"/tmp/dev/"}
+  
+  var_file = { 'namespace': '/oni', 'file_folder': '/oms/cid_10/categorias', 'file_folder_raw':'/oni/oms/cid_10/categorias', 'extension': 'csv', 'column_delimiter': ';', 'encoding': 'UTF-8', 'null_value': '' }
+
+
+try:
+  var_file = json.loads(re.sub("\'", '\"', dbutils.widgets.get("file")))
+  var_dls = json.loads(re.sub("\'", '\"', dbutils.widgets.get("dls")))
+  var_adf = json.loads(re.sub("\'", '\"', dbutils.widgets.get("adf")))
+except: 
+  var_adf = {"adf_factory_name":"cnibigdatafactory","adf_pipeline_name":"org_raw_tse_resultados_2022","adf_pipeline_run_id":"181ed1d1-3bce-471e-b9fb-f2062f021296","adf_trigger_id":"9a3958e25cd44c95bb1be066e9ee53d2","adf_trigger_name":"Sandbox","adf_trigger_time":"2023-08-18T21:16:02.5764238Z","adf_trigger_type":"Manual"}
+  
+  var_dls = {"folders":{"landing":"/tmp/dev/uld","error":"/tmp/dev/err","staging":"/tmp/dev/stg","log":"/tmp/dev/log","raw":"/tmp/dev/raw","archive":"/tmp/dev/ach"},"systems":{"raw":"usr"},"path_prefix":"/tmp/dev/"}
+  
+  var_file = { 'namespace': '/oni', 'file_folder': '/oms/cid_10/grupos', 'file_folder_raw':'/oni/oms/cid_10/grupos', 'extension': 'csv', 'column_delimiter': ';', 'encoding': 'UTF-8', 'null_value': '' }
+
+
+
+try:
+  var_file = json.loads(re.sub("\'", '\"', dbutils.widgets.get("file")))
+  var_dls = json.loads(re.sub("\'", '\"', dbutils.widgets.get("dls")))
+  var_adf = json.loads(re.sub("\'", '\"', dbutils.widgets.get("adf")))
+except: 
+  var_adf = {"adf_factory_name":"cnibigdatafactory","adf_pipeline_name":"org_raw_tse_resultados_2022","adf_pipeline_run_id":"181ed1d1-3bce-471e-b9fb-f2062f021296","adf_trigger_id":"9a3958e25cd44c95bb1be066e9ee53d2","adf_trigger_name":"Sandbox","adf_trigger_time":"2023-08-18T21:16:02.5764238Z","adf_trigger_type":"Manual"}
+  
+  var_dls = {"folders":{"landing":"/tmp/dev/uld","error":"/tmp/dev/err","staging":"/tmp/dev/stg","log":"/tmp/dev/log","raw":"/tmp/dev/raw","archive":"/tmp/dev/ach"},"systems":{"raw":"usr"},"path_prefix":"/tmp/dev/"}
+  
+  var_file = { 'namespace': '/oni', 'file_folder': '/oms/cid_10/subcategorias', 'file_folder_raw':'/oni/oms/cid_10/subcategorias', 'extension': 'csv', 'column_delimiter': ';', 'encoding': 'UTF-8', 'null_value': '' }
