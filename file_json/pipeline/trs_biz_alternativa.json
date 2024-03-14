@@ -1,0 +1,85 @@
+{
+	"name": "trs_biz_alternativa",
+	"properties": {
+		"activities": [
+			{
+				"name": "trs to biz",
+				"description": "",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "business__0__switch_env",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"table": {
+							"value": "@pipeline().parameters.tables.dAlternativa",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\",  \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\",  \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"user_parameters": {
+							"value": "@pipeline().parameters.user_parameters",
+							"type": "Expression"
+						},
+						"sqldw_copy": {
+							"value": "@pipeline().parameters.sqldw_copy",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"tables": {
+				"type": "object",
+				"defaultValue": {
+					"dAlternativa": {
+						"origins": [
+							"/mentis/resposta",
+							"/mentis/tiporesposta"
+						],
+						"destination": "/mentis/dAlternativa",
+						"databricks": {
+							"notebook": "/biz/mentis/trs_biz_mentis_alternativa"
+						}
+					}
+				}
+			},
+			"user_parameters": {
+				"type": "object",
+				"defaultValue": {
+					"null": "null"
+				}
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			},
+			"sqldw_copy": {
+				"type": "bool",
+				"defaultValue": false
+			}
+		},
+		"folder": {
+			"name": "biz/mentis"
+		},
+		"annotations": [
+			"business",
+			"parameterized",
+			"closing date"
+		]
+	}
+}

@@ -1,0 +1,121 @@
+{
+	"name": "wkf__oni_bases_referencia",
+	"properties": {
+		"description": "carga das bases manuais, disparado sob demanda\n",
+		"activities": [
+			{
+				"name": "trs_biz_cbo",
+				"description": "carga da cbo em bases de referencia",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_cbo",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "trs_biz_cnae20_subclasse",
+				"description": "carga das cnae_20 em oni/ bases de referencia \natualizada no PR https://dev.azure.com/CNI-STI/ENSI-BIG%20DATA/_git/ENSI-BIG%20DATA/pullrequest/20348",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "trs_biz_cbo",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_cnae20_subclasse",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "trs_biz_municipios",
+				"description": "carga das municipios em bases de referencia",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "trs_biz_cnae20_subclasse",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_municipios",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "trs_biz_uf",
+				"description": "carga das tabelas de uf em oni/bases de referencia ",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "trs_biz_municipios",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_uf",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "prod"
+				}
+			}
+		},
+		"folder": {
+			"name": "workflow/oni/bases_referencia"
+		},
+		"annotations": []
+	}
+}

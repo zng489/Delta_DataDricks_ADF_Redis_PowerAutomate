@@ -1,0 +1,119 @@
+{
+	"name": "trs_biz_fta_ipca",
+	"properties": {
+		"activities": [
+			{
+				"name": "business__0__switch_env",
+				"description": "Calls business template \"template_business\".",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "business__0__switch_env",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"table": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\",  \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\",  \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"user_parameters": {
+							"value": "@pipeline().parameters.user_parameters",
+							"type": "Expression"
+						},
+						"sqldw_copy": {
+							"value": "@pipeline().parameters.sqldw_copy",
+							"type": "Expression"
+						},
+						"sqldw_grant": {
+							"value": "@pipeline().parameters.sqldw_grant",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "alerta_falha",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "business__0__switch_env",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "send_email",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"email_users": {
+							"value": "@array('monitoramento_observatorio@cni.com.br')",
+							"type": "Expression"
+						},
+						"email_groups": {
+							"value": "@array('')",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\",  \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\",  \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"tables": {
+				"type": "object",
+				"defaultValue": {
+					"origin": "ibge/ipca",
+					"destination": "/oni/painel_metal_mecanica/fta_ibge_ipca",
+					"databricks": {
+						"notebook": "/biz/oni/painel_metal_mecanica/trs_biz_fta_ibge_ipca"
+					}
+				}
+			},
+			"user_parameters": {
+				"type": "object",
+				"defaultValue": {
+					"null": "null"
+				}
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			},
+			"sqldw_copy": {
+				"type": "bool"
+			},
+			"sqldw_grant": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "biz/oni/painel_metal_mecanica"
+		},
+		"annotations": []
+	}
+}

@@ -1,0 +1,200 @@
+{
+	"name": "wkf_trs_biz_estrategico_sesi_mensal",
+	"properties": {
+		"activities": [
+			{
+				"name": "espera_final_fluxo",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "raw_trs_sesi_indicador_10",
+						"dependencyConditions": [
+							"Failed"
+						]
+					},
+					{
+						"activity": "raw_trs_sesi_indicador_12",
+						"dependencyConditions": [
+							"Failed"
+						]
+					},
+					{
+						"activity": "raw_trs_sesi_indicador_14",
+						"dependencyConditions": [
+							"Failed"
+						]
+					},
+					{
+						"activity": "trs_biz_sesi_indicador_14",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "trs_biz_sesi_indicador_12",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "trs_biz_sesi_indicador_10",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "raw_trs_sesi_indicador_10",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "raw_trs_sesi_indicador_10",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "raw_trs_sesi_indicador_12",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "raw_trs_sesi_indicador_12",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "raw_trs_sesi_indicador_14",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "raw_trs_sesi_indicador_14",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "trs_biz_sesi_indicador_10",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "raw_trs_sesi_indicador_10",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_sesi_indicador_10",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "trs_biz_sesi_indicador_12",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "raw_trs_sesi_indicador_12",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_sesi_indicador_12",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "trs_biz_sesi_indicador_14",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "raw_trs_sesi_indicador_14",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_sesi_indicador_14",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "workflow/indicadores_sesi"
+		},
+		"annotations": []
+	}
+}

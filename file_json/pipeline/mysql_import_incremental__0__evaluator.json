@@ -1,0 +1,197 @@
+{
+	"name": "mysql_import_incremental__0__evaluator",
+	"properties": {
+		"description": "Well, this one uses a Filter condition for making things work for incremental loads.\n\nWARNING: \"tables\" object must be type ARRAY.\nAll objects in this array must be, in reality STRING type, enclosed by \".\nInside this objects, you should enclose everything in SINGLE QUOTES.\nOtherwise, things are not going to work. I warned you!\n\nHere's an example:\n[\"{'schema': 'INDDESEMPENHO', 'table':'ESTABELECIMENTO','load_type':'incremental','partition_column':'DATAATUALIZACAO','partitions':5,'control_column':'DATAATUALIZACAO','control_column_type_2_db':'datetime', 'control_column_default_value': '19000101',\n'control_column_mask_value': 'DD/MM/YYYY HH24:MI:SS'}\"]\n\n",
+		"activities": [
+			{
+				"name": "get_max_control_column_in_mysql",
+				"description": "Queries MySQL for systimestamp and casts as the needed string format so we can use as upperbound value for incrmental loads.\n",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "MySqlSource",
+						"query": "SELECT\nCAST(DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s') AS UNSIGNED) AS UPPERBOUND"
+					},
+					"dataset": {
+						"referenceName": "mysql_table_parameterized",
+						"type": "DatasetReference",
+						"parameters": {
+							"db_host": {
+								"value": "@pipeline().parameters.db.host",
+								"type": "Expression"
+							},
+							"db_port": {
+								"value": "@pipeline().parameters.db.port",
+								"type": "Expression"
+							},
+							"db_service_name": {
+								"value": "@pipeline().parameters.db.service_name",
+								"type": "Expression"
+							},
+							"db_user": {
+								"value": "@pipeline().parameters.db.username",
+								"type": "Expression"
+							},
+							"keyvault_secret": {
+								"value": "@pipeline().parameters.db.secret",
+								"type": "Expression"
+							},
+							"keyvault_url": {
+								"value": "@pipeline().parameters.keyvault_url",
+								"type": "Expression"
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "mysql_import_incremental__1_loader",
+				"description": "Calls the next step, which implements incremental load from MySQL over valid control_column range",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "get_max_control_column_in_mysql",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "mysql_import_incremental__1__loader",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"db": {
+							"value": "@pipeline().parameters.db",
+							"type": "Expression"
+						},
+						"tables": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"dls": {
+							"value": "@pipeline().parameters.dls",
+							"type": "Expression"
+						},
+						"watermark": {
+							"value": "@pipeline().parameters.watermark",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@pipeline().parameters.databricks",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@pipeline().parameters.adf",
+							"type": "Expression"
+						},
+						"increment": {
+							"value": "@json(\n    concat(\n        '{\"control_column\": {\"lowerbound\":' ,\n        string(pipeline().parameters.watermark.lowerbound),\n        ', \"upperbound\":',\n        string(activity('get_max_control_column_in_mysql').output.firstRow.UPPERBOUND),\n        '}}'\n    )\n)",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@pipeline().parameters.container",
+							"type": "Expression"
+						},
+						"url": {
+							"value": "@pipeline().parameters.url",
+							"type": "Expression"
+						},
+						"keyvault_url": {
+							"value": "@pipeline().parameters.keyvault_url",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"functionapp_access_code": {
+							"value": "@pipeline().parameters.functionapp_access_code",
+							"type": "Expression"
+						},
+						"redis_access_key": {
+							"value": "@pipeline().parameters.redis_access_key",
+							"type": "Expression"
+						},
+						"functionapp_url": {
+							"value": "@pipeline().parameters.functionapp_url",
+							"type": "Expression"
+						},
+						"db_schema": {
+							"value": "@pipeline().parameters.db_schema",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"db": {
+				"type": "object"
+			},
+			"tables": {
+				"type": "array"
+			},
+			"dls": {
+				"type": "object"
+			},
+			"watermark": {
+				"type": "object"
+			},
+			"databricks": {
+				"type": "object"
+			},
+			"adf": {
+				"type": "object"
+			},
+			"container": {
+				"type": "string"
+			},
+			"url": {
+				"type": "string"
+			},
+			"keyvault_url": {
+				"type": "string"
+			},
+			"env": {
+				"type": "object"
+			},
+			"functionapp_access_code": {
+				"type": "securestring"
+			},
+			"redis_access_key": {
+				"type": "securestring"
+			},
+			"functionapp_url": {
+				"type": "string"
+			},
+			"db_schema": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "templates/raw/bdo/mysql"
+		},
+		"annotations": [
+			"template",
+			"raw",
+			"mysql"
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

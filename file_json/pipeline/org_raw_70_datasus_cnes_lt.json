@@ -1,0 +1,64 @@
+{
+	"name": "org_raw_70_datasus_cnes_lt",
+	"properties": {
+		"description": "70 - DATASUS/MS - Cadastro Nacional de Estabelecimentos de Saúde",
+		"activities": [
+			{
+				"name": "import_uld_files__0__wrapper",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "import_uld_files__0__wrapper",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"files": {
+							"value": "@pipeline().parameters.files",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@pipeline().parameters.databricks",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\", \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\", \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"databricks": {
+				"type": "object",
+				"defaultValue": {
+					"notebook": "/fiesc/datasus/org_raw_datasus_cnes_pf"
+				}
+			},
+			"files": {
+				"type": "array",
+				"defaultValue": [
+					"{'namespace':'fiesc','file_folder':'datasus/CNES/LT','extension':'parquet','column_delimiter':';','encoding':'UTF-8','null_value':'','schema':[{'CNES': 'string', 'CODUFMUN': 'string', 'REGSAUDE': 'string', 'MICR_REG': 'string', 'DISTRSAN': 'string', 'DISTRADM': 'string', 'TPGESTAO': 'string', 'PF_PJ': 'string', 'CPF_CNPJ': 'string', 'NIV_DEP': 'string', 'CNPJ_MAN': 'string', 'ESFERA_A': 'string', 'ATIVIDAD': 'string', 'RETENCAO': 'string', 'NATUREZA': 'string', 'CLIENTEL': 'string', 'TP_UNID': 'string', 'TURNO_AT': 'string', 'NIV_HIER': 'string', 'TERCEIRO': 'string', 'TP_LEITO': 'string', 'CODLEITO': 'string', 'QT_EXIST': 'string', 'QT_CONTR': 'string', 'QT_SUS': 'string', 'QT_NSUS': 'string', 'COMPETEN': 'string', 'NAT_JUR': 'string', 'dt_atualizacao': 'timestamp', 'file_source': 'string'}]"
+				]
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "raw/usr/fiesc/datasus"
+		},
+		"annotations": []
+	}
+}

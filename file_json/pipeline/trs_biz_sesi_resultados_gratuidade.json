@@ -1,0 +1,80 @@
+{
+	"name": "trs_biz_sesi_resultados_gratuidade",
+	"properties": {
+		"description": "Pipeline que obtém as tabelas relacionadas ao orçamento e educação para obter uma das saídas do Desempenho, Resultados_Gratuidade",
+		"activities": [
+			{
+				"name": "resultados_gratuidade",
+				"description": "pipeline de trs_biz para o resultados_gratuidade",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "business__0__switch_env",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"table": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\",  \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\",  \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"user_parameters": {
+							"value": "@pipeline().parameters.user_parameters",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"tables": {
+				"type": "object",
+				"defaultValue": {
+					"origins": [
+						"/usr/scg/sesi_senai_deficit_gratuidade/",
+						"/evt/sesi/dados_orc_educacao/",
+						"/orcamento/sesi/rbcc/",
+						"/sesi/desempenho/monitoramento/sesi_gastos_ha/"
+					],
+					"destination": "/orcamento/sesi_resultados_gratuidade",
+					"databricks": {
+						"notebook": "/biz/visao_financeira_sesi_senai/trs_biz_sesi_resultados_gratuidade"
+					}
+				}
+			},
+			"user_parameters": {
+				"type": "object",
+				"defaultValue": {
+					"ano_fechamento": "null",
+					"data_fechamento": "null",
+					"perc_rlcc": "null",
+					"perc_meta_rlcc": "null",
+					"perc_grat_rlcc": "null"
+				}
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "biz/visao_financeira_sesi_senai/sesi_ebc"
+		},
+		"annotations": []
+	}
+}

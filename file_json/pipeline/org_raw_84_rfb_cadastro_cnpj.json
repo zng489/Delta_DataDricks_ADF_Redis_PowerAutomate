@@ -1,0 +1,64 @@
+{
+	"name": "org_raw_84_rfb_cadastro_cnpj",
+	"properties": {
+		"description": "\n84 - Cadastro CNPJ - RECEITA FEDERAL DO BRASIL (manter histórico)",
+		"activities": [
+			{
+				"name": "import_uld_files__0__wrapper",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "import_uld_files__0__wrapper",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"files": {
+							"value": "@pipeline().parameters.files",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@pipeline().parameters.databricks",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\", \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\", \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"databricks": {
+				"type": "object",
+				"defaultValue": {
+					"notebook": "/fiesc/rfb/org_raw_rfb_cadastro_cnpj"
+				}
+			},
+			"files": {
+				"type": "array",
+				"defaultValue": [
+					"{'namespace':'fiesc','file_folder':'rfb/RFB_FATO','extension':'parquet','column_delimiter':';','encoding':'UTF-8','null_value':'','schema':[{'nu_cnpj': 'string', 'nu_cnpj_raiz': 'string', 'cd_porte_da_empresa': 'bigint', 'nm_porte_obs': 'string', 'nm_porte_receita': 'string', 'nm_identificador_filia_matriz': 'bigint', 'nome_fantasia': 'string', 'razao_social': 'string', 'cd_situacao_cadastral': 'bigint', 'cd_natureza_juridica': 'bigint', 'cd_motivo_situacao_cadastral': 'bigint', 'opcao_simples': 'string', 'dt_opcao_simples': 'string', 'dt_exclusao_simples': 'string', 'opcao_mei': 'string', 'dt_opcao_mei': 'string', 'dt_exclusao_mei': 'string', 'cd_identificador_socio': 'string', 'nome_socio': 'string', 'nu_cnpj_cpf_socio': 'string', 'cd_qualificacao_socio': 'string', 'cd_qualificacao_do_responsavel': 'bigint', 'nu_cpf_representante_legal': 'string', 'nome_representante_legal': 'string', 'cd_qualificacao_representante_legal': 'string', 'cd_faixa_etaria': 'string', 'dt_entrada_sociedade': 'string', 'dt_inicio_atividade': 'string', 'cd_cnae_fiscal_principal': 'bigint', 'cd_cnae_fiscal_secundaria': 'string', 'tipo_logradouro': 'string', 'logradouro': 'string', 'numero': 'string', 'complemento': 'string', 'bairro': 'string', 'cep': 'string', 'uf': 'string', 'cd_mun_rfb': 'string', 'nm_mun': 'string', 'cd_mun_ibg': 'string', 'ddd_1': 'string', 'telefone_1': 'string', 'ddd_2': 'string', 'telefone_2': 'string', 'nm_correio_eletronico': 'string', 'dt_situacao_cadastral': 'string', 'nome_socios': 'string', 'cnpj_cpf_socios': 'string', 'nu_ddd_do_fax': 'string', 'nu_fax': 'string', 'cd_ente_federativo_responsavel': 'string', 'cd_situacao_especial': 'string', 'dt_situacao_especial': 'string', 'cd_pais': 'string'}]"
+				]
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "raw/usr/fiesc/rfb"
+		},
+		"annotations": []
+	}
+}

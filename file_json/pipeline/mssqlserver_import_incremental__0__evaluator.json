@@ -1,0 +1,338 @@
+{
+	"name": "mssqlserver_import_incremental__0__evaluator",
+	"properties": {
+		"description": "Well, this one uses a Filter condition for making things work for incremental loads.\n\nWARNING: \"tables\" object must be type ARRAY.\nAll objects in this array must be, in reality STRING type, enclosed by \".\nInside this objects, you should enclose everything in SINGLE QUOTES.\nOtherwise, things are not going to work. I warned you!\n\nHere's an example:\n[\"{'schema': 'INDDESEMPENHO', 'table':'ESTABELECIMENTO','load_type':'incremental','partition_column':'DATAATUALIZACAO','partitions':5,'control_column':'DATAATUALIZACAO','control_column_type_2_db':'datetime', 'control_column_default_value': '19000101',\n'control_column_mask_value': 'DD/MM/YYYY HH24:MI:SS'}\"]\n\n",
+		"activities": [
+			{
+				"name": "mssqlserver_import_incremental__1_loader",
+				"description": "Calls the next step, which implements incremental load from MSSQLServer DBs over valid control_column range",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "switch_control_control_2_db",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "mssqlserver_import_incremental__1__loader",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"db": {
+							"value": "@pipeline().parameters.db",
+							"type": "Expression"
+						},
+						"tables": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"dls": {
+							"value": "@pipeline().parameters.dls",
+							"type": "Expression"
+						},
+						"watermark": {
+							"value": "@pipeline().parameters.watermark",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@pipeline().parameters.databricks",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@pipeline().parameters.adf",
+							"type": "Expression"
+						},
+						"increment": {
+							"value": "@json(\n    concat(\n        '{\"control_column\": {\"lowerbound\":',\n        string(pipeline().parameters.watermark.lowerbound),\n        ', \"upperbound\":',\n        variables('max_control_column'),\n        '}}'\n    )\n)",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@pipeline().parameters.container",
+							"type": "Expression"
+						},
+						"url": {
+							"value": "@pipeline().parameters.url",
+							"type": "Expression"
+						},
+						"keyvault_url": {
+							"value": "@pipeline().parameters.keyvault_url",
+							"type": "Expression"
+						},
+						"functionapp_access_code": {
+							"value": "@pipeline().parameters.functionapp_access_code",
+							"type": "Expression"
+						},
+						"redis_access_key": {
+							"value": "@pipeline().parameters.redis_access_key",
+							"type": "Expression"
+						},
+						"functionapp_url": {
+							"value": "@pipeline().parameters.functionapp_url",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"db_schema": {
+							"value": "@pipeline().parameters.db_schema",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "switch_control_control_2_db",
+				"description": "Switches the control_column type for the adequate type for the control column in incremental loads.\n\nThe default type will be int/bigint!",
+				"type": "Switch",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"on": {
+						"value": "@json(pipeline().parameters.tables[0]).control_column_type_2_db",
+						"type": "Expression"
+					},
+					"cases": [
+						{
+							"value": "datetime",
+							"activities": [
+								{
+									"name": "get_max_control_column_datetime",
+									"description": "Queries MSSQLSERVER for systimestamp and casts as the needed string format so we can use as upperbound value for incrmental loads.\n\n",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 2,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderQuery": "SELECT CAST(FORMAT(SYSDATETIME(), 'yyyyMMddhhmmss') AS BIGINT) AS UPPERBOUND",
+											"queryTimeout": "02:00:00",
+											"isolationLevel": "ReadCommitted",
+											"partitionOption": "None"
+										},
+										"dataset": {
+											"referenceName": "azuresql_parameterized",
+											"type": "DatasetReference",
+											"parameters": {
+												"keyvault_url": {
+													"value": "@pipeline().parameters.keyvault_url",
+													"type": "Expression"
+												},
+												"keyvault_secret": {
+													"value": "@pipeline().parameters.db.secret",
+													"type": "Expression"
+												},
+												"db_host": {
+													"value": "@pipeline().parameters.db.host",
+													"type": "Expression"
+												},
+												"db_schema": {
+													"value": "@pipeline().parameters.db_schema",
+													"type": "Expression"
+												},
+												"db_user": {
+													"value": "@pipeline().parameters.db.username",
+													"type": "Expression"
+												}
+											}
+										}
+									}
+								},
+								{
+									"name": "set_max_control_column_datetime",
+									"description": "Sets the variable value so it can be used in an unified way",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "get_max_control_column_datetime",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "max_control_column",
+										"value": {
+											"value": "@string(activity('get_max_control_column_datetime').output.firstRow.UPPERBOUND)",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
+							"value": "string",
+							"activities": [
+								{
+									"name": "string__not_implemented_yet",
+									"description": "Type string is not implemented yet",
+									"type": "Fail",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"message": "Type 'string'  for increments is not implemented yet",
+										"errorCode": "1"
+									}
+								}
+							]
+						}
+					],
+					"defaultActivities": [
+						{
+							"name": "get_max_control_column_int",
+							"description": "Queries the database to get the max(control_column) considering it's int type.",
+							"type": "Lookup",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 2,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderQuery": {
+										"value": "SELECT \nCAST(\n COALESCE(MAX(@{json(pipeline().parameters.tables[0]).control_column}), @{json(pipeline().parameters.tables[0]).control_column_default_value}) \n AS BIGINT\n) AS UPPERBOUND\nFROM\n@{pipeline().parameters.db_schema}.@{json(pipeline().parameters.tables[0]).table}\n\n",
+										"type": "Expression"
+									},
+									"queryTimeout": "02:00:00",
+									"isolationLevel": "ReadCommitted",
+									"partitionOption": "None"
+								},
+								"dataset": {
+									"referenceName": "azuresql_parameterized",
+									"type": "DatasetReference",
+									"parameters": {
+										"keyvault_url": {
+											"value": "@pipeline().parameters.db",
+											"type": "Expression"
+										},
+										"keyvault_secret": {
+											"value": "@pipeline().parameters.db.secret",
+											"type": "Expression"
+										},
+										"db_host": {
+											"value": "@pipeline().parameters.db.host",
+											"type": "Expression"
+										},
+										"db_schema": {
+											"value": "@pipeline().parameters.db_schema",
+											"type": "Expression"
+										},
+										"db_user": {
+											"value": "@pipeline().parameters.db.username",
+											"type": "Expression"
+										}
+									}
+								}
+							}
+						},
+						{
+							"name": "set_max_control_column_int",
+							"description": "Sets the variable value so it can be used in an unified way",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "get_max_control_column_int",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "max_control_column",
+								"value": {
+									"value": "@string(activity('get_max_control_column_int').output.firstRow.UPPERBOUND)",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"db": {
+				"type": "object"
+			},
+			"tables": {
+				"type": "array"
+			},
+			"dls": {
+				"type": "object"
+			},
+			"watermark": {
+				"type": "object"
+			},
+			"databricks": {
+				"type": "object"
+			},
+			"adf": {
+				"type": "object"
+			},
+			"container": {
+				"type": "string"
+			},
+			"url": {
+				"type": "string"
+			},
+			"keyvault_url": {
+				"type": "string"
+			},
+			"env": {
+				"type": "object"
+			},
+			"functionapp_access_code": {
+				"type": "securestring"
+			},
+			"redis_access_key": {
+				"type": "securestring"
+			},
+			"functionapp_url": {
+				"type": "string"
+			},
+			"db_schema": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"max_control_column": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "templates/raw/bdo/mssqlserver"
+		},
+		"annotations": [
+			"raw",
+			"template",
+			"mssqlserver"
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

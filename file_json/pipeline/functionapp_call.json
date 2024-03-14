@@ -1,0 +1,484 @@
+{
+	"name": "functionapp_call",
+	"properties": {
+		"description": "Documentation on how to get secrets from key vault: https://learn.microsoft.com/pt-br/azure/data-factory/how-to-use-azure-key-vault-secrets-pipeline-activities\n\nResource to be managed by function ManageResources expects aan object like this:\n\n{\n        \"container\": [\n            {\n                \"name\": \"cnibigdatadlsreporter\",\n                \"resource_group\": \"bigdata\",\n                \"action\": \"start\"\n            }\n        ]\n    }\n\nValid keys are 'container' and 'vm'. Resources in this keys can be multiple, cause they are lists.\nSupported actions so far are: 'start' and 'stop'",
+		"activities": [
+			{
+				"name": "wait_completion",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "call_functionapp",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 80
+				}
+			},
+			{
+				"name": "get_client_secret_from_keyvault",
+				"description": "Get secret from key vault required as parameters to be used by the function.",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "switch_env_end",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": true,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@{variables('keyvault_url')}/secrets/@{variables('function_client_secret_name')}?@{pipeline().globalParameters.key_vault.general[pipeline().parameters.env.env].params.version}",
+						"type": "Expression"
+					},
+					"method": "GET",
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "get_function_code_from_keyvault",
+				"description": "Get function code from key vault required as parameters to be used by the function.",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "switch_env_end",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": true,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@{variables('keyvault_url')}/secrets/@{variables('function_code_secret_name')}?@{pipeline().globalParameters.key_vault.general[pipeline().parameters.env.env].params.version}",
+						"type": "Expression"
+					},
+					"method": "GET",
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "call_functionapp",
+				"description": "Calls functionapp via https",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "get_client_secret_from_keyvault",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "get_function_code_from_keyvault",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "append_resources_to_call_function",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": true
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@{variables('function_url')}/api/@{pipeline().parameters.function_name}?code=@{activity('get_function_code_from_keyvault').output.value}",
+						"type": "Expression"
+					},
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/json"
+					},
+					"body": {
+						"value": "{\n    \"azure\": {\n        \"tenant_id\": \"@{pipeline().globalParameters.azure.tenant_id}\",\n        \"subscription_id\": \"@{pipeline().globalParameters.azure.subscription_id}\",\n        \"client_id\": \"@{variables('function_client_id')}\",\n        \"client_secret\": \"@{activity('get_client_secret_from_keyvault').output.value}\"\n    },\n    \"adf\": {\n        \"data_factory_name\": \"@{pipeline().DataFactory}\",\n        \"pipeline_name\": \"@{pipeline().Pipeline}\",\n        \"pipeline_run_id\": \"@{pipeline().RunId}\",\n        \"pipeline_trigger_id\": \"@{pipeline().TriggerId}\",\n        \"pipeline_trigger_name\": \"@{pipeline().TriggerName}\",\n        \"pipeline_trigger_type\": \"@{pipeline().TriggerType}\"\n    },\n    \"resource\": @{first(variables('resource'))}\n}",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_resource_containers",
+				"description": "Sets the list of resources of type container",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "resource_containers_aux",
+					"value": {
+						"value": "@if(contains(pipeline().parameters.resource, 'container'),pipeline().parameters.resource.container, null)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_reource_vms",
+				"description": "Sets list of resources of type vm.",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "resource_vms_aux",
+					"value": {
+						"value": "@if(contains(pipeline().parameters.resource, 'vm'),pipeline().parameters.resource.vm, null)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "switch_container_env",
+				"description": "Switch env for resources type container",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "set_resource_containers",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('resource_containers_aux')",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "append_resource_containers",
+							"description": "Appends resource_containers variables with proper values.",
+							"type": "AppendVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "resource_containers",
+								"value": {
+									"value": "@union(pipeline().globalParameters.container_instances[item().service][pipeline().parameters.env.env], json(concat('{\"action\": \"', item().action, '\"}')))",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "switch_vm_env",
+				"description": "Switch env for resources type vm",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "set_reource_vms",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('resource_vms_aux')",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "append_resource_vms",
+							"description": "Appends resource vms with replaced env values.",
+							"type": "AppendVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "resource_vms",
+								"value": {
+									"value": "@pipeline().globalParameters.container_instances[item().service][pipeline().parameters.env.env]",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "set_function_url",
+				"description": "Sets functions url",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "switch_env_start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "function_url",
+					"value": {
+						"value": "@pipeline().globalParameters.functions.functionapp[pipeline().parameters.env.env].url",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_function_code_secret_name",
+				"description": "Sets function code's secret to get from key vault",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "switch_env_start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "function_code_secret_name",
+					"value": {
+						"value": "@pipeline().globalParameters.functions.functionapp[pipeline().parameters.env.env].secret_name",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "switch_env_end",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "set_function_url",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_function_code_secret_name",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_keyvault_url",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_function_client_id",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_function_client_secret_name",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "set_keyvault_url",
+				"description": "Sets keyvault url",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "switch_env_start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "keyvault_url",
+					"value": {
+						"value": "@pipeline().globalParameters.key_vault.general[pipeline().parameters.env.env].url",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_function_client_id",
+				"description": "Sets function_client_id url",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "switch_env_start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "function_client_id",
+					"value": {
+						"value": "@pipeline().globalParameters.functions.functionapp[pipeline().parameters.env.env].client.id",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_function_client_secret_name",
+				"description": "Sets secret name to be used by function, passed as client argument to the functionapp.",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "switch_env_start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "function_client_secret_name",
+					"value": {
+						"value": "@pipeline().globalParameters.functions.functionapp[pipeline().parameters.env.env].client.secret_name",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "switch_env_start",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "switch_vm_env",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "switch_container_env",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "append_resources_to_call_function",
+				"description": "Appends all resources to call functionapp",
+				"type": "AppendVariable",
+				"dependsOn": [
+					{
+						"activity": "switch_env_end",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "resource",
+					"value": {
+						"value": "@union(\n    if(\n        greater(\n            length(variables('resource_containers')), 0\n        )\n        ,json(concat('{\"container\": ', string(variables('resource_containers')) , '}'))\n        ,json('{}')\n    ),\n    if(\n        greater(\n            length(variables('resource_vms')), 0\n        )\n        ,json(concat('{\"vm\": ', string(variables('resource_vms')) , '}'))\n        ,json('{}')\n    )\n)",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			},
+			"resource": {
+				"type": "object",
+				"defaultValue": {
+					"container": [
+						{
+							"service": "adls_reporter",
+							"action": "start"
+						}
+					]
+				}
+			},
+			"function_name": {
+				"type": "string",
+				"defaultValue": "ManageResources"
+			}
+		},
+		"variables": {
+			"function_url": {
+				"type": "String"
+			},
+			"function_code_secret_name": {
+				"type": "String"
+			},
+			"keyvault_url": {
+				"type": "String"
+			},
+			"function_client_id": {
+				"type": "String"
+			},
+			"function_client_secret_name": {
+				"type": "String"
+			},
+			"resource_containers_aux": {
+				"type": "Array"
+			},
+			"resource_vms_aux": {
+				"type": "Array"
+			},
+			"resource_vms": {
+				"type": "Array"
+			},
+			"resource_containers": {
+				"type": "Array"
+			},
+			"resource": {
+				"type": "Array"
+			}
+		},
+		"folder": {
+			"name": "aut"
+		},
+		"annotations": [
+			"automation"
+		]
+	}
+}

@@ -1,0 +1,105 @@
+{
+	"name": "wkf_adls_report_oni",
+	"properties": {
+		"activities": [
+			{
+				"name": "catalogo_oni",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "set_databricks_config",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@concat('/KEYRUS/',string(pipeline().parameters.env.env),pipeline().parameters.notebook)",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@string(pipeline().parameters.env.env)",
+							"type": "Expression"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnibigdatabricks_any_job_cluster",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_url",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_id",
+							"type": "Expression"
+						},
+						"cluster_node": "Standard_DS4_v2",
+						"worker": "2",
+						"tag": {
+							"value": "@if(\n    contains( \n        pipeline().globalParameters.dls, \n        'tmp' \n    ),\n    'Desenvolvimento',\n    'Producao'\n)",
+							"type": "Expression"
+						},
+						"policy_id": {
+							"value": "@json(variables('databricks')).policy_id",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "set_databricks_config",
+				"description": "Sets Databricks configs",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "databricks",
+					"value": {
+						"value": "@string(pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env])",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			},
+			"notebook": {
+				"type": "string",
+				"defaultValue": "/gov/v2/get_adls_report_oni"
+			},
+			"adf": {
+				"type": "object"
+			}
+		},
+		"variables": {
+			"databricks": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "workflow/gov/catalogo_v2"
+		},
+		"annotations": []
+	}
+}

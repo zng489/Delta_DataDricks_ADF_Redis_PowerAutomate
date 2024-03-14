@@ -1,0 +1,729 @@
+{
+	"name": "import_lnd__1__execute_crw_container",
+	"properties": {
+		"description": "Implementing retry on crawler.\n\nbot_params expects the following key-values:\n- location:string :: 'brazilsouth', 'eastus2'\n- reload:string :: 'true','false'\n- reset:string :: 'true','false'\n- override:string :: 'true','false' ",
+		"activities": [
+			{
+				"name": "set_function_url",
+				"description": "Sets functions url",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "function_url",
+					"value": {
+						"value": "@pipeline().globalParameters.functions.proxy[pipeline().parameters.env.env].url",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_function_code_secret_name",
+				"description": "Sets function code's secret to get from key vault",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "function_code_secret_name",
+					"value": {
+						"value": "@pipeline().globalParameters.functions.proxy[pipeline().parameters.env.env].secret_name",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_keyvault_url",
+				"description": "Sets keyvault url",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "keyvault_url",
+					"value": {
+						"value": "@pipeline().globalParameters.key_vault.general[pipeline().parameters.env.env].url",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_function_client_id",
+				"description": "Sets function_client_id url",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "function_client_id",
+					"value": {
+						"value": "@pipeline().globalParameters.functions.functionapp[pipeline().parameters.env.env].client.id",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_bot_container_group_name",
+				"description": "Sets bot container group name",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "bot_container_group_name",
+					"value": {
+						"value": "crawler-@{pipeline().parameters.env.env}-@{pipeline().parameters.bot}",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "until_provisioning_state_is_final",
+				"description": "Check provisioning state is final \n\nhttps://learn.microsoft.com/en-us/azure/container-instances/container-state\n\nWhen state is final, set variable 'bot_is_provisioned' = true, to end the loop.\n\nThen chek in if condition if the returned value is the one you need and then continue or fail the pipeline. ",
+				"type": "Until",
+				"dependsOn": [
+					{
+						"activity": "call_proxy_run_crawler",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(\r\n    variables('bot_is_provisioned'),\r\n    true\r\n)",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "call_proxy_get_create_crawler",
+							"description": "this component might be called 'request_provisioning_crawler_container'.\nThis will:\n- request from ACI a container\n- wait 10 secs (optional)\n- return immediately\n\nCause you know the name of the bot, you might:\n- create a until loop, with condition to exist as 'bot_is_provisioned' = true\n    this is going to be evaluated for true when\n\n- get status of container group and check status until it's provisioning",
+							"type": "AzureFunctionActivity",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 90,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"functionName": {
+									"value": "@variables('function_name')",
+									"type": "Expression"
+								},
+								"method": "POST",
+								"body": {
+									"value": "@activity('call_proxy_run_crawler').output",
+									"type": "Expression"
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "Azure Function App",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"url_function": {
+										"value": "@variables('function_url')",
+										"type": "Expression"
+									},
+									"key_vault_url": {
+										"value": "@variables('keyvault_url')",
+										"type": "Expression"
+									},
+									"keyvault_secret_name": {
+										"value": "@variables('function_code_secret_name')",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "create_verify",
+							"type": "IfCondition",
+							"dependsOn": [
+								{
+									"activity": "Set bot_is_provisioned",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@not(\n    equals(\n        variables('bot_is_provisioned'), \n        true\n    )\n)",
+									"type": "Expression"
+								},
+								"ifTrueActivities": [
+									{
+										"name": "create wait",
+										"type": "Wait",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"waitTimeInSeconds": 60
+										}
+									}
+								]
+							}
+						},
+						{
+							"name": "Set bot_is_provisioned",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "call_proxy_get_create_crawler",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "bot_is_provisioned",
+								"value": {
+									"value": "@activity('call_proxy_get_create_crawler').output.bot_is_provisioned",
+									"type": "Expression"
+								}
+							}
+						}
+					],
+					"timeout": "0.12:00:00"
+				}
+			},
+			{
+				"name": "call_proxy_run_crawler",
+				"description": "this component might be called 'request_provisioning_crawler_container'.\nThis will:\n- request from ACI a container\n- wait 10 secs (optional)\n- return immediately\n\nCause you know the name of the bot, you might:\n- create a until loop, with condition to exist as 'bot_is_provisioned' = true\n    this is going to be evaluated for true when\n\n- get status of container group and check status until it's provisioning",
+				"type": "AzureFunctionActivity",
+				"dependsOn": [
+					{
+						"activity": "set_function_url",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_function_code_secret_name",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_keyvault_url",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_function_client_id",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_bot_container_group_name",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 90,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"functionName": {
+						"value": "@variables('function_name')",
+						"type": "Expression"
+					},
+					"method": "POST",
+					"body": {
+						"value": "@json(\n    concat(\n        '{',\n            '\"action\": \"post\",',\n            '\"bot\":\"', pipeline().parameters.bot, '\",',\n            '\"location\":\"', pipeline().parameters.bot_params.location, '\",',\n            '\"reset\":\"', pipeline().parameters.bot_params.reset, '\",',\n            '\"reload\":\"', pipeline().parameters.bot_params.reload, '\",',\n            '\"override\":\"', if(equals(pipeline().parameters.env.env, 'prod'), pipeline().parameters.bot_params.override, 'true'), '\",',\n            '\"memory_in_gb\":\"', pipeline().parameters.bot_params.memory_in_gb, '\",',\n            '\"cpu\":\"', pipeline().parameters.bot_params.cpu, '\",',\n            if(\n                contains(\n                    pipeline().parameters.bot_params,\n                    'max_compute'\n                ),\n                 concat(\n                    '\"max_compute\":\"', pipeline().parameters.bot_params.max_compute, '\",'\n                 )\n                , \n                '\"max_compute\":\"false\",'\n            ),\n            '\"pipeline_run_id\":\"', pipeline().TriggeredByPipelineRunId,'\"',    \n        '}'\n\n    )\n)",
+						"type": "Expression"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "Azure Function App",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"url_function": {
+							"value": "@variables('function_url')",
+							"type": "Expression"
+						},
+						"key_vault_url": {
+							"value": "@variables('keyvault_url')",
+							"type": "Expression"
+						},
+						"keyvault_secret_name": {
+							"value": "@variables('function_code_secret_name')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "verify_terminal_state",
+				"description": "Verify if container has succeed create.\n\nIf true continue, if false return fail and finally",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "until_provisioning_state_is_final",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(\n    activity('call_proxy_get_create_crawler').output.provision_state,\n    'succeeded'\n)",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Faied to provisioned",
+							"type": "Fail",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"message": "Failed provisioning container group",
+								"errorCode": "500"
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Status_check",
+				"description": "Verify the execution status of the container.\n\nIf finally continue, if false await the finalization.",
+				"type": "Until",
+				"dependsOn": [
+					{
+						"activity": "verify_terminal_state",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(variables('bot_finished_running'), true)",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "execution_verify",
+							"type": "IfCondition",
+							"dependsOn": [
+								{
+									"activity": "Set bot_finished_running",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@not(\n    equals(\n        variables('bot_finished_running'), \n        true\n    )\n)",
+									"type": "Expression"
+								},
+								"ifTrueActivities": [
+									{
+										"name": "execution wait",
+										"type": "Wait",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"waitTimeInSeconds": 120
+										}
+									}
+								]
+							}
+						},
+						{
+							"name": "Set bot_finished_running",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "call_proxy_get_status_crawler",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "bot_finished_running",
+								"value": {
+									"value": "@if(\n    equals(\n        toLower(activity('call_proxy_get_status_crawler').output.group_state),\n        'running'\n    ),\n    false,\n    true\n)",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "call_proxy_get_status_crawler",
+							"type": "AzureFunctionActivity",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 90,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"functionName": {
+									"value": "@variables('function_name')",
+									"type": "Expression"
+								},
+								"method": "POST",
+								"body": {
+									"value": "@activity('call_proxy_get_create_crawler').output",
+									"type": "Expression"
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "Azure Function App",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"url_function": {
+										"value": "@variables('function_url')",
+										"type": "Expression"
+									},
+									"key_vault_url": {
+										"value": "@variables('keyvault_url')",
+										"type": "Expression"
+									},
+									"keyvault_secret_name": {
+										"value": "@variables('function_code_secret_name')",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					],
+					"timeout": "0.12:00:00"
+				}
+			},
+			{
+				"name": "verify_status",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "verify_trigger_type",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(\n    toLower(activity('call_proxy_get_status_crawler').output.group_state),\n    'succeeded'\n)",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "send_email_provisioning_container_group_failed",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "send_email",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"status": "failed",
+									"email_users": {
+										"value": "@array('deafult')",
+										"type": "Expression"
+									},
+									"email_groups": {
+										"value": "@array('default')",
+										"type": "Expression"
+									},
+									"adf": {
+										"value": "@pipeline().parameters.adf",
+										"type": "Expression"
+									},
+									"env": {
+										"value": "@pipeline().parameters.env",
+										"type": "Expression"
+									},
+									"message": {
+										"value": "Container group @{variables('bot_container_group_name')} has failed to be provisioned in Azure Container Instances",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "failed execution bot",
+							"description": "Container group provisioning has failed in ACI.",
+							"type": "Fail",
+							"dependsOn": [
+								{
+									"activity": "return-fail",
+									"dependencyConditions": [
+										"Completed"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"message": {
+									"value": "@activity('call_proxy_get_create_crawler').output.pipelineReturnValue",
+									"type": "Expression"
+								},
+								"errorCode": "1"
+							}
+						},
+						{
+							"name": "return-fail",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "send_email_provisioning_container_group_failed",
+									"dependencyConditions": [
+										"Completed"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "pipelineReturnValue",
+								"value": [
+									{
+										"key": "return",
+										"value": {
+											"type": "Expression",
+											"content": "@activity('call_proxy_get_status_crawler').output"
+										}
+									}
+								],
+								"setSystemVariable": true
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "return-success",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "pipelineReturnValue",
+								"value": [
+									{
+										"key": "return",
+										"value": {
+											"type": "Expression",
+											"content": "@activity('call_proxy_get_status_crawler').output"
+										}
+									}
+								],
+								"setSystemVariable": true
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "verify_trigger_type",
+				"description": "Verify the trigger type and enviroment to pipeline.\n\nIf trigger type equal \"manual\" and enviroment equal \"prod\", container delete, else continue.",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Status_check",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@and(\n    equals(\n        toLower(pipeline().parameters.adf.adf_trigger_type),\n        'manual'\n    ),\n    equals(\n        toLower(pipeline().parameters.env.env), \n        'prod'\n    )\n)",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "call_proxy_delete_crawler",
+							"type": "AzureFunctionActivity",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 90,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"functionName": {
+									"value": "@variables('function_name')",
+									"type": "Expression"
+								},
+								"method": "POST",
+								"body": {
+									"value": "@json(\n    concat(\n        '{\n            \"action\": \"delete\",',\n            '\"name\": \"', activity('call_proxy_run_crawler').output.name, '\",',\n            '\"resource_group\": \"', activity('call_proxy_run_crawler').output.resource_group, '\"',\n        '}'\n    )\n)",
+									"type": "Expression"
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "Azure Function App",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"url_function": {
+										"value": "@variables('function_url')",
+										"type": "Expression"
+									},
+									"key_vault_url": {
+										"value": "@variables('keyvault_url')",
+										"type": "Expression"
+									},
+									"keyvault_secret_name": {
+										"value": "@variables('function_code_secret_name')",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "fail_delete_container_group",
+							"type": "Fail",
+							"dependsOn": [
+								{
+									"activity": "call_proxy_delete_crawler",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"message": {
+									"value": "@activity('call_proxy_delete_crawler').output.pipelineReturnValue",
+									"type": "Expression"
+								},
+								"errorCode": "500"
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"bot": {
+				"type": "string"
+			},
+			"adf": {
+				"type": "object",
+				"defaultValue": {
+					"adf_factory_name": "not implemented for this pipeline",
+					"adf_pipeline_name": "not implemented for this pipeline",
+					"adf_pipeline_run_id": "not implemented for this pipeline",
+					"adf_trigger_id": "not implemented for this pipeline",
+					"adf_trigger_name": "not implemented for this pipeline",
+					"adf_trigger_time": "not implemented for this pipeline",
+					"adf_trigger_type": "not implemented for this pipeline"
+				}
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			},
+			"bot_params": {
+				"type": "object"
+			}
+		},
+		"variables": {
+			"function_url": {
+				"type": "String"
+			},
+			"function_code_secret_name": {
+				"type": "String"
+			},
+			"keyvault_url": {
+				"type": "String"
+			},
+			"function_client_id": {
+				"type": "String"
+			},
+			"function_client_secret_name": {
+				"type": "String"
+			},
+			"function_name": {
+				"type": "String",
+				"defaultValue": "CrawlerProxy"
+			},
+			"bot_finished_running": {
+				"type": "Boolean",
+				"defaultValue": false
+			},
+			"bot_container_group_name": {
+				"type": "String"
+			},
+			"bot_is_provisioned": {
+				"type": "Boolean",
+				"defaultValue": false
+			}
+		},
+		"folder": {
+			"name": "templates/lnd"
+		},
+		"annotations": [
+			"template",
+			"landing",
+			"crawler"
+		]
+	}
+}

@@ -1,0 +1,96 @@
+{
+	"name": "wkf_raw_dbCDISOrcamento_2xdia",
+	"properties": {
+		"activities": [
+			{
+				"name": "org_raw_orcamento_custo_vwconsultaorcamentofilter",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_orcamento_custo_vwconsultaorcamentofilter",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "raw_trs_sors_vwconsultaorcamentofilter",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "org_raw_orcamento_custo_vwconsultaorcamentofilter",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "raw_trs_sors_vwconsultaorcamentofilter",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "wkf_refresh_powerbi_diret_sesi_ussi_2x_9h_16h",
+				"description": "Pipeline de refresh do Power BI chamado do ADF cnipowerbicorp",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "raw_trs_sors_vwconsultaorcamentofilter",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "get_adf",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"pipeline_name": "wkf_refresh_powerbi_diret_sesi_ussi_2x_9h_16h",
+						"adf_name": "cnipowerbicorp",
+						"resource_group": "PowerBI-Corporativo",
+						"subscripition_id": "3e3a21e3-9551-4945-8c46-c02f558392ce"
+					}
+				}
+			}
+		],
+		"policy": {
+			"elapsedTimeMetric": {
+				"duration": "0.00:10:00"
+			}
+		},
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "workflow/sors_dbCDISOrcamento"
+		},
+		"annotations": []
+	}
+}

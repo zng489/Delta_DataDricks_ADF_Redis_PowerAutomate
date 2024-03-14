@@ -1,0 +1,204 @@
+{
+	"name": "wkf_raw__portal_transparencia",
+	"properties": {
+		"activities": [
+			{
+				"name": "espera_final_fluxo",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "org_raw_transparencia_contratos",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "org_raw_transparencia_indicador_recursos",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "org_raw_transparencia_gratuidades",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "org_raw_transparencia_indicador_custo_ha",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "org_raw_transparencia_metas",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "org_raw_transparencia_demonstracoes",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "org_raw_transparencia_orcamentarias",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "org_raw_transparencia_contratos",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_transparencia_contratos",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "org_raw_transparencia_demonstracoes",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_transparencia_demonstracoes",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "org_raw_transparencia_gratuidades",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_transparencia_gratuidades",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "org_raw_transparencia_indicador_custo_ha",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_transparencia_indicador_custo_ha",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "org_raw_transparencia_indicador_recursos",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_transparencia_indicador_recursos",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "org_raw_transparencia_metas",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_transparencia_metas",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "org_raw_transparencia_orcamentarias",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_transparencia_orcamentarias",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "workflow/transparencia"
+		},
+		"annotations": []
+	}
+}

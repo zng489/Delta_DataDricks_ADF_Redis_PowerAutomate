@@ -1,0 +1,872 @@
+{
+	"name": "wkf_lnd__uniepro_pt3",
+	"properties": {
+		"activities": [
+			{
+				"name": "COMPLETED",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "lnd_org_raw_piaemp",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_banco_mundial_preco_commodity",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_pimpf",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_ibge_ipp_cnae_div",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_fred_indicadores_selecionados",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_piaemp_aquisicoes",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_worldsteel_indicadores_selecionados",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_aco_brasil_prod_aco_nacional",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_pia_produto_vti",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_me_comex",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_rfb_cnpj_cadastro_empresa",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_rfb_cnpj_cadastro_socio",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_rfb_cnpj_tabelas_auxiliares",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_iea_carvao_estatisticas",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_rfb_cnpj_regime_tributario",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_rfb_cnpj_cadastro_estbl",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_ibge_pnadc_a_deflatores",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_pnadc_a_visita2",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_ibge_pnadc_a_visita1",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_ibge_pnadc_a_visita5",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_ms_sim",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_ibge_pintec_tipo_programa_po",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_ibge_pintec_bio_nano_po",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "IBGE",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd_org_raw_piaemp",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "IBGE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_piaemp",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "BANCO_MUNDIAL",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd_org_raw_banco_mundial_preco_commodity",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "BANCO_MUNDIAL",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_banco_mundial_preco_commodity",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_pimpf",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "IBGE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_pimpf",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_ibge_ipp_cnae_div",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "IBGE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_ibge_ipp_cnae_div",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "FRED",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd_org_raw_fred_indicadores_selecionados",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "FRED",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_fred_indicadores_selecionados",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_piaemp_aquisicoes",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "IBGE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_piaemp_aquisicoes",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "WORLDSTEEL",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd_org_raw_worldsteel_indicadores_selecionados",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "WORLDSTEEL",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_worldsteel_indicadores_selecionados",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "ACO_BRASIL",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd_org_raw_aco_brasil_prod_aco_nacional",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "ACO_BRASIL",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_aco_brasil_prod_aco_nacional",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_pia_produto_vti",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "IBGE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_pia_produto_vti",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "ME",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd_org_raw_me_comex",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "ME",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_me_comex",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "RFB_CNPJ",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd_org_raw_rfb_cnpj_cadastro_empresa",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "RFB_CNPJ",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_rfb_cnpj_cadastro_empresa",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_rfb_cnpj_cadastro_socio",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "RFB_CNPJ",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_rfb_cnpj_cadastro_socio",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_rfb_cnpj_tabelas_auxiliares",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "RFB_CNPJ",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_rfb_cnpj_tabelas_auxiliares",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_iea_carvao_estatisticas",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "IEA",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_iea_carvao_estatisticas",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "IEA",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd_org_raw_rfb_cnpj_regime_tributario",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "RFB_CNPJ",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_rfb_cnpj_regime_tributario",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_rfb_cnpj_cadastro_simples",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "RFB_CNPJ",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_rfb_cnpj_cadastro_simples",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_rfb_cnpj_cadastro_estbl",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "RFB_CNPJ",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_rfb_cnpj_cadastro_estbl",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_ibge_pnadc_a_deflatores",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "IBGE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_ibge_pnadc_a_deflatores",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_pnadc_a_visita2",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "IBGE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_pnadc_a_visita2",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_ibge_pnadc_a_visita1",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "IBGE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_ibge_pnadc_a_visita1",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_ibge_pnadc_a_visita5",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "IBGE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_ibge_pnadc_a_visita5",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "MS",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd_org_raw_ms_sim",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "MS",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_ms_sim",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_ibge_pintec_tipo_programa_po",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "IBGE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_ibge_pintec_tipo_programa_po",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_ibge_pintec_bio_nano_po",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "IBGE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_ibge_pintec_bio_nano_po",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "workflow/uniepro/lnd"
+		},
+		"annotations": []
+	}
+}

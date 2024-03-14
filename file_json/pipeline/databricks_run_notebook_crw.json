@@ -1,0 +1,413 @@
+{
+	"name": "databricks_run_notebook_crw",
+	"properties": {
+		"activities": [
+			{
+				"name": "If Condition1",
+				"type": "IfCondition",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@or(\n    and(\n        equals(\n            toLower(\n                pipeline().parameters.adf.adf_trigger_name\n            ), \n            'sandbox'\n        ), \n        equals(\n            toLower(\n                pipeline().parameters.adf.adf_trigger_type\n            ), \n            'manual'\n        )\n    ), \n    equals(\n        pipeline().parameters.env.env,\n        'dev'\n    )\n)",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "run_crawler_prod",
+							"type": "DatabricksNotebook",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 3,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": {
+									"value": "@concat(\n    pipeline().globalParameters.databricks.notebook_base[pipeline().parameters.env.env],\n    '/lnd/',\n    pipeline().parameters.bot)",
+									"type": "Expression"
+								},
+								"baseParameters": {
+									"dls": {
+										"value": "@string(pipeline().globalParameters.dls[pipeline().parameters.env.env])",
+										"type": "Expression"
+									},
+									"params": {
+										"value": "@string(pipeline().parameters.bot_params)",
+										"type": "Expression"
+									},
+									"adf": {
+										"value": "@string(pipeline().parameters.adf)",
+										"type": "Expression"
+									},
+									"env": {
+										"value": "@string(pipeline().parameters.env)",
+										"type": "Expression"
+									},
+									"bot_name": {
+										"value": "@pipeline().parameters.bot",
+										"type": "Expression"
+									}
+								},
+								"libraries": [
+									{
+										"egg": "dbfs:/libs/impl/crawler_functions.egg"
+									},
+									{
+										"pypi": {
+											"package": "redis==3.4.1"
+										}
+									},
+									{
+										"pypi": {
+											"package": "wget==3.2"
+										}
+									},
+									{
+										"pypi": {
+											"package": "pandas==1.2.1"
+										}
+									},
+									{
+										"egg": "dbfs:/libs/impl/cni_connector.egg"
+									},
+									{
+										"pypi": {
+											"package": "xlrd==1.2.0"
+										}
+									},
+									{
+										"pypi": {
+											"package": "pyarrow"
+										}
+									},
+									{
+										"pypi": {
+											"package": "openpyxl"
+										}
+									},
+									{
+										"pypi": {
+											"package": "numpy==1.21.6"
+										}
+									},
+									{
+										"pypi": {
+											"package": "selenium==3.141.0"
+										}
+									},
+									{
+										"pypi": {
+											"package": "unrar==0.4"
+										}
+									},
+									{
+										"pypi": {
+											"package": "rarfile==3.1"
+										}
+									},
+									{
+										"pypi": {
+											"package": "beautifulsoup4==4.9.0"
+										}
+									},
+									{
+										"pypi": {
+											"package": "cython==0.29.21"
+										}
+									},
+									{
+										"pypi": {
+											"package": "zipfile2==0.0.12"
+										}
+									},
+									{
+										"pypi": {
+											"package": "grequests==0.6.0"
+										}
+									},
+									{
+										"pypi": {
+											"package": "py7zr==0.16.2"
+										}
+									},
+									{
+										"pypi": {
+											"package": "urllib3==1.25.11"
+										}
+									},
+									{
+										"pypi": {
+											"package": "zipfile-deflate64==0.2.0"
+										}
+									},
+									{
+										"pypi": {
+											"package": "unicodecsv==0.14.1"
+										}
+									},
+									{
+										"pypi": {
+											"package": "simpledbf==0.2.6"
+										}
+									},
+									{
+										"pypi": {
+											"package": "chardet==3.0.4"
+										}
+									},
+									{
+										"pypi": {
+											"package": "tqdm==4.64.1"
+										}
+									},
+									{
+										"pypi": {
+											"package": "rich"
+										}
+									},
+									{
+										"pypi": {
+											"package": "Flask==2.0.3"
+										}
+									},
+									{
+										"egg": "dbfs:/libs/impl/cni_connector.egg"
+									}
+								]
+							},
+							"linkedServiceName": {
+								"referenceName": "cnibigdatabricks_any_job_cluster",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"workspace_url": {
+										"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_url",
+										"type": "Expression"
+									},
+									"workspace_id": {
+										"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_id",
+										"type": "Expression"
+									},
+									"cluster_version": "12.2.x-scala2.12",
+									"cluster_node": "Standard_DS3_v2",
+									"worker": "1",
+									"tag": "Producao",
+									"policy_id": {
+										"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].policy_id",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "run_crawler_dev",
+							"type": "DatabricksNotebook",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 3,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": {
+									"value": "@concat(\n    pipeline().globalParameters.databricks.notebook_base.dev,\n    '/lnd/',\n    pipeline().parameters.bot)",
+									"type": "Expression"
+								},
+								"baseParameters": {
+									"dls": {
+										"value": "@string(pipeline().globalParameters.dls[pipeline().parameters.env.env])",
+										"type": "Expression"
+									},
+									"params": {
+										"value": "@string(pipeline().parameters.bot_params)",
+										"type": "Expression"
+									},
+									"adf": {
+										"value": "@string(pipeline().parameters.adf)",
+										"type": "Expression"
+									},
+									"env": "\"{\\\"env\\\":\\\"dev\\\"}\"",
+									"bot_name": {
+										"value": "@pipeline().parameters.bot",
+										"type": "Expression"
+									}
+								},
+								"libraries": [
+									{
+										"egg": "dbfs:/libs/impl/crawler_functions.egg"
+									},
+									{
+										"pypi": {
+											"package": "redis==3.4.1"
+										}
+									},
+									{
+										"pypi": {
+											"package": "wget==3.2"
+										}
+									},
+									{
+										"pypi": {
+											"package": "pandas==1.2.1"
+										}
+									},
+									{
+										"pypi": {
+											"package": "xlrd==1.2.0"
+										}
+									},
+									{
+										"pypi": {
+											"package": "pyarrow"
+										}
+									},
+									{
+										"pypi": {
+											"package": "openpyxl"
+										}
+									},
+									{
+										"pypi": {
+											"package": "numpy==1.21.6"
+										}
+									},
+									{
+										"pypi": {
+											"package": "selenium==3.141.0"
+										}
+									},
+									{
+										"pypi": {
+											"package": "unrar==0.4"
+										}
+									},
+									{
+										"pypi": {
+											"package": "rarfile==3.1"
+										}
+									},
+									{
+										"pypi": {
+											"package": "beautifulsoup4==4.9.0"
+										}
+									},
+									{
+										"pypi": {
+											"package": "cython==0.29.21"
+										}
+									},
+									{
+										"pypi": {
+											"package": "zipfile2==0.0.12"
+										}
+									},
+									{
+										"pypi": {
+											"package": "grequests==0.6.0"
+										}
+									},
+									{
+										"pypi": {
+											"package": "py7zr==0.16.2"
+										}
+									},
+									{
+										"pypi": {
+											"package": "urllib3==1.25.11"
+										}
+									},
+									{
+										"pypi": {
+											"package": "zipfile-deflate64==0.2.0"
+										}
+									},
+									{
+										"pypi": {
+											"package": "unicodecsv==0.14.1"
+										}
+									},
+									{
+										"pypi": {
+											"package": "simpledbf==0.2.6"
+										}
+									},
+									{
+										"pypi": {
+											"package": "chardet==3.0.4"
+										}
+									},
+									{
+										"pypi": {
+											"package": "tqdm==4.64.1"
+										}
+									},
+									{
+										"pypi": {
+											"package": "rich"
+										}
+									},
+									{
+										"pypi": {
+											"package": "Flask==2.0.3"
+										}
+									},
+									{
+										"egg": "dbfs:/libs/impl/cni_connector.egg"
+									}
+								]
+							},
+							"linkedServiceName": {
+								"referenceName": "cnibigdatabricks_any_job_cluster",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"workspace_url": {
+										"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_url",
+										"type": "Expression"
+									},
+									"workspace_id": {
+										"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_id",
+										"type": "Expression"
+									},
+									"cluster_version": "12.2.x-scala2.12",
+									"cluster_node": "Standard_DS3_v2",
+									"worker": "1",
+									"tag": "Desenvolvimento",
+									"policy_id": {
+										"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].policy_id",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"bot": {
+				"type": "string"
+			},
+			"adf": {
+				"type": "object"
+			},
+			"env": {
+				"type": "object"
+			},
+			"bot_params": {
+				"type": "object"
+			}
+		},
+		"folder": {
+			"name": "templates/lnd"
+		},
+		"annotations": []
+	}
+}

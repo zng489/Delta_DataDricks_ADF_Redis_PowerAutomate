@@ -1,0 +1,525 @@
+{
+	"name": "wkf_biz__trello",
+	"properties": {
+		"description": "Raw tables from trello. All of them are small objects from Trello API. High parallelism is encouraged.",
+		"activities": [
+			{
+				"name": "wkf_biz__uniepro__wv5",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "biz_biz_dim_compras_rateio_ano",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "biz_biz_dim_compras_rateio",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "biz_biz_dim_compras_members_qtd_compras",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "biz_biz_dim_compras_members_of_card",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "trs_biz_dim_compras_lista",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "trs_biz_dim_compras_actions",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "trs_biz_dim_compras_checklist",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "trs_biz_dim_compras_juncao_boards_cards_checklist",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "trs_biz_fta_demanda",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wkf_biz__uniepro__wv5",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_trello_fta_demanda",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "biz_biz_dim_demanda_members_of_card",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "trs_biz_fta_demanda",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "biz_biz_trello_dim_demanda_members_of_card",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "biz_biz_dim_demanda_members_qtd_demandas",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "trs_biz_fta_demanda",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "biz_biz_trello_dim_demanda_members_qtd_demandas",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "trs_biz_dim_demanda_juncao_boards_cards_members",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wkf_biz__uniepro__wv5",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_trello_dim_demanda_juncao_boards_cards_members",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "trs_biz_dim_demanda_member_checklist",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wkf_biz__uniepro__wv5",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_trello_dim_demanda_member_checklist",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "trs_biz_dim_demanda_actions",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wkf_biz__uniepro__wv5",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_trello_dim_demanda_actions",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "trs_biz_fta_compras",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_trello_fta_compras",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "trs_biz_dim_compras_member",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_trello_dim_compras_member",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "trs_biz_dim_compras_lista",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_trello_dim_compras_lista",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "trs_biz_dim_compras_juncao_boards_cards_members",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_trello_dim_compras_juncao_boards_cards_members",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "trs_biz_dim_compras_juncao_boards_cards_checklist",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_trello_dim_compras_juncao_boards_cards_checklist",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "trs_biz_dim_compras_checklist_pagamento",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_trello_dim_compras_checklist_pagamento",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "trs_biz_dim_compras_checklist",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_trello_dim_compras_checklist",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "trs_biz_dim_compras_actions",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_trello_dim_compras_actions",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "biz_biz_dim_compras_rateio_ano",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "trs_biz_fta_compras",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "trs_biz_dim_compras_checklist_pagamento",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "biz_biz_trello_dim_compras_rateio_ano",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "biz_biz_dim_compras_rateio",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "trs_biz_fta_compras",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "biz_biz_trello_dim_compras_rateio",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "biz_biz_dim_compras_members_qtd_compras",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "trs_biz_dim_compras_member",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "trs_biz_dim_compras_juncao_boards_cards_members",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "trs_biz_fta_compras",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "biz_biz_trello_dim_compras_members_qtd_compras",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "biz_biz_dim_compras_members_of_card",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "trs_biz_dim_compras_member",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "trs_biz_dim_compras_juncao_boards_cards_members",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "trs_biz_fta_compras",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "biz_biz_trello_dim_compras_members_of_card",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "prod"
+				}
+			}
+		},
+		"folder": {
+			"name": "workflow/oni/trello/biz"
+		},
+		"annotations": [
+			"workflow",
+			"raw",
+			"robolegisdata"
+		]
+	}
+}

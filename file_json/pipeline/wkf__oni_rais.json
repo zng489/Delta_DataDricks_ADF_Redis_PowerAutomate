@@ -1,0 +1,40 @@
+{
+	"name": "wkf__oni_rais",
+	"properties": {
+		"description": "carga manual para base rais, disparada manualmente.",
+		"activities": [
+			{
+				"name": "trs_biz_rais_vinculo_publica",
+				"description": "carga do microdado rais publica em oni/dados_mestre",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_rais_vinculo_publica",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "workflow/oni/dados_mestre"
+		},
+		"annotations": []
+	}
+}

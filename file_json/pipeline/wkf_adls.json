@@ -1,0 +1,115 @@
+{
+	"name": "wkf_adls",
+	"properties": {
+		"activities": [
+			{
+				"name": "lnd_acl_adls",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "call_functionapp_start_container",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_acl_adls",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "call_functionapp_start_container",
+				"description": "Call execution of function 'ManageResources' asking to start the container.\n\nStart ADLSReporter container.",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "functionapp_call",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"resource": {
+							"value": "@json('{\"container\":[{\"service\": \"adls_reporter\",\"action\":\"start\"}]}')",
+							"type": "Expression"
+						},
+						"function_name": {
+							"value": "@variables('function_name')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "call_functionapp_stop_container",
+				"description": "Call execution of function 'ManageResources' asking to start the container.\n\nStops ADLSreporter container.",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "lnd_acl_adls",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "functionapp_call",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"resource": {
+							"value": "@json('{\"container\":[{\"service\": \"adls_reporter\",\"action\":\"stop\"}]}')",
+							"type": "Expression"
+						},
+						"function_name": {
+							"value": "@variables('function_name')",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"variables": {
+			"function_name": {
+				"type": "String",
+				"defaultValue": "ManageResources"
+			}
+		},
+		"folder": {
+			"name": "workflow/permissoes_adls"
+		},
+		"annotations": []
+	}
+}

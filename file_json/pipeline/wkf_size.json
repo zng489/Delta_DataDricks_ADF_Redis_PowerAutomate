@@ -1,0 +1,952 @@
+{
+	"name": "wkf_size",
+	"properties": {
+		"activities": [
+			{
+				"name": "size_raw",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@concat('/KEYRUS/',string(pipeline().parameters.env.env),pipeline().parameters.notebook)",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@string(pipeline().parameters.env.env)",
+							"type": "Expression"
+						},
+						"path": "raw"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnibigdatabricks_any_job_cluster",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_url",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_id",
+							"type": "Expression"
+						},
+						"cluster_version": "12.2.x-scala2.12",
+						"cluster_node": "Standard_DS4_v2",
+						"worker": "2",
+						"tag": {
+							"value": "@if(\n    contains( \n        pipeline().globalParameters.dls, \n        'tmp' \n    ),\n    'Desenvolvimento',\n    'Producao'\n)",
+							"type": "Expression"
+						},
+						"policy_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].policy_id",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "size_trs",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "size_raw",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@concat('/KEYRUS/',string(pipeline().parameters.env.env),pipeline().parameters.notebook)",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@string(pipeline().parameters.env.env)",
+							"type": "Expression"
+						},
+						"path": "trs"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnibigdatabricks_any_job_cluster",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_url",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_id",
+							"type": "Expression"
+						},
+						"cluster_version": "12.2.x-scala2.12",
+						"cluster_node": "Standard_DS4_v2",
+						"worker": "2",
+						"tag": {
+							"value": "@if(\n    contains( \n        pipeline().globalParameters.dls, \n        'tmp' \n    ),\n    'Desenvolvimento',\n    'Producao'\n)",
+							"type": "Expression"
+						},
+						"policy_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].policy_id",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "size_biz",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "size_trs",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@concat('/KEYRUS/',string(pipeline().parameters.env.env),pipeline().parameters.notebook)",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@string(pipeline().parameters.env.env)",
+							"type": "Expression"
+						},
+						"path": "biz"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnibigdatabricks_any_job_cluster",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_url",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_id",
+							"type": "Expression"
+						},
+						"cluster_version": "12.2.x-scala2.12",
+						"cluster_node": "Standard_DS4_v2",
+						"worker": "2",
+						"tag": {
+							"value": "@if(\n    contains( \n        pipeline().globalParameters.dls, \n        'tmp' \n    ),\n    'Desenvolvimento',\n    'Producao'\n)",
+							"type": "Expression"
+						},
+						"policy_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].policy_id",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "size_uds",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "size_biz",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@concat('/KEYRUS/',string(pipeline().parameters.env.env),pipeline().parameters.notebook)",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@string(pipeline().parameters.env.env)",
+							"type": "Expression"
+						},
+						"path": "uds"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnibigdatabricks_any_job_cluster",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_url",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_id",
+							"type": "Expression"
+						},
+						"cluster_version": "12.2.x-scala2.12",
+						"cluster_node": "Standard_DS4_v2",
+						"worker": "2",
+						"tag": {
+							"value": "@if(\n    contains( \n        pipeline().globalParameters.dls, \n        'tmp' \n    ),\n    'Desenvolvimento',\n    'Producao'\n)",
+							"type": "Expression"
+						},
+						"policy_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].policy_id",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "size_hst",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "size_uds",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@concat('/KEYRUS/',string(pipeline().parameters.env.env),pipeline().parameters.notebook)",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@string(pipeline().parameters.env.env)",
+							"type": "Expression"
+						},
+						"path": "hst"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnibigdatabricks_any_job_cluster",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_url",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_id",
+							"type": "Expression"
+						},
+						"cluster_version": "12.2.x-scala2.12",
+						"cluster_node": "Standard_DS4_v2",
+						"worker": "2",
+						"tag": {
+							"value": "@if(\n    contains( \n        pipeline().globalParameters.dls, \n        'tmp' \n    ),\n    'Desenvolvimento',\n    'Producao'\n)",
+							"type": "Expression"
+						},
+						"policy_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].policy_id",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "size_uld",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "size_hst",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@concat('/KEYRUS/',string(pipeline().parameters.env.env),pipeline().parameters.notebook)",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@string(pipeline().parameters.env.env)",
+							"type": "Expression"
+						},
+						"path": "uld"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnibigdatabricks_any_job_cluster",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_url",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_id",
+							"type": "Expression"
+						},
+						"cluster_version": "12.2.x-scala2.12",
+						"cluster_node": "Standard_DS4_v2",
+						"worker": "2",
+						"tag": {
+							"value": "@if(\n    contains( \n        pipeline().globalParameters.dls, \n        'tmp' \n    ),\n    'Desenvolvimento',\n    'Producao'\n)",
+							"type": "Expression"
+						},
+						"policy_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].policy_id",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "size_prm",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "size_uld",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@concat('/KEYRUS/',string(pipeline().parameters.env.env),pipeline().parameters.notebook)",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@string(pipeline().parameters.env.env)",
+							"type": "Expression"
+						},
+						"path": "prm"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnibigdatabricks_any_job_cluster",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_url",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_id",
+							"type": "Expression"
+						},
+						"cluster_version": "12.2.x-scala2.12",
+						"cluster_node": "Standard_DS4_v2",
+						"worker": "2",
+						"tag": {
+							"value": "@if(\n    contains( \n        pipeline().globalParameters.dls, \n        'tmp' \n    ),\n    'Desenvolvimento',\n    'Producao'\n)",
+							"type": "Expression"
+						},
+						"policy_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].policy_id",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "size_tmp",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "size_prm",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@concat('/KEYRUS/',string(pipeline().parameters.env.env),pipeline().parameters.notebook)",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@string(pipeline().parameters.env.env)",
+							"type": "Expression"
+						},
+						"path": "tmp"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnibigdatabricks_any_job_cluster",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_url",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_id",
+							"type": "Expression"
+						},
+						"cluster_version": "12.2.x-scala2.12",
+						"cluster_node": "Standard_DS4_v2",
+						"worker": "2",
+						"tag": {
+							"value": "@if(\n    contains( \n        pipeline().globalParameters.dls, \n        'tmp' \n    ),\n    'Desenvolvimento',\n    'Producao'\n)",
+							"type": "Expression"
+						},
+						"policy_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].policy_id",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "size_gov",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "size_tmp",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@concat('/KEYRUS/',string(pipeline().parameters.env.env),pipeline().parameters.notebook)",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@string(pipeline().parameters.env.env)",
+							"type": "Expression"
+						},
+						"path": "gov"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnibigdatabricks_any_job_cluster",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_url",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_id",
+							"type": "Expression"
+						},
+						"cluster_version": "12.2.x-scala2.12",
+						"cluster_node": "Standard_DS4_v2",
+						"worker": "2",
+						"tag": {
+							"value": "@if(\n    contains( \n        pipeline().globalParameters.dls, \n        'tmp' \n    ),\n    'Desenvolvimento',\n    'Producao'\n)",
+							"type": "Expression"
+						},
+						"policy_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].policy_id",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "size_err",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "size_gov",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@concat('/KEYRUS/',string(pipeline().parameters.env.env),pipeline().parameters.notebook)",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@string(pipeline().parameters.env.env)",
+							"type": "Expression"
+						},
+						"path": "err"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnibigdatabricks_any_job_cluster",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_url",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_id",
+							"type": "Expression"
+						},
+						"cluster_version": "12.2.x-scala2.12",
+						"cluster_node": "Standard_DS4_v2",
+						"worker": "2",
+						"tag": {
+							"value": "@if(\n    contains( \n        pipeline().globalParameters.dls, \n        'tmp' \n    ),\n    'Desenvolvimento',\n    'Producao'\n)",
+							"type": "Expression"
+						},
+						"policy_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].policy_id",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "size_lnd",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "size_err",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@concat('/KEYRUS/',string(pipeline().parameters.env.env),pipeline().parameters.notebook)",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@string(pipeline().parameters.env.env)",
+							"type": "Expression"
+						},
+						"path": "lnd"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnibigdatabricks_any_job_cluster",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_url",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_id",
+							"type": "Expression"
+						},
+						"cluster_version": "12.2.x-scala2.12",
+						"cluster_node": "Standard_DS4_v2",
+						"worker": "2",
+						"tag": {
+							"value": "@if(\n    contains( \n        pipeline().globalParameters.dls, \n        'tmp' \n    ),\n    'Desenvolvimento',\n    'Producao'\n)",
+							"type": "Expression"
+						},
+						"policy_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].policy_id",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "size_log",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "size_lnd",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@concat('/KEYRUS/',string(pipeline().parameters.env.env),pipeline().parameters.notebook)",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@string(pipeline().parameters.env.env)",
+							"type": "Expression"
+						},
+						"path": "log"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnibigdatabricks_any_job_cluster",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_url",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_id",
+							"type": "Expression"
+						},
+						"cluster_version": "12.2.x-scala2.12",
+						"cluster_node": "Standard_DS4_v2",
+						"worker": "2",
+						"tag": {
+							"value": "@if(\n    contains( \n        pipeline().globalParameters.dls, \n        'tmp' \n    ),\n    'Desenvolvimento',\n    'Producao'\n)",
+							"type": "Expression"
+						},
+						"policy_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].policy_id",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "size_mgt",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "size_log",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@concat('/KEYRUS/',string(pipeline().parameters.env.env),pipeline().parameters.notebook)",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@string(pipeline().parameters.env.env)",
+							"type": "Expression"
+						},
+						"path": "mgt"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnibigdatabricks_any_job_cluster",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_url",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_id",
+							"type": "Expression"
+						},
+						"cluster_version": "12.2.x-scala2.12",
+						"cluster_node": "Standard_DS4_v2",
+						"worker": "2",
+						"tag": {
+							"value": "@if(\n    contains( \n        pipeline().globalParameters.dls, \n        'tmp' \n    ),\n    'Desenvolvimento',\n    'Producao'\n)",
+							"type": "Expression"
+						},
+						"policy_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].policy_id",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "size_rjt",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "size_mgt",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@concat('/KEYRUS/',string(pipeline().parameters.env.env),pipeline().parameters.notebook)",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@string(pipeline().parameters.env.env)",
+							"type": "Expression"
+						},
+						"path": "rjt"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnibigdatabricks_any_job_cluster",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_url",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_id",
+							"type": "Expression"
+						},
+						"cluster_version": "12.2.x-scala2.12",
+						"cluster_node": "Standard_DS4_v2",
+						"worker": "2",
+						"tag": {
+							"value": "@if(\n    contains( \n        pipeline().globalParameters.dls, \n        'tmp' \n    ),\n    'Desenvolvimento',\n    'Producao'\n)",
+							"type": "Expression"
+						},
+						"policy_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].policy_id",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "size_stg",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "size_rjt",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@concat('/KEYRUS/',string(pipeline().parameters.env.env),pipeline().parameters.notebook)",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@string(pipeline().parameters.env.env)",
+							"type": "Expression"
+						},
+						"path": "stg"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnibigdatabricks_any_job_cluster",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_url",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_id",
+							"type": "Expression"
+						},
+						"cluster_version": "12.2.x-scala2.12",
+						"cluster_node": "Standard_DS4_v2",
+						"worker": "2",
+						"tag": {
+							"value": "@if(\n    contains( \n        pipeline().globalParameters.dls, \n        'tmp' \n    ),\n    'Desenvolvimento',\n    'Producao'\n)",
+							"type": "Expression"
+						},
+						"policy_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].policy_id",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "size_vld",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "size_stg",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@concat('/KEYRUS/',string(pipeline().parameters.env.env),pipeline().parameters.notebook)",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@string(pipeline().parameters.env.env)",
+							"type": "Expression"
+						},
+						"path": "vld"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnibigdatabricks_any_job_cluster",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_url",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_id",
+							"type": "Expression"
+						},
+						"cluster_version": "12.2.x-scala2.12",
+						"cluster_node": "Standard_DS4_v2",
+						"worker": "2",
+						"tag": {
+							"value": "@if(\n    contains( \n        pipeline().globalParameters.dls, \n        'tmp' \n    ),\n    'Desenvolvimento',\n    'Producao'\n)",
+							"type": "Expression"
+						},
+						"policy_id": {
+							"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].policy_id",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			},
+			"notebook": {
+				"type": "string",
+				"defaultValue": "/gov/v2/get_size_lake"
+			},
+			"adf": {
+				"type": "object"
+			}
+		},
+		"variables": {
+			"databricks": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "workflow/gov/catalogo_v2"
+		},
+		"annotations": []
+	}
+}

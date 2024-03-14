@@ -1,0 +1,64 @@
+{
+	"name": "org_raw_89_me_comex_ncm_sh4_ncm",
+	"properties": {
+		"description": "89 - ME/COMEX - EXPORTAÇÃO POR NCM E SH4",
+		"activities": [
+			{
+				"name": "import_uld_files__0__wrapper",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "import_uld_files__0__wrapper",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"files": {
+							"value": "@pipeline().parameters.files",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@pipeline().parameters.databricks",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\", \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\", \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"databricks": {
+				"type": "object",
+				"defaultValue": {
+					"notebook": "/fiesc/me/comex/export/org_raw_me_comex_export_ncm_sh4"
+				}
+			},
+			"files": {
+				"type": "array",
+				"defaultValue": [
+					"{'namespace':'fiesc','file_folder':'me/comex/export/ncm','extension':'parquet','column_delimiter':';','encoding':'UTF-8','null_value':'','schema':[{'competencia': 'string', 'cd_ano': 'bigint', 'cd_mes': 'bigint', 'tipo_carga': 'string', 'cd_ncm': 'bigint', 'nm_ncm_por': 'string', 'cd_isic_secao': 'string', 'nm_isic_secao': 'string', 'cd_cuci_grupo': 'bigint', 'nm_cuci_grupo': 'string', 'cd_unid': 'bigint', 'nm_unid': 'string', 'sg_unid': 'string', 'cd_pais': 'bigint', 'sg_uf': 'string', 'cd_via': 'bigint', 'nm_via': 'string', 'cd_urf': 'bigint', 'nm_urf': 'string', 'nu_qtd_estat': 'bigint', 'nu_kg_liquido': 'string', 'nu_fob': 'bigint', 'nu_frete': 'bigint', 'nu_seguro': 'bigint', 'cd_cgce_n3': 'bigint', 'nm_cgce_n3': 'string', 'nm_cgce_n3_ing': 'string', 'nm_cgce_n3_esp': 'string', 'cd_cgce_n2': 'bigint', 'nm_cgce_n2': 'string', 'nm_cgce_n2_ing': 'string', 'nm_cgce_n2_esp': 'string', 'cd_cgce_n1': 'bigint', 'nm_cgce_n1': 'string', 'nm_cgce_n1_ing': 'string', 'nm_cgce_n1_esp': 'string', 'cd_cuci_item': 'bigint', 'nm_cuci_item': 'string', 'cd_cuci_sub': 'bigint', 'nm_cuci_sub': 'string', 'cd_cuci_divisao': 'bigint', 'nm_cuci_divisao': 'string', 'cd_cuci_sec': 'bigint', 'nm_cuci_sec': 'string', 'cd_fat_agreg': 'bigint', 'nm_fat_agreg': 'string', 'nm_fat_agreg_gp': 'string', 'cd_isic_classe': 'bigint', 'nm_isic_classe': 'string', 'nm_isic_classe_ing': 'string', 'nm_isic_classe_esp': 'string', 'cd_isic_grupo': 'bigint', 'nm_isic_grupo': 'string', 'nm_isic_grupo_ing': 'string', 'nm_isic_grupo_esp': 'string', 'cd_isic_divisao': 'bigint', 'nm_isic_divisao': 'string', 'nm_isic_divisao_ing': 'string', 'nm_isic_divisao_esp': 'string', 'nm_isic_secao_ing': 'string', 'nm_isic_secao_esp': 'string', 'cd_ppe': 'bigint', 'nm_ppe': 'string', 'nm_ppe_min': 'string', 'nm_ppe_ing': 'string', 'cd_ppi': 'bigint', 'nm_ppi': 'string', 'nm_ppi_min': 'string', 'nm_ppi_ing': 'string', 'cd_sh6': 'bigint', 'nm_sh6_por': 'string', 'nm_sh6_esp': 'string', 'nm_sh6_ing': 'string', 'cd_sh4': 'bigint', 'nm_sh4_por': 'string', 'nm_sh4_esp': 'string', 'nm_sh4_ing': 'string', 'cd_sh2': 'bigint', 'nm_sh2_por': 'string', 'nm_sh2_esp': 'string', 'nm_sh2_ing': 'string', 'cd_ncm_secrom': 'bigint', 'nm_sec_por': 'string', 'nm_sec_esp': 'string', 'nm_sec_ing': 'string', 'cd_siit': 'bigint', 'nm_siit': 'string', 'obs_cd_sh4': 'string', 'obs_nm_sh4': 'string', 'obs_nm_ncm': 'string', 'obs_nm_produto': 'string', 'obs_cd_classe': 'string', 'obs_nm_classe': 'string', 'obs_cd_grupo': 'string', 'obs_nm_grupo': 'string', 'obs_cd_div': 'string', 'obs_nm_div': 'string', 'obs_nm_sc_competitiva': 'string', 'obs_nm_gr_setor': 'string', 'cd_municipio': 'bigint', 'nm_municipio': 'string', 'nm_vice_presidencia': 'string'}]"
+				]
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "raw/usr/fiesc/me/comex/export"
+		},
+		"annotations": []
+	}
+}

@@ -1,0 +1,342 @@
+{
+	"name": "import_crw__0__switch_env",
+	"properties": {
+		"activities": [
+			{
+				"name": "send_email_on_failure",
+				"description": "Calls the pipeline that send email on  failure. As this activity will be successfully executed, it will be necessary to force a fail in the downstream.",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "import_crw__1__check_files",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "send_email",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"email_users": {
+							"value": "@array('default')",
+							"type": "Expression"
+						},
+						"email_groups": {
+							"value": "@array('default')",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(string(pipeline().parameters.adf))",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "set_container",
+				"description": "Set storage/adls container",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "check_params",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "container",
+					"value": {
+						"value": "@pipeline().globalParameters.storage[pipeline().parameters.env.env].container",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_storage_url",
+				"description": "Sets storage url",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "check_params",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "storage_url",
+					"value": {
+						"value": "@pipeline().globalParameters.storage[pipeline().parameters.env.env].url",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "import_crw__1__check_files",
+				"description": "Duplication of pipeline based on env was used in order to avoid parsing string to json variables. Unfortunately, ADF does not support object variables.",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "set_function_url",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_function_secret_name",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_keyvault_url",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_storage_url",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_container",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "import_crw__1__check_files",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"tables": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"dls": {
+							"value": "@pipeline().globalParameters.dls[pipeline().parameters.env.env]",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@json(concat('{\"notebook\": \"', pipeline().globalParameters.databricks.notebook_base[pipeline().parameters.env.env], '/raw/crw', pipeline().parameters.databricks.notebook, '\"}'))",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(string(pipeline().parameters.adf))",
+							"type": "Expression"
+						},
+						"ach_tables": {
+							"value": "@split(pipeline().parameters.ach_tables, ';')",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@variables('container')",
+							"type": "Expression"
+						},
+						"url": {
+							"value": "@variables('storage_url')",
+							"type": "Expression"
+						},
+						"function_url": {
+							"value": "@variables('function_url')",
+							"type": "Expression"
+						},
+						"function_secret": {
+							"value": "@variables('function_secret')",
+							"type": "Expression"
+						},
+						"keyvault_url": {
+							"value": "@variables('keyvault_url')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "set_function_url",
+				"description": "Sets proxy url.",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "check_params",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "function_url",
+					"value": {
+						"value": "@pipeline().globalParameters.functions.proxy[pipeline().parameters.env.env].url",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_function_secret_name",
+				"description": "Sets functionapp secret_name.",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "check_params",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "function_secret",
+					"value": {
+						"value": "@pipeline().globalParameters.functions.proxy[pipeline().parameters.env.env].secret_name",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_keyvault_url",
+				"description": "Sets keyvault url.",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "check_params",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "keyvault_url",
+					"value": {
+						"value": "@pipeline().globalParameters.key_vault.general[pipeline().parameters.env.env].url",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "fail_pipeline",
+				"description": "Fail this pipeline",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "send_email_on_failure",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Pipeline has failed.",
+					"errorCode": "5"
+				}
+			},
+			{
+				"name": "check_params",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "check_params",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"body": {
+							"value": "{\n    \"adf\": @{pipeline().parameters.adf},\n    \"env\": @{pipeline().parameters.env}, \n    \"tables\": @{pipeline().parameters.tables},\n    \"databricks\": @{pipeline().parameters.databricks},\n    \"ach_tables\": \"@{pipeline().parameters.ach_tables}\"\n}",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object"
+			},
+			"adf": {
+				"type": "object"
+			},
+			"tables": {
+				"type": "object"
+			},
+			"databricks": {
+				"type": "object"
+			},
+			"ach_tables": {
+				"type": "string",
+				"defaultValue": "{'null':'null'}"
+			}
+		},
+		"variables": {
+			"container": {
+				"type": "String"
+			},
+			"storage_url": {
+				"type": "String"
+			},
+			"function_url": {
+				"type": "String"
+			},
+			"function_secret": {
+				"type": "String"
+			},
+			"keyvault_url": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "templates/raw/crw"
+		},
+		"annotations": []
+	}
+}

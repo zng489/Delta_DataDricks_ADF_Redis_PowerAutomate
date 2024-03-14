@@ -1,0 +1,44 @@
+{
+	"name": "wkf_trs__trello",
+	"properties": {
+		"description": "Raw tables from trello. All of them are small objects from Trello API. High parallelism is encouraged.",
+		"activities": [
+			{
+				"name": "raw_trs_trello",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "raw_trs_trello",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "prod"
+				}
+			}
+		},
+		"folder": {
+			"name": "workflow/oni/trello/trs"
+		},
+		"annotations": [
+			"workflow",
+			"raw",
+			"robolegisdata"
+		]
+	}
+}

@@ -1,0 +1,64 @@
+{
+	"name": "test_run_crawler",
+	"properties": {
+		"description": "Test Run crawler",
+		"activities": [
+			{
+				"name": "import_lnd__0__execute_crw",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "import_lnd__0__execute_crw",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"bot": {
+							"value": "@pipeline().parameters.bot",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"bot_params": {
+							"value": "@pipeline().parameters.bot_params",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"bot": {
+				"type": "string",
+				"defaultValue": "template"
+			},
+			"bot_params": {
+				"type": "object",
+				"defaultValue": {
+					"location": "brazilsouth",
+					"reload": "false",
+					"reset": "false",
+					"override": "true"
+				}
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "test/lnd"
+		},
+		"annotations": [
+			"test",
+			"lnd",
+			"crawler"
+		]
+	}
+}

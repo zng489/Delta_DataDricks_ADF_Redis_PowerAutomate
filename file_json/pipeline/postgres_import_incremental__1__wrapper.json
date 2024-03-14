@@ -1,0 +1,673 @@
+{
+	"name": "postgres_import_incremental__1__wrapper",
+	"properties": {
+		"description": "Well, this one uses a Filter condition for making things work for incremental loads.\n\n\n",
+		"activities": [
+			{
+				"name": "filter_control_column_type_2_db_datetime",
+				"description": "Filtering control column type as datetime, if parameter \"control_column_type_2_db\" in table dictionary is datetime.\n\nThe column in Postgres MUST be type timestamp. This is a change in the default implementation. Oracle still deals with as many types to datetime, but this won't do for Postgres. ",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "wait_to_filter_control_column_type",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.tables",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@equals(toLower(json(item()).control_column_type_2_db), 'datetime')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "1_for_control_column_datetime",
+				"description": "This makes our pipeline generic and iterable. After filtering the incremental tables that have the control column that IS datetime and you want to load all the data until the current datetime (not by year), we shall proceed working with on any of them . \n\nAfter passing through this loop, \"tables\" pipeline parameter must be casted to json when needed.",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "filter_control_column_type_2_db_datetime",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('filter_control_column_type_2_db_datetime').output.value\n",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"batchCount": 4,
+					"activities": [
+						{
+							"name": "1_run_raw_notebook",
+							"description": "Invokes the pipeline that runs the Databricks' notebook. ",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "1_postgres__load_datetime_increment",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "raw_load_dbo_unified__4__run_databricks_notebook",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"databricks": {
+										"value": "@pipeline().parameters.databricks",
+										"type": "Expression"
+									},
+									"adf": {
+										"value": "@pipeline().parameters.adf",
+										"type": "Expression"
+									},
+									"dls": {
+										"value": "@pipeline().parameters.dls",
+										"type": "Expression"
+									},
+									"table": {
+										"value": "@item()",
+										"type": "Expression"
+									},
+									"db_schema": {
+										"value": "@pipeline().parameters.db_schema",
+										"type": "Expression"
+									},
+									"env": {
+										"value": "@pipeline().parameters.env",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "1_raw_load_dbo_unified__5_update_watermark_in_db",
+							"description": "Updates the watermark in watermark's database.",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "1_run_raw_notebook",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "raw_load_dbo_unified__5__update_watermark_in_db",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"watermark": {
+										"value": "@pipeline().parameters.watermark",
+										"type": "Expression"
+									},
+									"increment": {
+										"value": "@pipeline().parameters.increment",
+										"type": "Expression"
+									},
+									"table": {
+										"value": "@json(item())",
+										"type": "Expression"
+									},
+									"env": {
+										"value": "@pipeline().parameters.env",
+										"type": "Expression"
+									},
+									"functionapp_access_code": {
+										"value": "@pipeline().parameters.functionapp_access_code",
+										"type": "Expression"
+									},
+									"redis_access_key": {
+										"value": "@pipeline().parameters.redis_access_key",
+										"type": "Expression"
+									},
+									"functionapp_url": {
+										"value": "@pipeline().parameters.functionapp_url",
+										"type": "Expression"
+									},
+									"num_rows_copied": {
+										"value": "@activity('1_postgres__load_datetime_increment').output.rowsCopied",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "1_postgres__load_datetime_increment",
+							"description": "Loads data from ensi-aztableau schema in Postgres.",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "08:00:00",
+								"retry": 2,
+								"retryIntervalInSeconds": 60,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "PostgreSqlSource",
+									"query": {
+										"value": "SELECT @{json(item()).columns} \nFROM @{pipeline().parameters.db_schema}.@{json(item()).table} \nWHERE CAST(COALESCE(TRIM(TO_CHAR(@{json(item()).control_column}, 'YYYYMMDDHHMISS')), '@{pipeline().parameters.increment.control_column.lowerbound}') AS BIGINT) \n>= CAST('@{pipeline().parameters.increment.control_column.lowerbound}' AS BIGINT) \nAND \nCAST(COALESCE(TRIM(TO_CHAR(@{json(item()).control_column}, 'YYYYMMDDHHMISS')), '@{pipeline().parameters.increment.control_column.lowerbound}') AS BIGINT) \n<= @{pipeline().parameters.increment.control_column.upperbound}",
+										"type": "Expression"
+									}
+								},
+								"sink": {
+									"type": "ParquetSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "ParquetWriteSettings"
+									}
+								},
+								"enableStaging": false,
+								"parallelCopies": 4,
+								"enableSkipIncompatibleRow": true,
+								"redirectIncompatibleRowSettings": {
+									"linkedServiceName": {
+										"referenceName": "cnibigdatadlsgen2stg",
+										"type": "LinkedServiceReference"
+									},
+									"path": {
+										"value": "@{pipeline().parameters.container}/@{pipeline().parameters.dls.folders.error}/dbo/@{pipeline().parameters.db_schema}/@{json(item()).table}",
+										"type": "Expression"
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "postgres_parameterized",
+									"type": "DatasetReference",
+									"parameters": {
+										"db_host": {
+											"value": "@pipeline().parameters.db.host",
+											"type": "Expression"
+										},
+										"db_port": {
+											"value": "@pipeline().parameters.db.port",
+											"type": "Expression"
+										},
+										"db_service_name": {
+											"value": "@pipeline().parameters.db.service_name",
+											"type": "Expression"
+										},
+										"db_username": {
+											"value": "@pipeline().parameters.db.username",
+											"type": "Expression"
+										},
+										"keyvault_url": {
+											"value": "@pipeline().parameters.keyvault_url",
+											"type": "Expression"
+										},
+										"keyvault_secret": {
+											"value": "@pipeline().parameters.db.secret",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "adls_parameterized_partitioned_source",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": {
+											"value": "@pipeline().parameters.container",
+											"type": "Expression"
+										},
+										"url": {
+											"value": "@pipeline().parameters.url",
+											"type": "Expression"
+										},
+										"db_schema": {
+											"value": "@pipeline().parameters.db_schema",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "filter_control_column_type_2_db_bigint",
+				"description": "Filtering control column type as bigint, if parameter \"control_column_type_2_db\".\n\nThis parameter \"control_column_type_2_db\" IS the original type from database. For Postgres, we're implementing this exactly as should be for any data type. ",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "wait_to_filter_control_column_type",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.tables",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@equals(toLower(json(item()).control_column_type_2_db), 'bigint')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "2_for_control_column_bigint",
+				"description": "This makes our pipeline generic and iterable. After filtering the incremental tables that have the control column that is a  bigint. \nAgain, the column must be BIGINT in source Postgres. \n",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "filter_control_column_type_2_db_bigint",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('filter_control_column_type_2_db_bigint').output.value\n",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"batchCount": 4,
+					"activities": [
+						{
+							"name": "2_run_raw_notebook",
+							"description": "Invokes the pipeline that runs the Databricks' notebook.",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "postgres__load_bigint_increment",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "raw_load_dbo_unified__4__run_databricks_notebook",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"databricks": {
+										"value": "@pipeline().parameters.databricks",
+										"type": "Expression"
+									},
+									"adf": {
+										"value": "@pipeline().parameters.adf",
+										"type": "Expression"
+									},
+									"dls": {
+										"value": "@pipeline().parameters.dls",
+										"type": "Expression"
+									},
+									"table": {
+										"value": "@string(item())",
+										"type": "Expression"
+									},
+									"db_schema": {
+										"value": "@pipeline().parameters.db_schema",
+										"type": "Expression"
+									},
+									"env": {
+										"value": "@pipeline().parameters.env",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "2__postgres__get_upperbound_bigint",
+							"description": "Until this moment, the upperbound was a BIGINT representation of the CURRENT_TIMESTAMP. Right now, we've got get the new upperboud, type BIGINT, in the source table in the connection set for ensi-aztableau.",
+							"type": "Lookup",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.03:00:00",
+								"retry": 2,
+								"retryIntervalInSeconds": 60,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "PostgreSqlSource",
+									"query": {
+										"value": "SELECT \nCAST(\n  COALESCE(\n    MAX(\n      @{json(item()).control_column}), \n      @{json(item()).control_column_default_value}\n    ) \nAS BIGINT) AS UPPERBOUND\nFROM\n@{pipeline().parameters.db_schema}.@{json(item()).table}\n",
+										"type": "Expression"
+									}
+								},
+								"dataset": {
+									"referenceName": "postgres_parameterized",
+									"type": "DatasetReference",
+									"parameters": {
+										"db_host": {
+											"value": "@pipeline().parameters.db.host",
+											"type": "Expression"
+										},
+										"db_port": {
+											"value": "@pipeline().parameters.db.port",
+											"type": "Expression"
+										},
+										"db_service_name": {
+											"value": "@pipeline().parameters.db.service_name",
+											"type": "Expression"
+										},
+										"db_username": {
+											"value": "@pipeline().parameters.db.username",
+											"type": "Expression"
+										},
+										"keyvault_url": {
+											"value": "@pipeline().parameters.keyvault_url",
+											"type": "Expression"
+										},
+										"keyvault_secret": {
+											"value": "@pipeline().parameters.db.secret",
+											"type": "Expression"
+										}
+									}
+								}
+							}
+						},
+						{
+							"name": "2__postgres__set_upperbound",
+							"description": "Sets upperbound variable for this connection, avoiding tons of distinct implementatios fo 'update watermark'",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "2__postgres__get_upperbound_bigint",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "upperbound_bigint",
+								"value": {
+									"value": "@string(activity('2__postgres__get_upperbound_bigint').output.firstRow.UPPERBOUND)",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "2_raw_load_dbo_unified__5_update_watermark_in_db_copy1",
+							"description": "Updates the watermark in watermark's database.",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "2_run_raw_notebook",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "raw_load_dbo_unified__5__update_watermark_in_db",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"watermark": {
+										"value": "@pipeline().parameters.watermark",
+										"type": "Expression"
+									},
+									"increment": {
+										"value": "@pipeline().parameters.increment",
+										"type": "Expression"
+									},
+									"table": {
+										"value": "@json(item())",
+										"type": "Expression"
+									},
+									"env": {
+										"value": "@pipeline().parameters.env",
+										"type": "Expression"
+									},
+									"functionapp_access_code": {
+										"value": "@pipeline().parameters.functionapp_access_code",
+										"type": "Expression"
+									},
+									"redis_access_key": {
+										"value": "@pipeline().parameters.redis_access_key",
+										"type": "Expression"
+									},
+									"functionapp_url": {
+										"value": "@pipeline().parameters.functionapp_url",
+										"type": "Expression"
+									},
+									"num_rows_copied": {
+										"value": "@activity('postgres__load_bigint_increment').output.rowsCopied",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "postgres__load_bigint_increment",
+							"description": "Loads bigint data increment from ensi-aztableau schema in Postgres.",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "2__postgres__set_upperbound",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "08:00:00",
+								"retry": 2,
+								"retryIntervalInSeconds": 60,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "PostgreSqlSource",
+									"query": {
+										"value": "SELECT @{json(item()).columns}\nFROM @{pipeline().parameters.db_schema}.@{json(item()).table}\nWHERE\n@{json(item()).control_column} > @{pipeline().parameters.increment.control_column.lowerbound}\nAND \n@{json(item()).control_column} <= COALESCE(@{pipeline().parameters.increment.control_column.upperbound},\n@{pipeline().parameters.increment.control_column.lowerbound})",
+										"type": "Expression"
+									}
+								},
+								"sink": {
+									"type": "ParquetSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "ParquetWriteSettings"
+									}
+								},
+								"enableStaging": false,
+								"parallelCopies": 4,
+								"enableSkipIncompatibleRow": true,
+								"redirectIncompatibleRowSettings": {
+									"linkedServiceName": {
+										"referenceName": "cnibigdatadlsgen2stg",
+										"type": "LinkedServiceReference"
+									},
+									"path": {
+										"value": "@{pipeline().parameters.container}/@{pipeline().parameters.dls.folders.error}/dbo/@{pipeline().parameters.db_schema}/@{json(item()).table}",
+										"type": "Expression"
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "postgres_parameterized",
+									"type": "DatasetReference",
+									"parameters": {
+										"db_host": {
+											"value": "@pipeline().parameters.db.host",
+											"type": "Expression"
+										},
+										"db_port": {
+											"value": "@pipeline().parameters.db.port",
+											"type": "Expression"
+										},
+										"db_service_name": {
+											"value": "@pipeline().parameters.db.service_name",
+											"type": "Expression"
+										},
+										"db_username": {
+											"value": "@pipeline().parameters.db.username",
+											"type": "Expression"
+										},
+										"keyvault_url": {
+											"value": "@pipeline().parameters.keyvault_url",
+											"type": "Expression"
+										},
+										"keyvault_secret": {
+											"value": "@pipeline().parameters.db.secret",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "adls_parameterized_partitioned_source",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": {
+											"value": "@pipeline().parameters.container",
+											"type": "Expression"
+										},
+										"url": {
+											"value": "@pipeline().parameters.url",
+											"type": "Expression"
+										},
+										"db_schema": {
+											"value": "@pipeline().parameters.db_schema",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "wait_to_filter_control_column_type",
+				"description": "Just a wait to keep thing together.",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			}
+		],
+		"parameters": {
+			"db": {
+				"type": "object"
+			},
+			"tables": {
+				"type": "array"
+			},
+			"dls": {
+				"type": "object"
+			},
+			"watermark": {
+				"type": "object"
+			},
+			"databricks": {
+				"type": "object"
+			},
+			"adf": {
+				"type": "object"
+			},
+			"increment": {
+				"type": "object"
+			},
+			"container": {
+				"type": "string"
+			},
+			"url": {
+				"type": "string"
+			},
+			"keyvault_url": {
+				"type": "string"
+			},
+			"functionapp_access_code": {
+				"type": "securestring"
+			},
+			"redis_access_key": {
+				"type": "securestring"
+			},
+			"functionapp_url": {
+				"type": "string"
+			},
+			"env": {
+				"type": "object"
+			},
+			"db_schema": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"db_schema": {
+				"type": "String"
+			},
+			"upperbound_bigint": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "templates/raw/bdo/postgres/import_incremental"
+		},
+		"annotations": [
+			"template",
+			"raw",
+			"postgres"
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

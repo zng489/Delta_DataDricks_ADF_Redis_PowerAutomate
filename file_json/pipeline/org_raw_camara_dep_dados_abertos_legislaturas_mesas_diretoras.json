@@ -1,0 +1,71 @@
+{
+	"name": "org_raw_camara_dep_dados_abertos_legislaturas_mesas_diretoras",
+	"properties": {
+		"description": "Paramas for system OBA, implemented via user updated files.",
+		"activities": [
+			{
+				"name": "import_uld_files__0__wrapper",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "import_uld_files__0__wrapper",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"files": {
+							"value": "@pipeline().parameters.files",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@pipeline().parameters.databricks",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\", \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\", \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"databricks": {
+				"type": "object",
+				"defaultValue": {
+					"notebook": "/oni/camara_dep/org_raw_camara_dep_dados_abertos_legislaturas"
+				}
+			},
+			"files": {
+				"type": "array",
+				"defaultValue": [
+					"{'namespace':'oni','file_folder':'camara_dep/dados_abertos/legislaturas/mesas_diretoras','data_file':'legislaturasMesas.csv','extension':'csv','column_delimiter':';','encoding':'UTF-8','null_value':'', 'raw_path': 'usr/oni/camara_dep/dados_abertos/legislaturas/'}"
+				]
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			},
+			"tables": {
+				"type": "object",
+				"defaultValue": {
+					"prm_path": "usr/oni/camara_dep/dados_abertos_legislaturas/FIEC_camara_dep_dados_abertos_legislaturas_mapeamento_unificado_raw.xlsx",
+					"raw_path_": "usr/oni/camara_dep/dados_abertos/legislaturas/mesas_diretoras"
+				}
+			}
+		},
+		"folder": {
+			"name": "raw/usr/oni/camara_dep"
+		},
+		"annotations": []
+	}
+}

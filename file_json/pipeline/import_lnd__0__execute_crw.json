@@ -1,0 +1,182 @@
+{
+	"name": "import_lnd__0__execute_crw",
+	"properties": {
+		"activities": [
+			{
+				"name": "verify_resource_using",
+				"description": "Check the condition to run the crawler, based on the \"resource\" parameter, first check if the parameter exists, if it exists, check the value, if the value is equal to \"databricks\" run in ADB, if the parameter does not exist or the parameter is not equal to \"databricks\", run in ACI.",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "check_params",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@and(\n    contains(pipeline().parameters.bot_params, 'resource'),\n    equals(\n        pipeline().parameters.bot_params.resource, 'databricks'\n    )\n)\n\n",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "import_lnd__1__execute_crw_container",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "import_lnd__1__execute_crw_container",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"bot": {
+										"value": "@pipeline().parameters.bot",
+										"type": "Expression"
+									},
+									"adf": {
+										"value": "@pipeline().parameters.adf",
+										"type": "Expression"
+									},
+									"env": {
+										"value": "@pipeline().parameters.env",
+										"type": "Expression"
+									},
+									"bot_params": {
+										"value": "@pipeline().parameters.bot_params",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "return",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "import_lnd__1__execute_crw_container",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "pipelineReturnValue",
+								"value": [
+									{
+										"key": "return",
+										"value": {
+											"type": "Expression",
+											"content": "@activity('import_lnd__1__execute_crw_container').output.pipelineReturnValue"
+										}
+									}
+								],
+								"setSystemVariable": true
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "import_lnd__1__execute_crw_databricks",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "databricks_run_notebook_crw",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"bot": {
+										"value": "@pipeline().parameters.bot",
+										"type": "Expression"
+									},
+									"adf": {
+										"value": "@pipeline().parameters.adf",
+										"type": "Expression"
+									},
+									"env": {
+										"value": "@pipeline().parameters.env",
+										"type": "Expression"
+									},
+									"bot_params": {
+										"value": "@pipeline().parameters.bot_params",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "check_params",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "check_params",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"body": {
+							"value": "{\n    \"adf\": @{pipeline().parameters.adf},\n    \"env\": @{pipeline().parameters.env}, \n    \"bot\": \"@{pipeline().parameters.bot}\",\n    \"bot_params\": @{pipeline().parameters.bot_params}\n}",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"bot": {
+				"type": "string"
+			},
+			"adf": {
+				"type": "object",
+				"defaultValue": {
+					"adf_factory_name": "not implemented for this pipeline",
+					"adf_pipeline_name": "not implemented for this pipeline",
+					"adf_pipeline_run_id": "not implemented for this pipeline",
+					"adf_trigger_id": "not implemented for this pipeline",
+					"adf_trigger_name": "not implemented for this pipeline",
+					"adf_trigger_time": "not implemented for this pipeline",
+					"adf_trigger_type": "not implemented for this pipeline"
+				}
+			},
+			"env": {
+				"type": "object"
+			},
+			"bot_params": {
+				"type": "object"
+			}
+		},
+		"folder": {
+			"name": "templates/lnd"
+		},
+		"annotations": []
+	}
+}

@@ -1,0 +1,55 @@
+{
+	"name": "org_raw_coal_vw_rdr_ds_votacoes",
+	"properties": {
+		"description": "Will always be loaded as full.\n\n- For full load without partitioning use:\nParameter tables = [\"{'schema': 'SORS', 'table':'VWCONSULTAORCAMENTOGERENCIAL','load_type':'full','partition_column':'null', 'columns': 'CodigoEntidade,SiglaEntidade,CodigoReservadoUnidade,NomeUnidadeNegocio,CodigoReservadoCR,NomeCR,NomeTipoCR,CodigoLinhaAtuacao,LinhaAtuacao,CodigoReservadoGrupo,NomeGrupo,CodigoReservadoConta,NomeConta,DespesaReceita,Ano,Mes,Realizado,Orcado,Retificado,Suplementado,Transposto,ForeCastOrcado,ForeCastRetificado,ForeCastSuplementado'}\"]\n\nExecute pipeline = mssqlserver_import_full\n\nWarning: Parameter host in db dictionary must be passed as two separated values if the source has a \"\\\" in the name.  Ex: CLUSTER-SQL010\\INSTANCIASQL010\nIn this case, the first part of the host is identified by the HostPart1 parameter and the second part is identified by the HostPart2 parameter.. Ex: HostPart1 =  CLUSTER-SQL010 and HostPart2 = INSTANCIASQL010.\nThe parameter used in the pipeline looks like:\n{\"host_part1\":\"CLUSTER-SQL010\", \"host_part2\": \"INSTANCIASQL010\",\"db_name\":\"dbCDISOrcamento\",\"username\":\"usr_bigdata\",\"vendor\":\"SQLServer\"}\n",
+		"activities": [
+			{
+				"name": "raw_load_bdo_unified__0__switch_env",
+				"description": "Run template pipeline to import tables",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "raw_load_dbo_unified__0__switch_env",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"tables": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(\n    concat(\n        '{',\n            '\"adf_factory_name\": \"', pipeline().DataFactory,'\",',\n            '\"adf_pipeline_name\": \"', pipeline().Pipeline,'\",',\n            '\"adf_pipeline_run_id\": \"', pipeline().RunId,'\",',\n            '\"adf_trigger_id\": \"', pipeline().TriggerId, '\",' ,\n            '\"adf_trigger_name\": \"', pipeline().TriggerName, '\",',\n            '\"adf_trigger_time\": \"', pipeline().TriggerTime,'\",',\n            '\"adf_trigger_type\": \"', pipeline().TriggerType,'\",',\n        '}'\n    )\n)",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"tables": {
+				"type": "array",
+				"defaultValue": [
+					"{'db_conn': 'INTEGRACAO_OS', 'table':'VW_RDR_DS_VOTACOES','load_type':'full','partition_column':'null', 'columns':' [Parlamentar_Completo] AS Parlamentar_Completo, [Parlamentar_Nome] AS Parlamentar_Nome, [Parlamentar_Partido] AS Parlamentar_Partido, [Parlamentar_UF] AS Parlamentar_UF, [Parlamentar_CPF] AS Parlamentar_CPF, [Grau_de_Interlocucao] AS Grau_de_Interlocucao, [Proposicao_Completa] AS Proposicao_Completa, [Proposicao_Casa] AS Proposicao_Casa, [Proposicao_Tipo] AS Proposicao_Tipo, [Proposicao_Numero] AS Proposicao_Numero, [Proposicao_Ano] AS Proposicao_Ano, [Proposicao_Foco] AS Proposicao_Foco, [Votacao_ID] AS Votacao_ID, [Votacao_Descricao] AS Votacao_Descricao, [Votacao_Data] AS Votacao_Data, [Votacao_Posicao_CNI] AS Votacao_Posicao_CNI, [Votacao_Foco] AS Votacao_Foco, [Votacao_Voto_Esperado] AS Votacao_Voto_Esperado, [Votacao_Voto_Parlamentar] AS Votacao_Voto_Parlamentar, [Votação_Parlamentar_Avaliacao] AS Votacao_Parlamentar_Avaliacao ','business_area':'coal'}"
+				]
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "raw/bdo/coal"
+		},
+		"annotations": []
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

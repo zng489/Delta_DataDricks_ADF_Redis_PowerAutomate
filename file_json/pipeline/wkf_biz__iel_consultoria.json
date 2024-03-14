@@ -1,0 +1,58 @@
+{
+	"name": "wkf_biz__iel_consultoria",
+	"properties": {
+		"activities": [
+			{
+				"name": "wkf_biz__iel_consultoria",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "trs_biz_iel_consultoria_consolidado",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "trs_biz_iel_consultoria_consolidado",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_iel_consultoria_consolidados",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "workflow/iel/biz"
+		},
+		"annotations": [
+			"workflow",
+			"raw"
+		]
+	}
+}

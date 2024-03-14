@@ -1,0 +1,95 @@
+{
+	"name": "trs_biz_caged",
+	"properties": {
+		"description": "Fato de Dados do PIB na granularidade de UF",
+		"activities": [
+			{
+				"name": "business__0__switch_env",
+				"description": "Calls business template \"template_business\".",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "business__0__switch_env",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"table": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\",  \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\",  \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"user_parameters": {
+							"value": "@pipeline().parameters.user_parameters",
+							"type": "Expression"
+						},
+						"sqldw_copy": {
+							"value": "@pipeline().parameters.sqldw_copy",
+							"type": "Expression"
+						},
+						"sqldw_grant": {
+							"value": "@pipeline().parameters.sqldw_grant",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"tables": {
+				"type": "object",
+				"defaultValue": {
+					"path_trs_ipca": "crw/ibge/ipca",
+					"path_cadastro_cbo": "me/cadastro_cbo/",
+					"path_am_legal": "oni/bases_referencia/uf",
+					"path_cnae": "usr/uniepro/cnae_industrial/",
+					"path_contribuintes": "oni/bases_do_projeto/painel_dos_estados/contribuintes/",
+					"path_cnae_subclasses": "oni/bases_referencia/cnae_20/cnae_divisao",
+					"path_municipio": "oni/bases_referencia/municipios",
+					"path_caged_antigo": "me/caged/",
+					"path_novo_caged": "me/novo_caged/",
+					"path_destination": "oni/painel_dos_estados/caged",
+					"year_initial_date": 2007,
+					"min_salary": 300,
+					"max_salary": 30000,
+					"destination": "/oni/painel_dos_estados/caged",
+					"databricks": {
+						"notebook": "/biz/oni/painel_dos_estados/trs_biz_caged"
+					}
+				}
+			},
+			"user_parameters": {
+				"type": "object",
+				"defaultValue": {
+					"null": "null"
+				}
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			},
+			"sqldw_copy": {
+				"type": "bool",
+				"defaultValue": false
+			},
+			"sqldw_grant": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "biz/oni/painel_dos_estados"
+		},
+		"annotations": []
+	}
+}

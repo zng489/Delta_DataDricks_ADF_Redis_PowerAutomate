@@ -1,0 +1,576 @@
+{
+	"name": "workflow_test_integration",
+	"properties": {
+		"description": "This workflow contains the execution test to be called after and during integrations. If this one executes with success, then all load types are guaranteed to be tested.",
+		"activities": [
+			{
+				"name": "LND__lnd_org_raw_trello",
+				"description": "lnd test",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "raw",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_trello",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "RAW_FULL_MSSQLSERVER__org_raw_siga_T1705",
+				"description": "Raw Full  MSSqlServer org_raw_siga_T1705SubstituicaoGuiaRecolhimento",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "raw",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_siga_T1705SubstituicaoGuiaRecolhimento",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "RAW_FULL_ORACLE__org_raw_bd_basi_log_localidade",
+				"description": "Raw Full Oracle org_raw_bd_basi_log_localidade",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "raw",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_bd_basi_log_localidade",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "raw",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "ULD__uld_raw_grau_instrucao",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "LND_RAW__org_raw_aco_brasil_prod_aco_nacional",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "LND_RAW__org_raw_trello_boards",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "trs",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "RAW_FULL_MSSQLSERVER__org_raw_siga_T1705",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "LND__lnd_org_raw_trello",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "RAW_FULL_ORACLE__org_raw_bd_basi_log_localidade",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "RAW_FULL_MYSQL__org_raw_lms_uc_assignments_in_groups",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "RAW_INCREMENTA_NOT_PART_ORACLE_org_raw_bd_basi_tb_curso",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "RAW_INCREMENTAL_PART_ORACLE__org_raw_bd_basi_rl_atendim",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "RAW_INCREMENTAL_W_JOIN_ORACLE__org_raw_oba_rl_cargo",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "RAW_YEAR_OVERW_ORACLE__org_raw_inddesempenho",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "RAW_YEAR_OVERW_MSSQLSERVER__org_raw_protheus_akd010",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "RAW_FULL_MYSQL__org_raw_lms_uc_assignments_in_groups",
+				"description": "Raw Full MySQL org_raw_lms_uc_assignments_in_groups",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "raw",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_lms_uc_assignments_in_groups",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "RAW_INCREMENTA_NOT_PART_ORACLE_org_raw_bd_basi_tb_curso",
+				"description": "Raw Incremental Not Partitioned Oracle org_raw_bd_basi_tb_curso",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "raw",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_bd_basi_tb_curso",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "RAW_INCREMENTAL_PART_ORACLE__org_raw_bd_basi_rl_atendim",
+				"description": "Raw Incremental Partitioned Oracle\norg_raw_bd_basi_rl_atendimento_pessoa",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "raw",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_bd_basi_rl_atendimento_pessoa",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "RAW_INCREMENTAL_W_JOIN_ORACLE__org_raw_oba_rl_cargo",
+				"description": "Raw Incremental With Join Oracle org_raw_oba_rl_cargo_escolarid_unid_oba",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "raw",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_oba_rl_cargo_escolarid_unid_oba",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "RAW_YEAR_OVERW_ORACLE__org_raw_inddesempenho",
+				"description": "Raw Year Overwrite Oracle org_raw_inddesempenho_centroresponsabilidade",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "raw",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_inddesempenho_centroresponsabilidade",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "RAW_YEAR_OVERW_MSSQLSERVER__org_raw_protheus_akd010",
+				"description": "Raw Year Overwrite MSQQLServer org_raw_protheus_akd010",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "raw",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_protheus_akd010",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "LND_RAW__org_raw_aco_brasil_prod_aco_nacional",
+				"description": "Lnd Raw org_raw_aco_brasil_prod_aco_nacional",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "lnd__uld",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_aco_brasil_prod_aco_nacional",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "LND_RAW__org_raw_trello_boards",
+				"description": "LND Raw org_raw_trello_boards",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "lnd__uld",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_trello_boards",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "ULD__uld_raw_grau_instrucao",
+				"description": "ULD uld_raw_grau_instrucao",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "lnd__uld",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "uld_raw_grau_instrucao",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "TRS_raw_trs_convenio_ensino_prof_carga_horaria",
+				"description": "TRS raw_trs_convenio_ensino_prof_carga_horaria",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "trs",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "raw_trs_convenio_ensino_prof_carga_horaria",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "biz",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "TRS_raw_trs_convenio_ensino_prof_carga_horaria",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "BIZ__trs_biz_dim_cadastro_cbo",
+				"description": "Biz trs_biz_dim_cadastro_cbo",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "biz",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trs_biz_dim_cadastro_cbo",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "end",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "BIZ__trs_biz_dim_cadastro_cbo",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd__uld",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "workflow"
+		},
+		"annotations": [
+			"test",
+			"ci/cd"
+		]
+	}
+}

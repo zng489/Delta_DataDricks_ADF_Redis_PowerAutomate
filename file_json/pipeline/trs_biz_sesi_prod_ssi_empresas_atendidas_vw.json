@@ -1,0 +1,71 @@
+{
+	"name": "trs_biz_sesi_prod_ssi_empresas_atendidas_vw",
+	"properties": {
+		"description": "Pipeline que transforma a tabela producao_ssi na view SESI_PROD_SSI_EMPRESAS_ATENDIDAS_VW, que será consumida pelo Power BI",
+		"activities": [
+			{
+				"name": "ssi_prod_empresas_atendidas_vw",
+				"description": "pipeline trs_biz para a view SESI_PROD_SSI_EMPRESAS_ATENDIDAS_VW",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "business__0__switch_env",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"table": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "{\"adf_factory_name\": \"@{pipeline().DataFactory}\", \"adf_pipeline_name\": \"@{pipeline().Pipeline}\", \"adf_pipeline_run_id\": \"@{pipeline().RunId}\",  \"adf_trigger_id\": \"@{pipeline().TriggerId}\", \"adf_trigger_name\": \"@{pipeline().TriggerName}\", \"adf_trigger_time\": \"@{pipeline().TriggerTime}\",  \"adf_trigger_type\": \"@{pipeline().TriggerType}\"}",
+							"type": "Expression"
+						},
+						"user_parameters": {
+							"value": "@pipeline().parameters.user_parameters",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"tables": {
+				"type": "object",
+				"defaultValue": {
+					"origins": [
+						"/evt/sesi/ssi/sesi_producao_ssi/"
+					],
+					"destination": "/sesi/ssi/datacg/sesi_prod_ssi_empresas_atendidas_vw",
+					"databricks": {
+						"notebook": "/biz/saude_seguranca_industria/trs_biz_sesi_prod_ssi_empresas_atendidas"
+					}
+				}
+			},
+			"user_parameters": {
+				"type": "object",
+				"defaultValue": {
+					"ano": "null",
+					"mes": "null"
+				}
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "biz/saude_seguranca_industria"
+		},
+		"annotations": []
+	}
+}

@@ -1,0 +1,91 @@
+{
+	"name": "trs_biz_fta_kpis",
+	"properties": {
+		"activities": [
+			{
+				"name": "business__0__switch_env",
+				"description": "Calls business template \"template_business\".",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "business__0__switch_env",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"table": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\",  \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\",  \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"user_parameters": {
+							"value": "@pipeline().parameters.user_parameters",
+							"type": "Expression"
+						},
+						"sqldw_copy": {
+							"value": "@pipeline().parameters.sqldw_copy",
+							"type": "Expression"
+						},
+						"sqldw_grant": {
+							"value": "@pipeline().parameters.sqldw_grant",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"tables": {
+				"type": "object",
+				"defaultValue": {
+					"path_pnadc": "ibge/pnadc/",
+					"path_pnadc_deflatores": "crw/ibge/deflatores/",
+					"path_ibge": "crw/ibge/relatorio_dtb_brasil_municipio/",
+					"path_cadastro_cbo": "usr/me/cadastro_cbo/",
+					"path_ipca": "crw/ibge/ipca/",
+					"path_caged": "me/caged/",
+					"path_novo_caged": "me/novo_caged/",
+					"path_destination": "oni/monitor_do_emprego_kpis/fta_kpis",
+					"year_initial_date": 2012,
+					"min_salary": 1212,
+					"max_salary": 30000,
+					"destination": "/oni/monitor_do_emprego_kpis/fta_kpis",
+					"databricks": {
+						"notebook": "/biz/monitor_de_emprego_kpis/trs_biz_fta_kpis"
+					}
+				}
+			},
+			"user_parameters": {
+				"type": "object",
+				"defaultValue": {
+					"null": "null"
+				}
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			},
+			"sqldw_copy": {
+				"type": "bool"
+			},
+			"sqldw_grant": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "biz/monitor_de_emprego_kpis"
+		},
+		"annotations": []
+	}
+}

@@ -1,0 +1,424 @@
+{
+	"name": "databricks_run_notebook",
+	"properties": {
+		"description": "Runs the databricks notebook. Calling this as a unified piece will allow us to make things easier to mantain and also to modify the connection when needed.\n\n\nAbout parameters: please read it:\n- table: is used by RAW\n- tables: is used by TRS\n  When you've got one, you don't have the other.\n- file: used just by raw/usr pipelines. Keep it as {\"null\":\"null\"} if your process is not that type.\n- file_pars : used by raw/usr/unigest. Keep it as {\"null\":\"null\"} if your process is not that type.\n\n---\n",
+		"activities": [
+			{
+				"name": "if_debug_use_job_cluster",
+				"description": "If user is pressing the debug button, then a job cluster will be used. Else, the interactive production cluster. ",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "set_databricks_config",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@or(and(equals(toLower(pipeline().parameters.adf.adf_trigger_name), 'sandbox'), equals(toLower(pipeline().parameters.adf.adf_trigger_type), 'manual')), equals(pipeline().parameters.dls.path_prefix,'tmp'))",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "run_databricks_job_cluster",
+							"description": "Instantiates a job cluster to. Libraries are configured here.\n\nFor 'dls', ve verify if it's the case of uld files, where the dictionary in 'file' has a 'file' key. In the case false, it's a traditional load. \nWhen we've got valid keys in 'file_parse', then we've got uld_unigest, and we have to use the correspondent 'dls' definition for it. \n\n----",
+							"type": "DatabricksNotebook",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "8:00:00",
+								"retry": 2,
+								"retryIntervalInSeconds": 180,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": {
+									"value": "@pipeline().parameters.databricks_notebook_path",
+									"type": "Expression"
+								},
+								"baseParameters": {
+									"dls": {
+										"value": "@if(\n    contains(pipeline().parameters.file_parse, 'file_path')\n    ,string(pipeline().globalParameters.dls_uld_unigest_dev)\n    ,if(\n        contains(pipeline().parameters.file, 'file_folder')\n        ,string(pipeline().parameters.dls.uld)\n        ,string(pipeline().parameters.dls)\n    )\n)",
+										"type": "Expression"
+									},
+									"table": {
+										"value": "@string(pipeline().parameters.table)",
+										"type": "Expression"
+									},
+									"adf": {
+										"value": "@string(pipeline().parameters.adf)",
+										"type": "Expression"
+									},
+									"user_parameters": {
+										"value": "@string(pipeline().parameters.user_parameters)",
+										"type": "Expression"
+									},
+									"tables": {
+										"value": "@string(pipeline().parameters.tables)",
+										"type": "Expression"
+									},
+									"file": {
+										"value": "@string(pipeline().parameters.file)",
+										"type": "Expression"
+									},
+									"file_parse": {
+										"value": "@string(pipeline().parameters.file_parse)",
+										"type": "Expression"
+									},
+									"vendor": {
+										"value": "@pipeline().parameters.vendor",
+										"type": "Expression"
+									},
+									"dir": {
+										"value": "@pipeline().parameters.dir",
+										"type": "Expression"
+									},
+									"env": {
+										"value": "@pipeline().parameters.env",
+										"type": "Expression"
+									},
+									"source_name": {
+										"value": "@pipeline().parameters.source_name",
+										"type": "Expression"
+									},
+									"source_type": {
+										"value": "@pipeline().parameters.source_type",
+										"type": "Expression"
+									},
+									"gov_table": {
+										"value": "@pipeline().parameters.gov_table",
+										"type": "Expression"
+									},
+									"path": {
+										"value": "@pipeline().parameters.path",
+										"type": "Expression"
+									},
+									"db_schema": {
+										"value": "@concat('{\"schema\": \"', pipeline().parameters.db_schema, '\"}')",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "cnibigdatabricks_any_job_cluster",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"workspace_url": {
+										"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name].dev.workspace_url",
+										"type": "Expression"
+									},
+									"workspace_id": {
+										"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name].dev.workspace_id",
+										"type": "Expression"
+									},
+									"cluster_version": "12.2.x-scala2.12",
+									"cluster_node": "Standard_DS4_v2",
+									"worker": "1",
+									"tag": "Producao",
+									"policy_id": {
+										"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env].policy_id",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "set_databricks_output",
+							"description": "Sets databricks_output",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "run_databricks_job_cluster",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "databricks_output",
+								"value": {
+									"value": "@string(activity('run_databricks_job_cluster').output)",
+									"type": "Expression"
+								}
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "run_databricks_job_cluster_debug",
+							"description": "Instantiates a job cluster to run the debug job. Libraries are configured here.\n\nFor 'dls', ve verify if it's the case of uld files, where the dictionary in 'file' has a 'file' key. In the case false, it's a traditional load. \nWhen we've got valid keys in 'file_parse', then we've got uld_unigest, and we have to use the correspondent 'dls' definition for it. \n\n----",
+							"type": "DatabricksNotebook",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "8:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 60,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": {
+									"value": "@pipeline().parameters.databricks_notebook_path",
+									"type": "Expression"
+								},
+								"baseParameters": {
+									"dls": {
+										"value": "@if(\n    contains(pipeline().parameters.file_parse, 'file_path')\n    ,string(pipeline().globalParameters.dls_uld_unigest_dev)\n    ,if(\n        contains(pipeline().parameters.file, 'file_folder')\n        ,string(pipeline().parameters.dls.uld)\n        ,string(pipeline().parameters.dls)\n    )\n)",
+										"type": "Expression"
+									},
+									"table": {
+										"value": "@string(pipeline().parameters.table)",
+										"type": "Expression"
+									},
+									"adf": {
+										"value": "@string(pipeline().parameters.adf)",
+										"type": "Expression"
+									},
+									"user_parameters": {
+										"value": "@string(pipeline().parameters.user_parameters)",
+										"type": "Expression"
+									},
+									"tables": {
+										"value": "@string(pipeline().parameters.tables)",
+										"type": "Expression"
+									},
+									"file": {
+										"value": "@string(pipeline().parameters.file)",
+										"type": "Expression"
+									},
+									"file_parse": {
+										"value": "@string(pipeline().parameters.file_parse)",
+										"type": "Expression"
+									},
+									"vendor": {
+										"value": "@pipeline().parameters.vendor",
+										"type": "Expression"
+									},
+									"dir": {
+										"value": "@pipeline().parameters.dir",
+										"type": "Expression"
+									},
+									"env": {
+										"value": "@pipeline().parameters.env",
+										"type": "Expression"
+									},
+									"source_name": {
+										"value": "@pipeline().parameters.source_name",
+										"type": "Expression"
+									},
+									"source_type": {
+										"value": "@pipeline().parameters.source_type",
+										"type": "Expression"
+									},
+									"gov_table": {
+										"value": "@pipeline().parameters.gov_table",
+										"type": "Expression"
+									},
+									"path": {
+										"value": "@pipeline().parameters.path",
+										"type": "Expression"
+									},
+									"db_schema": {
+										"value": "@concat('{\"schema\": \"', pipeline().parameters.db_schema, '\"}')",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "cnibigdatabricks_any_job_cluster",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"workspace_url": {
+										"value": "@json(variables('databricks_config')).workspace_url",
+										"type": "Expression"
+									},
+									"workspace_id": {
+										"value": "@json(variables('databricks_config')).workspace_id",
+										"type": "Expression"
+									},
+									"cluster_version": "12.2.x-scala2.12",
+									"cluster_node": "Standard_DS4_v2",
+									"worker": "1",
+									"tag": "Desenvolvimento",
+									"policy_id": {
+										"value": "@json(variables('databricks_config')).policy_id",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "set_databricks_output__debug",
+							"description": "Sets_databricks_output",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "run_databricks_job_cluster_debug",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "databricks_output",
+								"value": {
+									"value": "@string(activity('run_databricks_job_cluster_debug').output)",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "set_databricks_config",
+				"description": "Switches Databricks connection to use based on ADF property",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "databricks_config",
+					"value": {
+						"value": "@string(\n    pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env]\n)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "return_databricks_output",
+				"description": "Returns Databricks output to parent calling pipeline",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "if_debug_use_job_cluster",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineReturnValue",
+					"value": [
+						{
+							"key": "databricks_run_output",
+							"value": {
+								"type": "Expression",
+								"content": "@json(variables('databricks_output'))"
+							}
+						}
+					],
+					"setSystemVariable": true
+				}
+			}
+		],
+		"parameters": {
+			"databricks_notebook_path": {
+				"type": "string"
+			},
+			"adf": {
+				"type": "object"
+			},
+			"dls": {
+				"type": "object"
+			},
+			"table": {
+				"type": "string",
+				"defaultValue": "'{\"null\":\"null\"}'"
+			},
+			"user_parameters": {
+				"type": "object",
+				"defaultValue": {
+					"null": "null"
+				}
+			},
+			"tables": {
+				"type": "object",
+				"defaultValue": {
+					"null": "null"
+				}
+			},
+			"file": {
+				"type": "object",
+				"defaultValue": {
+					"null": "null"
+				}
+			},
+			"file_parse": {
+				"type": "object",
+				"defaultValue": {
+					"null": "null"
+				}
+			},
+			"vendor": {
+				"type": "string",
+				"defaultValue": "variavel carga gov"
+			},
+			"dir": {
+				"type": "string",
+				"defaultValue": "variavel carga gov"
+			},
+			"env": {
+				"type": "string",
+				"defaultValue": "variavel carga gov"
+			},
+			"source_name": {
+				"type": "string",
+				"defaultValue": "variavel carga gov"
+			},
+			"source_type": {
+				"type": "string",
+				"defaultValue": "variavel carga gov"
+			},
+			"gov_table": {
+				"type": "string",
+				"defaultValue": "variavel carga gov"
+			},
+			"path": {
+				"type": "string",
+				"defaultValue": "variavel size acl prop"
+			},
+			"db_schema": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"databricks_config": {
+				"type": "String"
+			},
+			"databricks_output": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "templates/common"
+		},
+		"annotations": [
+			"template",
+			"common"
+		]
+	}
+}

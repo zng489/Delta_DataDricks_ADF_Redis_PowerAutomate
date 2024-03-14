@@ -1,0 +1,64 @@
+{
+	"name": "org_raw_70_datasus_cnes_st",
+	"properties": {
+		"description": "70 - DATASUS/MS - Cadastro Nacional de Estabelecimentos de Saúde",
+		"activities": [
+			{
+				"name": "import_uld_files__0__wrapper",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "import_uld_files__0__wrapper",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"files": {
+							"value": "@pipeline().parameters.files",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@pipeline().parameters.databricks",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\", \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\", \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"databricks": {
+				"type": "object",
+				"defaultValue": {
+					"notebook": "/fiesc/datasus/org_raw_datasus_cnes_pf"
+				}
+			},
+			"files": {
+				"type": "array",
+				"defaultValue": [
+					"{'namespace':'fiesc','file_folder':'datasus/CNES/ST','extension':'parquet','column_delimiter':';','encoding':'UTF-8','null_value':'','schema':[{'CNES': 'string', 'CODUFMUN': 'string', 'COD_CEP': 'string', 'CPF_CNPJ': 'string', 'PF_PJ': 'string', 'NIV_DEP': 'string', 'CNPJ_MAN': 'string', 'COD_IR': 'string', 'REGSAUDE': 'string', 'MICR_REG': 'string', 'DISTRSAN': 'string', 'DISTRADM': 'string', 'VINC_SUS': 'string', 'TPGESTAO': 'string', 'ESFERA_A': 'string', 'RETENCAO': 'string', 'ATIVIDAD': 'string', 'NATUREZA': 'string', 'CLIENTEL': 'string', 'TP_UNID': 'string', 'TURNO_AT': 'string', 'NIV_HIER': 'string', 'TP_PREST': 'string', 'CO_BANCO': 'string', 'CO_AGENC': 'string', 'C_CORREN': 'string', 'CONTRATM': 'string', 'DT_PUBLM': 'string', 'CONTRATE': 'string', 'DT_PUBLE': 'string', 'ALVARA': 'string', 'DT_EXPED': 'string', 'ORGEXPED': 'string', 'AV_ACRED': 'string', 'CLASAVAL': 'string', 'DT_ACRED': 'string', 'AV_PNASS': 'string', 'DT_PNASS': 'string', 'GESPRG1E': 'string', 'GESPRG1M': 'string', 'GESPRG2E': 'string', 'GESPRG2M': 'string', 'GESPRG4E': 'string', 'GESPRG4M': 'string', 'NIVATE_A': 'string', 'GESPRG3E': 'string', 'GESPRG3M': 'string', 'GESPRG5E': 'string', 'GESPRG5M': 'string', 'GESPRG6E': 'string', 'GESPRG6M': 'string', 'NIVATE_H': 'string', 'QTLEITP1': 'string', 'QTLEITP2': 'string', 'QTLEITP3': 'string', 'LEITHOSP': 'string', 'QTINST01': 'string', 'QTINST02': 'string', 'QTINST03': 'string', 'QTINST04': 'string', 'QTINST05': 'string', 'QTINST06': 'string', 'QTINST07': 'string', 'QTINST08': 'string', 'QTINST09': 'string', 'QTINST10': 'string', 'QTINST11': 'string', 'QTINST12': 'string', 'QTINST13': 'string', 'QTINST14': 'string', 'URGEMERG': 'string', 'QTINST15': 'string', 'QTINST16': 'string', 'QTINST17': 'string', 'QTINST18': 'string', 'QTINST19': 'string', 'QTINST20': 'string', 'QTINST21': 'string', 'QTINST22': 'string', 'QTINST23': 'string', 'QTINST24': 'string', 'QTINST25': 'string', 'QTINST26': 'string', 'QTINST27': 'string', 'QTINST28': 'string', 'QTINST29': 'string', 'QTINST30': 'string', 'ATENDAMB': 'string', 'QTINST31': 'string', 'QTINST32': 'string', 'QTINST33': 'string', 'CENTRCIR': 'string', 'QTINST34': 'string', 'QTINST35': 'string', 'QTINST36': 'string', 'QTINST37': 'string', 'CENTROBS': 'string', 'QTLEIT05': 'string', 'QTLEIT06': 'string', 'QTLEIT07': 'string', 'QTLEIT08': 'string', 'QTLEIT09': 'string', 'QTLEIT19': 'string', 'QTLEIT20': 'string', 'QTLEIT21': 'string', 'QTLEIT22': 'string', 'QTLEIT23': 'string', 'QTLEIT32': 'string', 'QTLEIT34': 'string', 'QTLEIT38': 'string', 'QTLEIT39': 'string', 'QTLEIT40': 'string', 'CENTRNEO': 'string', 'ATENDHOS': 'string', 'SERAP01P': 'string', 'SERAP01T': 'string', 'SERAP02P': 'string', 'SERAP02T': 'string', 'SERAP03P': 'string', 'SERAP03T': 'string', 'SERAP04P': 'string', 'SERAP04T': 'string', 'SERAP05P': 'string', 'SERAP05T': 'string', 'SERAP06P': 'string', 'SERAP06T': 'string', 'SERAP07P': 'string', 'SERAP07T': 'string', 'SERAP08P': 'string', 'SERAP08T': 'string', 'SERAP09P': 'string', 'SERAP09T': 'string', 'SERAP10P': 'string', 'SERAP10T': 'string', 'SERAP11P': 'string', 'SERAP11T': 'string', 'SERAPOIO': 'string', 'RES_BIOL': 'string', 'RES_QUIM': 'string', 'RES_RADI': 'string', 'RES_COMU': 'string', 'COLETRES': 'string', 'COMISS01': 'string', 'COMISS02': 'string', 'COMISS03': 'string', 'COMISS04': 'string', 'COMISS05': 'string', 'COMISS06': 'string', 'COMISS07': 'string', 'COMISS08': 'string', 'COMISS09': 'string', 'COMISS10': 'string', 'COMISS11': 'string', 'COMISS12': 'string', 'COMISSAO': 'string', 'AP01CV01': 'string', 'AP01CV02': 'string', 'AP01CV05': 'string', 'AP01CV06': 'string', 'AP01CV03': 'string', 'AP01CV04': 'string', 'AP02CV01': 'string', 'AP02CV02': 'string', 'AP02CV05': 'string', 'AP02CV06': 'string', 'AP02CV03': 'string', 'AP02CV04': 'string', 'AP03CV01': 'string', 'AP03CV02': 'string', 'AP03CV05': 'string', 'AP03CV06': 'string', 'AP03CV03': 'string', 'AP03CV04': 'string', 'AP04CV01': 'string', 'AP04CV02': 'string', 'AP04CV05': 'string', 'AP04CV06': 'string', 'AP04CV03': 'string', 'AP04CV04': 'string', 'AP05CV01': 'string', 'AP05CV02': 'string', 'AP05CV05': 'string', 'AP05CV06': 'string', 'AP05CV03': 'string', 'AP05CV04': 'string', 'AP06CV01': 'string', 'AP06CV02': 'string', 'AP06CV05': 'string', 'AP06CV06': 'string', 'AP06CV03': 'string', 'AP06CV04': 'string', 'AP07CV01': 'string', 'AP07CV02': 'string', 'AP07CV05': 'string', 'AP07CV06': 'string', 'AP07CV03': 'string', 'AP07CV04': 'string', 'ATEND_PR': 'string', 'DT_ATUAL': 'string', 'COMPETEN': 'string', 'NAT_JUR': 'string', 'AP01CV07': 'string', 'AP02CV07': 'string', 'AP03CV07': 'string', 'AP04CV07': 'string', 'AP05CV07': 'string', 'AP06CV07': 'string', 'AP07CV07': 'string', 'dt_atualizacao': 'timestamp', 'file_source': 'string'}]"
+				]
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "raw/usr/fiesc/datasus"
+		},
+		"annotations": []
+	}
+}

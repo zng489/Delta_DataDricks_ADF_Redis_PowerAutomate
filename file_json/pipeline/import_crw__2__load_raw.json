@@ -1,0 +1,314 @@
+{
+	"name": "import_crw__2__load_raw",
+	"properties": {
+		"description": "Import data extract from crawlers saved in parquet.\nIt checks load type and then calls the pipeline.\n\nReceives proxy url and code dynamically using the parameters 'proxy_url' and 'proxy_secret'",
+		"activities": [
+			{
+				"name": "import_crw__3__archive",
+				"description": "Invokes archive step",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "databricks_run_notebook",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "import_crw__3__archive",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"table": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"dls": {
+							"value": "@pipeline().parameters.dls",
+							"type": "Expression"
+						},
+						"var_dh_insercao_raw": {
+							"value": "@replace(replace(replace(replace(replace(string(pipeline().parameters.adf.adf_trigger_time), '-', ''), 'T', ''), ':', ''), '.', ''), 'Z', '')",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@pipeline().parameters.container",
+							"type": "Expression"
+						},
+						"url": {
+							"value": "@pipeline().parameters.url",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "foreach_ach_tables",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "filter_ach_tables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('filter_ach_tables').output.value",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "import_crw__3__archive_foreach",
+							"description": "Invokes archive step",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "import_crw__3__archive",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"table": {
+										"value": "@json(item())",
+										"type": "Expression"
+									},
+									"dls": {
+										"value": "@pipeline().parameters.dls",
+										"type": "Expression"
+									},
+									"var_dh_insercao_raw": {
+										"value": "@replace(replace(replace(replace(replace(string(pipeline().parameters.adf.adf_trigger_time), '-', ''), 'T', ''), ':', ''), '.', ''), 'Z', '')",
+										"type": "Expression"
+									},
+									"container": {
+										"value": "@pipeline().parameters.container",
+										"type": "Expression"
+									},
+									"url": {
+										"value": "@pipeline().parameters.url",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "filter_ach_tables",
+				"description": "Cause different files extensions lead to different connections in ADF, we need to split the implementations of possible alternatives. ",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "databricks_run_notebook",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.ach_tables",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@and(contains(json(item()), 'schema'), contains(json(item()), 'table'))",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "update_last_crawler_modification",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "databricks_run_notebook",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.00:01:30",
+					"retry": 1,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": true
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"url": {
+						"value": "@{pipeline().parameters.function_url}/api/@{variables('function_name')}?code=@{activity('get_function_code_from_keyvault').output.value}",
+						"type": "Expression"
+					},
+					"body": {
+						"value": "@json(concat('{', '\"method\":\"POST\"', ',', '\"adl_path\"', ':', \n'\"', pipeline().parameters.dls.folders.landing, '/crw/', pipeline().parameters.tables.schema, '__', pipeline().parameters.tables.table, '\"', ',', '\"env\"', ':', \n'\"', pipeline().parameters.env.env, '\"', '}'))",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "databricks_run_notebook",
+				"description": "Calls the unified invocation for databricks notebooks using job clusters.",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "get_function_code_from_keyvault",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "databricks_run_notebook",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"databricks_notebook_path": {
+							"value": "@{pipeline().parameters.databricks.notebook}",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@pipeline().parameters.adf",
+							"type": "Expression"
+						},
+						"dls": {
+							"value": "@pipeline().parameters.dls",
+							"type": "Expression"
+						},
+						"tables": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "get_function_code_from_keyvault",
+				"description": "Get function code from key vault required as parameters to be used by the function.",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "set_function_code_secret_name",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": true,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "GET",
+					"url": {
+						"value": "@{pipeline().parameters.keyvault_url}/secrets/@{variables('function_code_secret_name')}?@{pipeline().globalParameters.key_vault.general[pipeline().parameters.env.env].params.version}",
+						"type": "Expression"
+					},
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "set_function_code_secret_name",
+				"description": "Sets function code's secret to get from key vault",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "function_code_secret_name",
+					"value": {
+						"value": "@pipeline().globalParameters.functions.proxy[pipeline().parameters.env.env].secret_name",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"tables": {
+				"type": "object"
+			},
+			"dls": {
+				"type": "object"
+			},
+			"databricks": {
+				"type": "object"
+			},
+			"adf": {
+				"type": "object"
+			},
+			"ach_tables": {
+				"type": "array"
+			},
+			"env": {
+				"type": "object"
+			},
+			"container": {
+				"type": "string"
+			},
+			"url": {
+				"type": "string"
+			},
+			"function_url": {
+				"type": "string"
+			},
+			"function_secret": {
+				"type": "string"
+			},
+			"keyvault_url": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"function_name": {
+				"type": "String",
+				"defaultValue": "RawControl"
+			},
+			"function_code_secret_name": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "templates/raw/crw"
+		},
+		"annotations": []
+	}
+}

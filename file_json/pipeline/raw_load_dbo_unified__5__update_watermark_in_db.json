@@ -1,0 +1,99 @@
+{
+	"name": "raw_load_dbo_unified__5__update_watermark_in_db",
+	"properties": {
+		"description": "Updates the watermark value in watermark Databse.",
+		"activities": [
+			{
+				"name": "if_rows_copied_greater_than_zero",
+				"description": "If at least one row was copied, then we can update the watermark. Otherwise, we must keep it to the value it is cause seems like when SHIR reaches its limit it won't copy data, but will not throw an error either. ",
+				"type": "IfCondition",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@greater(pipeline().parameters.num_rows_copied, 0)",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "zero_rows_loaded_keep_watermark",
+							"description": "No rows were loaded by copy activity. Do not update watermark value. ",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "call_functionapp_set_watermark",
+							"description": "Calls functionapp via https to set the new watermark value watermark.\n\nResponse in complex in type and has to be evaluated according to possible to possible status_codes:\n\n- 200: OK\n- 410: Gone; means there's no watermark yet. Redis does no fail in this case, but returns null. This is not an error for the pipeline.\n- 510: Not implemented; this is an error. Must be treated like that in the if case that evaluates this output.\n\nExample of response from the functionapp:\n{\n 'status': 'OK',\n 'message': None,\n 'value': None,\n}\n",
+							"type": "WebActivity",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"url": {
+									"value": "@{pipeline().parameters.functionapp_url}/api/@{pipeline().parameters.watermark.function_name}?code=@{pipeline().parameters.functionapp_access_code}",
+									"type": "Expression"
+								},
+								"method": "POST",
+								"body": {
+									"value": "{\n    \"host\": \"@{pipeline().globalParameters.redis.watermark[pipeline().parameters.env.env].host}\" ,\n    \"port\": @{pipeline().globalParameters.redis.watermark[pipeline().parameters.env.env].port},\n    \"database\": @{pipeline().globalParameters.redis.watermark[pipeline().parameters.env.env].database},\n    \"access_key\": \"@{pipeline().parameters.redis_access_key}\",\n    \"action\": \"set\",\n    \"data\": {\n        \"key\": \"@{pipeline().parameters.watermark.table_name}\",\n        \"value\": {\n            \"table_name\": \"@{pipeline().parameters.watermark.table_name}\" ,\n            \"control_column\": \"@{pipeline().parameters.watermark.control_column}\" ,\n            \"control_column_value\": \"@{pipeline().parameters.increment.control_column.upperbound}\" ,\n            \"control_column_type_2_db\": \"@{pipeline().parameters.watermark.control_column_type_2_db}\" , \n            \"last_modified_date\": \"@{utcnow('yyyyMMddHHmmss')}\" ,\n            \"last_modified_pipeline_run_id\": \"@{pipeline().parameters.watermark.last_modified_pipeline_run_id}\" ,\n            \"adf_instance_name\": \"@{pipeline().parameters.watermark.adf_instance_name}\"\n        }\n    }\n}",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"watermark": {
+				"type": "object"
+			},
+			"increment": {
+				"type": "object"
+			},
+			"table": {
+				"type": "object"
+			},
+			"env": {
+				"type": "object"
+			},
+			"functionapp_access_code": {
+				"type": "securestring"
+			},
+			"redis_access_key": {
+				"type": "securestring"
+			},
+			"functionapp_url": {
+				"type": "string"
+			},
+			"num_rows_copied": {
+				"type": "int",
+				"defaultValue": 0
+			}
+		},
+		"variables": {
+			"watermark_upperbound": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "templates/raw/bdo/raw_load_bdo_unified"
+		},
+		"annotations": [
+			"raw",
+			"template"
+		]
+	}
+}

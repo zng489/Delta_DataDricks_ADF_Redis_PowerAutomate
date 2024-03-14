@@ -1,0 +1,194 @@
+{
+	"name": "postgres_import_incremental__0__evaluator",
+	"properties": {
+		"description": "Well, this one uses a Filter condition for making things work for incremental loads.\n\nWARNING: \"tables\" object must be type ARRAY.\nAll objects in this array must be, in reality STRING type, enclosed by \".\nInside this objects, you should enclose everything in SINGLE QUOTES.\nOtherwise, things are not going to work. I warned you!\n\nHere's an example:\n[\"{'schema': 'INDDESEMPENHO', 'table':'ESTABELECIMENTO','load_type':'incremental','partition_column':'DATAATUALIZACAO','partitions':5,'control_column':'DATAATUALIZACAO','control_column_type_2_db':'datetime', 'control_column_default_value': '19000101',\n'control_column_mask_value': 'DD/MM/YYYY HH24:MI:SS'}\"]\n\n",
+		"activities": [
+			{
+				"name": "get_max_datetime_control_column_in_postgres",
+				"description": "Queries a predefined Postgres Instance for current_timesptam and casts as the needed string format so we can use as upperbound value for incremental loads.\n\nOBS: This is run against an specific instance, since Postgres cannot be parameterized. Your best hope is to have the clocks close in time to one another.",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "PostgreSqlSource",
+						"query": "SELECT CAST(TO_CHAR(CURRENT_TIMESTAMP, 'YYYYMMDDHHMMSS') AS BIGINT) AS UPPERBOUND"
+					},
+					"dataset": {
+						"referenceName": "postgres_parameterized",
+						"type": "DatasetReference",
+						"parameters": {
+							"db_host": {
+								"value": "@pipeline().parameters.db.host",
+								"type": "Expression"
+							},
+							"db_port": {
+								"value": "@pipeline().parameters.db.port",
+								"type": "Expression"
+							},
+							"db_service_name": {
+								"value": "@pipeline().parameters.db.service_name",
+								"type": "Expression"
+							},
+							"db_username": {
+								"value": "@pipeline().parameters.db.username",
+								"type": "Expression"
+							},
+							"keyvault_url": {
+								"value": "@pipeline().parameters.keyvault_url",
+								"type": "Expression"
+							},
+							"keyvault_secret": {
+								"value": "@pipeline().parameters.db.secret",
+								"type": "Expression"
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "postgres_import_incremental__1__wrapper",
+				"description": "Calls the next step, which implements incremental load from Postgres over valid control_column range",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "get_max_datetime_control_column_in_postgres",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "postgres_import_incremental__1__wrapper",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"db": {
+							"value": "@pipeline().parameters.db",
+							"type": "Expression"
+						},
+						"tables": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"dls": {
+							"value": "@pipeline().parameters.dls",
+							"type": "Expression"
+						},
+						"watermark": {
+							"value": "@pipeline().parameters.watermark",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@pipeline().parameters.databricks",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@pipeline().parameters.adf",
+							"type": "Expression"
+						},
+						"increment": {
+							"value": "@json(\n    concat(\n        '{\"control_column\": {\"lowerbound\":',\n        string(pipeline().parameters.watermark.lowerbound),\n        ', \"upperbound\":',\n        string(activity('get_max_datetime_control_column_in_postgres').output.firstRow.UPPERBOUND),\n        '}}'\n    )\n)",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@pipeline().parameters.container",
+							"type": "Expression"
+						},
+						"url": {
+							"value": "@pipeline().parameters.url",
+							"type": "Expression"
+						},
+						"keyvault_url": {
+							"value": "@pipeline().parameters.keyvault_url",
+							"type": "Expression"
+						},
+						"functionapp_access_code": {
+							"value": "@pipeline().parameters.functionapp_access_code",
+							"type": "Expression"
+						},
+						"redis_access_key": {
+							"value": "@pipeline().parameters.redis_access_key",
+							"type": "Expression"
+						},
+						"functionapp_url": {
+							"value": "@pipeline().parameters.functionapp_url",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"db_schema": {
+							"value": "@pipeline().parameters.db_schema",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"db": {
+				"type": "object"
+			},
+			"tables": {
+				"type": "array"
+			},
+			"dls": {
+				"type": "object"
+			},
+			"watermark": {
+				"type": "object"
+			},
+			"databricks": {
+				"type": "object"
+			},
+			"adf": {
+				"type": "object"
+			},
+			"container": {
+				"type": "string"
+			},
+			"url": {
+				"type": "string"
+			},
+			"keyvault_url": {
+				"type": "string"
+			},
+			"functionapp_access_code": {
+				"type": "securestring"
+			},
+			"redis_access_key": {
+				"type": "securestring"
+			},
+			"functionapp_url": {
+				"type": "string"
+			},
+			"env": {
+				"type": "object"
+			},
+			"db_schema": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "templates/raw/bdo/postgres/import_incremental"
+		},
+		"annotations": [
+			"template",
+			"raw",
+			"postgres"
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,559 @@
+{
+	"name": "raw_load_dbo_unified__2__switch_db",
+	"properties": {
+		"description": "This sublevel implements the basic call of the templates, avoiding to recreate all this all the time for all database definitions.",
+		"activities": [
+			{
+				"name": "delete_lnd_folder_before_load",
+				"description": "Whatever happens, lnd folder has to be deleted. Since there's some limitations in here, we might keep it as a separated workflow.",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "delete_landing_data",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"db": {
+							"value": "@pipeline().parameters.db",
+							"type": "Expression"
+						},
+						"tables": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"dls": {
+							"value": "@pipeline().parameters.dls",
+							"type": "Expression"
+						},
+						"watermark": {
+							"value": "@pipeline().parameters.watermark",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@pipeline().parameters.databricks",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"db_schema": {
+							"value": "@pipeline().parameters.db_schema",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "delete_lnd_folder_after_load__success",
+				"description": "Whatever happens, lnd folder has to be deleted. Since there's some limitations in here, we might keep it as a separated workflow.",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "switch_database_vendor",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "delete_landing_data",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"db": {
+							"value": "@pipeline().parameters.db",
+							"type": "Expression"
+						},
+						"tables": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"dls": {
+							"value": "@pipeline().parameters.dls",
+							"type": "Expression"
+						},
+						"watermark": {
+							"value": "@pipeline().parameters.watermark",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@pipeline().parameters.databricks",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"db_schema": {
+							"value": "@pipeline().parameters.db_schema",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "switch_database_vendor",
+				"description": "Switches dbs implementation to redirect to Oracle databases instances. ",
+				"type": "Switch",
+				"dependsOn": [
+					{
+						"activity": "delete_lnd_folder_before_load",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"on": {
+						"value": "@toLower(pipeline().parameters.db.vendor)",
+						"type": "Expression"
+					},
+					"cases": [
+						{
+							"value": "oracle",
+							"activities": [
+								{
+									"name": "raw_load_dbo_unified__3__db_oracle",
+									"description": "Executes the pipeline responsible for \n sources on Oracle Databases.",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "raw_load_dbo_unified__3__db_oracle",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"tables": {
+												"value": "@pipeline().parameters.tables",
+												"type": "Expression"
+											},
+											"dls": {
+												"value": "@pipeline().parameters.dls",
+												"type": "Expression"
+											},
+											"adf": {
+												"value": "@pipeline().parameters.adf",
+												"type": "Expression"
+											},
+											"watermark": {
+												"value": "@pipeline().parameters.watermark",
+												"type": "Expression"
+											},
+											"databricks": {
+												"value": "@pipeline().parameters.databricks",
+												"type": "Expression"
+											},
+											"db": {
+												"value": "@pipeline().parameters.db",
+												"type": "Expression"
+											},
+											"container": {
+												"value": "@pipeline().parameters.container",
+												"type": "Expression"
+											},
+											"url": {
+												"value": "@pipeline().parameters.url",
+												"type": "Expression"
+											},
+											"keyvault_url": {
+												"value": "@pipeline().parameters.keyvault_url",
+												"type": "Expression"
+											},
+											"env": {
+												"value": "@pipeline().parameters.env",
+												"type": "Expression"
+											},
+											"functionapp_access_code": {
+												"value": "@pipeline().parameters.functionapp_access_code",
+												"type": "Expression"
+											},
+											"redis_access_key": {
+												"value": "@pipeline().parameters.redis_access_key",
+												"type": "Expression"
+											},
+											"functionapp_url": {
+												"value": "@pipeline().parameters.functionapp_url",
+												"type": "Expression"
+											},
+											"db_schema": {
+												"value": "@pipeline().parameters.db_schema",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						},
+						{
+							"value": "sqlserver",
+							"activities": [
+								{
+									"name": "raw_load_dbo_unified__3__db_mssqlserver",
+									"description": "Executes the pipeline responsible for \n sources on MS SQL Server.",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "raw_load_dbo_unified__3__db_mssqlserver",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"tables": {
+												"value": "@pipeline().parameters.tables",
+												"type": "Expression"
+											},
+											"dls": {
+												"value": "@pipeline().parameters.dls",
+												"type": "Expression"
+											},
+											"adf": {
+												"value": "@pipeline().parameters.adf",
+												"type": "Expression"
+											},
+											"watermark": {
+												"value": "@pipeline().parameters.watermark",
+												"type": "Expression"
+											},
+											"databricks": {
+												"value": "@pipeline().parameters.databricks",
+												"type": "Expression"
+											},
+											"db": {
+												"value": "@pipeline().parameters.db",
+												"type": "Expression"
+											},
+											"container": {
+												"value": "@pipeline().parameters.container",
+												"type": "Expression"
+											},
+											"url": {
+												"value": "@pipeline().parameters.url",
+												"type": "Expression"
+											},
+											"keyvault_url": {
+												"value": "@pipeline().parameters.keyvault_url",
+												"type": "Expression"
+											},
+											"env": {
+												"value": "@pipeline().parameters.env",
+												"type": "Expression"
+											},
+											"functionapp_access_code": {
+												"value": "@pipeline().parameters.functionapp_access_code",
+												"type": "Expression"
+											},
+											"redis_access_key": {
+												"value": "@pipeline().parameters.redis_access_key",
+												"type": "Expression"
+											},
+											"functionapp_url": {
+												"value": "@pipeline().parameters.functionapp_url",
+												"type": "Expression"
+											},
+											"db_schema": {
+												"value": "@pipeline().parameters.db_schema",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						},
+						{
+							"value": "mysql",
+							"activities": [
+								{
+									"name": "raw_load_dbo_unified__3__db_mysql",
+									"description": "Executes the pipeline responsible for \n sources on Oracle Databases.",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "raw_load_dbo_unified__3__db_mysql",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"tables": {
+												"value": "@pipeline().parameters.tables",
+												"type": "Expression"
+											},
+											"dls": {
+												"value": "@pipeline().parameters.dls",
+												"type": "Expression"
+											},
+											"adf": {
+												"value": "@pipeline().parameters.adf",
+												"type": "Expression"
+											},
+											"watermark": {
+												"value": "@pipeline().parameters.watermark",
+												"type": "Expression"
+											},
+											"databricks": {
+												"value": "@pipeline().parameters.databricks",
+												"type": "Expression"
+											},
+											"db": {
+												"value": "@pipeline().parameters.db",
+												"type": "Expression"
+											},
+											"container": {
+												"value": "@pipeline().parameters.container",
+												"type": "Expression"
+											},
+											"url": {
+												"value": "@pipeline().parameters.url",
+												"type": "Expression"
+											},
+											"keyvault_url": {
+												"value": "@pipeline().parameters.keyvault_url",
+												"type": "Expression"
+											},
+											"env": {
+												"value": "@pipeline().parameters.env",
+												"type": "Expression"
+											},
+											"functionapp_access_code": {
+												"value": "@pipeline().parameters.functionapp_access_code",
+												"type": "Expression"
+											},
+											"redis_access_key": {
+												"value": "@pipeline().parameters.redis_access_key",
+												"type": "Expression"
+											},
+											"functionapp_url": {
+												"value": "@pipeline().parameters.functionapp_url",
+												"type": "Expression"
+											},
+											"db_schema": {
+												"value": "@pipeline().parameters.db_schema",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						},
+						{
+							"value": "postgres",
+							"activities": [
+								{
+									"name": "raw_load_dbo_unified__3__db_postgres",
+									"description": "Executes the pipeline responsible for \n sources on Postgres Databases",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "raw_load_dbo_unified__3__db_postgres",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"tables": {
+												"value": "@pipeline().parameters.tables",
+												"type": "Expression"
+											},
+											"dls": {
+												"value": "@pipeline().parameters.dls",
+												"type": "Expression"
+											},
+											"adf": {
+												"value": "@pipeline().parameters.adf",
+												"type": "Expression"
+											},
+											"watermark": {
+												"value": "@pipeline().parameters.watermark",
+												"type": "Expression"
+											},
+											"databricks": {
+												"value": "@pipeline().parameters.databricks",
+												"type": "Expression"
+											},
+											"db": {
+												"value": "@pipeline().parameters.db",
+												"type": "Expression"
+											},
+											"container": {
+												"value": "@pipeline().parameters.container",
+												"type": "Expression"
+											},
+											"url": {
+												"value": "@pipeline().parameters.url",
+												"type": "Expression"
+											},
+											"keyvault_url": {
+												"value": "@pipeline().parameters.keyvault_url",
+												"type": "Expression"
+											},
+											"functionapp_access_code": {
+												"value": "@pipeline().parameters.functionapp_access_code",
+												"type": "Expression"
+											},
+											"redis_access_key": {
+												"value": "@pipeline().parameters.redis_access_key",
+												"type": "Expression"
+											},
+											"functionapp_url": {
+												"value": "@pipeline().parameters.functionapp_url",
+												"type": "Expression"
+											},
+											"env": {
+												"value": "@pipeline().parameters.env",
+												"type": "Expression"
+											},
+											"db_schema": {
+												"value": "@pipeline().parameters.db_schema",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						}
+					],
+					"defaultActivities": [
+						{
+							"name": "error__db_vendor_not_implemented",
+							"description": "There's no implementation for the defined database vendor. You must review your pipeline settings or implement this technology if it is not yet available in here.",
+							"type": "Fail",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"message": "DB vendor not implemented",
+								"errorCode": "1"
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "delete_lnd_folder_after_load__error",
+				"description": "Whatever happens, lnd folder has to be deleted. Since there's some limitations in here, we might keep it as a separated workflow.",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "switch_database_vendor",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "delete_landing_data",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"db": {
+							"value": "@pipeline().parameters.db",
+							"type": "Expression"
+						},
+						"tables": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"dls": {
+							"value": "@pipeline().parameters.dls",
+							"type": "Expression"
+						},
+						"watermark": {
+							"value": "@pipeline().parameters.watermark",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@pipeline().parameters.databricks",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "error_loading_table",
+				"description": "There was an error loading the table.\nPlease check monitoring logs.",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "delete_lnd_folder_after_load__error",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Error loading table. Please check monitoring logs.",
+					"errorCode": "3"
+				}
+			}
+		],
+		"parameters": {
+			"tables": {
+				"type": "array"
+			},
+			"dls": {
+				"type": "object"
+			},
+			"adf": {
+				"type": "object"
+			},
+			"watermark": {
+				"type": "object"
+			},
+			"databricks": {
+				"type": "object"
+			},
+			"db": {
+				"type": "object"
+			},
+			"container": {
+				"type": "string"
+			},
+			"url": {
+				"type": "string"
+			},
+			"keyvault_url": {
+				"type": "string"
+			},
+			"env": {
+				"type": "object"
+			},
+			"functionapp_access_code": {
+				"type": "securestring"
+			},
+			"redis_access_key": {
+				"type": "securestring"
+			},
+			"functionapp_url": {
+				"type": "string"
+			},
+			"db_schema": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "templates/raw/bdo/raw_load_bdo_unified"
+		},
+		"annotations": []
+	}
+}

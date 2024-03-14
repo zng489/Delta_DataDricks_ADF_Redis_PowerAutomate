@@ -1,0 +1,244 @@
+{
+	"name": "merge_batch_event",
+	"properties": {
+		"activities": [
+			{
+				"name": "merge_desc",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "set gov_table",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "/KEYRUS/@{pipeline().parameters.env.env}/gov/catalog/desc/merge_desc_@{variables('gov_table')}",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@pipeline().parameters.env.env",
+							"type": "Expression"
+						},
+						"source_type": "DUMMY"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnigovdatabricks",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@variables('databricks_workspace_url')",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@variables('databricks_workspace_id')",
+							"type": "Expression"
+						},
+						"existing_cluster_id": {
+							"value": "@variables('databricks_cluster')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "set gov_table",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "gov_table",
+					"value": {
+						"value": "@split(substring(pipeline().parameters.event_folderpath, lastindexof(pipeline().parameters.event_folderpath, '/'),\nsub(length(pipeline().parameters.event_folderpath), lastindexof(pipeline().parameters.event_folderpath, '/'))\n), '/')[1]",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_databricks_workspace_url",
+				"description": "Sets databricks workspace url",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "set_adf",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "databricks_workspace_url",
+					"value": {
+						"value": "@pipeline().globalParameters.databricks[json(variables('adf')).adf_factory_name][pipeline().parameters.env.env.env.env].workspace_url",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_databricks_workspace_id",
+				"description": "Sets databricks workspace id",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "set_adf",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "databricks_workspace_id",
+					"value": {
+						"value": "@pipeline().globalParameters.databricks[json(variables('adf')).adf_factory_name][pipeline().parameters.env.env.env.env].workspace_id",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "start",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "set_databricks_workspace_url",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_databricks_workspace_id",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_databricks_cluster_dev",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "set_databricks_cluster_dev",
+				"description": "Sets databricks cluster to dev",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "set_adf",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "databricks_cluster",
+					"value": {
+						"value": "@pipeline().globalParameters.databricks[json(variables('adf')).adf_factory_name][pipeline().parameters.env.env.env.env].existing_cluster_id",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_adf",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "adf",
+					"value": {
+						"value": "@string(coalesce(pipeline().parameters.adf,json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\",  \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\",  \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))))",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"event_folderpath": {
+				"type": "string"
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			},
+			"event_filename": {
+				"type": "string"
+			},
+			"adf": {
+				"type": "object"
+			}
+		},
+		"variables": {
+			"gov_table": {
+				"type": "String"
+			},
+			"databricks_workspace_id": {
+				"type": "String"
+			},
+			"databricks_workspace_url": {
+				"type": "String"
+			},
+			"databricks_cluster": {
+				"type": "String"
+			},
+			"adf": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "gov/merge_desc/event_trigger"
+		},
+		"annotations": [
+			"metadata",
+			"gov",
+			"event"
+		]
+	}
+}

@@ -1,0 +1,150 @@
+{
+	"name": "wkf_mentis",
+	"properties": {
+		"activities": [
+			{
+				"name": "wkf_mentis_raw",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_mentis_raw",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "wkf_mentis_trs",
+				"description": "",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wkf_mentis_raw",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "wkf_mentis_raw_pt2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_mentis_trs",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "wkf_mentis_biz",
+				"description": "",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wkf_mentis_trs",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_mentis_biz",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "wkf_mentis_raw_pt2",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_mentis_raw_pt2",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "wkf_refresh_powerbi_diret_sesi_ussi_mentis",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wkf_mentis_biz",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "get_adf",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"pipeline_name": "wkf_refresh_powerbi_diret_sesi_ussi_mentis",
+						"adf_name": "cnipowerbicorp",
+						"resource_group": "PowerBI-Corporativo",
+						"subscripition_id": "3e3a21e3-9551-4945-8c46-c02f558392ce",
+						"body": "{}"
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"policy": {
+			"elapsedTimeMetric": {
+				"duration": "0.01:40:00"
+			}
+		},
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "workflow/mentis"
+		},
+		"annotations": []
+	}
+}

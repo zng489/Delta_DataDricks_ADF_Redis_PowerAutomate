@@ -1,0 +1,85 @@
+{
+	"name": "wkf_sesi_gasto_custo_ha",
+	"properties": {
+		"activities": [
+			{
+				"name": "biz_biz_sesi_gasto_ha",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "biz_biz_gastos_ha",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "biz_biz_sesi_custo_ha",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "biz_biz_custo_ha",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "Esperar os dois completarem",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "biz_biz_sesi_custo_ha",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "biz_biz_sesi_gasto_ha",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "workflow/sesi_ebc"
+		},
+		"annotations": []
+	}
+}

@@ -1,0 +1,691 @@
+{
+	"name": "raw_load_dbo_unified__0__switch_env",
+	"properties": {
+		"description": "Checks the parameter in \"env\" variable to decide which parameters and connections to use. This will avoid having to declare a full set of parameters like db, watermark and dls. \n\nNeeded parameters:\n- db: dict type;  not the complete definition\n- tables: array type; complete definition added with partitioning definition\n- env: dict type; simple key value definition\n- adf: dict type; complete definition taking the parameters the parent pipeline (the one that entitles the process)\n\n\"adf\" parameter may be passed as string all the way down, cause it will only be evaluated in Databricks, só don't need to worry  about it now. \n\n\"dls\" parameter may be string as well.\n\nThese NEEDED PARAMS will come from the most exposed (the outer layer) of the pipeline, the one that takes the process' name. \n\nIMPORTANT: if there's no partition, you SHALL NOT declare the key  -- \"raw\": {\"partition_by\"}-- in \"tables\" array, cause in Databricks the existence of this key will be tested and if it exists, it MUST contain a VALID implementation (test it before in a notebook).\n\n\n- dbs: (add other hosts when needed)\n{\"bd_basi\":{\"host\":\"scan-rac11g\",\"port\":\"1521\",\"service_name\":\"RAC11G.SISTEMA-CNI.ORG.BR\",\"username\":\"usr_bigdata\",\"vendor\":\"Oracle\"}, \"inddesempenho\":{\"host\":\"ensi-data07-vip.sistema-cni.org.br\",\"port\":\"1521\",\"service_name\":\"ensi_rac.sistemacni.org.br\",\"username\":\"usr_bigdata\",\"vendor\":\"Oracle\"}}\n\nFor env == 'dev':\n - dls = {\"folders\":{ \"landing\":\"/tmp/dev/lnd\", \"error\":\"/tmp/dev/err\", \"staging\":\"/tmp/dev/stg\", \"log\":\"/tmp/dev/log\", \"raw\":\"/tmp/dev/raw\"}}\n\n- watermark = {\"table\":\"dev.data_factory_watermark\",\"columns\":{\"table_name\":\"table_name\",\"control_column\":\"control_column\",\"control_column_value\":\"control_column_value\",\"control_column_type_2_db\":\"control_column_type_2_db\"},\"procedures\":{\"insert_first_watermark\":\"[dev].[insert_first_watermark]\",\"update_watermark\":\"[dev].[usp_write_watermark]\"}}",
+		"activities": [
+			{
+				"name": "send_email_on_failure",
+				"description": "Calls the pipeline that send email on  failure. As this activity will be successfully executed, it will be necessary to force a fail in the downstream.",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "raw_load_dbo_unified__1__set_params",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "send_email",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"email_users": {
+							"value": "@array('default')",
+							"type": "Expression"
+						},
+						"email_groups": {
+							"value": "@array('default')",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(string(pipeline().parameters.adf))",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "set_container",
+				"description": "Set storage/adls container",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "set_variables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "container",
+					"value": {
+						"value": "@pipeline().globalParameters.storage[pipeline().parameters.env.env].container",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_storage_url",
+				"description": "Sets storage url for datalake.",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "set_variables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "storage_url",
+					"value": {
+						"value": "@pipeline().globalParameters.storage[pipeline().parameters.env.env].url",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "raw_load_dbo_unified__1__set_params",
+				"description": "Executes 'raw_load_dbo_unified__1__set_params'.\n\n",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "is_load_type_incremental",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "raw_load_dbo_unified__1__set_params",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"tables": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"dls": {
+							"value": "@pipeline().globalParameters.dls[pipeline().parameters.env.env]",
+							"type": "Expression"
+						},
+						"watermark": {
+							"value": "@json(\n    concat(\n        '{\"table_name\": \"', \n        variables('watermark_key'), \n        '\",' ,\n        '\"function_name\": \"', \n        variables('watermark_function_name'), \n        '\",',\n        '\"control_column\": \"',\n        if(\n            contains(json(pipeline().parameters.tables[0]), 'control_column'),\n            string(json(pipeline().parameters.tables[0]).control_column),\n            ''\n        ), \n        '\",',\n        '\"control_column_value\": \"', \n        if(\n            contains(json(pipeline().parameters.tables[0]), 'control_column_default_value'),\n            string(json(pipeline().parameters.tables[0]).control_column_default_value),\n            ''\n        ),\n        '\",',\n        '\"control_column_type_2_db\": \"',\n        if(\n            contains(json(pipeline().parameters.tables[0]), 'control_column_type_2_db'),\n            string(json(pipeline().parameters.tables[0]).control_column_type_2_db),\n            ''\n        ), \n        '\",',\n        '\"last_modified_date\": \"',\n        string(utcnow('yyyyMMddHHmmss')),\n        '\",',\n        '\"last_modified_pipeline_run_id\": \"',\n        pipeline().RunId,\n        '\",',\n        '\"adf_instance_name\": \"',\n        pipeline().DataFactory, \n        '\",',\n        '\"lowerbound\": \"', \n        variables('watermark_lowerbound'),\n        '\"}'\n    )\n)",
+							"type": "Expression"
+						},
+						"db_conn": {
+							"value": "@json(variables('database_connection'))",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(string(pipeline().parameters.adf))",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@variables('container')",
+							"type": "Expression"
+						},
+						"url": {
+							"value": "@variables('storage_url')",
+							"type": "Expression"
+						},
+						"keyvault_url": {
+							"value": "@variables('keyvault_url')",
+							"type": "Expression"
+						},
+						"functionapp_access_code": {
+							"value": "@variables('functionapp_access_code')",
+							"type": "Expression"
+						},
+						"redis_access_key": {
+							"value": "@variables('redis_access_key')",
+							"type": "Expression"
+						},
+						"functionapp_url": {
+							"value": "@variables('functionapp_url')",
+							"type": "Expression"
+						},
+						"db_schema": {
+							"value": "@variables('db_schema')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "set_keyvault_url",
+				"description": "Sets keyvault url.",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "set_variables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "keyvault_url",
+					"value": {
+						"value": "@pipeline().globalParameters.key_vault.general[pipeline().parameters.env.env].url",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_watermark_key",
+				"description": "Set value for watermark key to be retrieved from Redis",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "set_db_schema",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "watermark_key",
+					"value": {
+						"value": "@toLower(concat(pipeline().globalParameters.watermark_prefix_dbo, '.', variables('db_schema'), '.', json(pipeline().parameters.tables[0]).table))",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_secret_name",
+				"description": "Sets secret name to get from key vault",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "set_variables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "watermark_kv_secret_name",
+					"value": {
+						"value": "@pipeline().globalParameters.redis.watermark[pipeline().parameters.env.env].secret_name",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_function_url",
+				"description": "Sets functions url",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "set_variables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "functionapp_url",
+					"value": {
+						"value": "@pipeline().globalParameters.functions.functionapp[pipeline().parameters.env.env].url",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_functionapp_code_secret_name",
+				"description": "Sets function code's secret to get from key vault",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "set_variables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "functionapp_code_secret_name",
+					"value": {
+						"value": "@pipeline().globalParameters.functions.functionapp[pipeline().parameters.env.env].secret_name",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_variables",
+				"description": "Will enter the set variables section",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "pipeline_has_failed",
+				"description": "Errors found during execution. This pipeline has failed.",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "send_email_on_failure",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Pipeline failed",
+					"errorCode": "1"
+				}
+			},
+			{
+				"name": "is_load_type_incremental",
+				"description": "Is this table using load type 'incremental' or 'incremental' with join?\n\nIf that's the case, get the watermark.",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "set_watermark_key",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@contains(\n    createArray('incremental', 'incremental_with_join')\n    ,toLower(json(pipeline().parameters.tables[0]).load_type)\n)\n",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "table_is_not_incremental_wmk_null",
+							"description": "Table is not of one of the incremental types. Watermark will be downstreammed as NULL.",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "get_redis_access_key_from_keyvault",
+							"description": "Gets redis access key from key vault. This is Required as parameters to be used by the function.",
+							"type": "WebActivity",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": true,
+								"secureInput": true
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"url": {
+									"value": "@{variables('keyvault_url')}/secrets/@{variables('watermark_kv_secret_name')}?@{pipeline().globalParameters.key_vault.general[pipeline().parameters.env.env].params.version}",
+									"type": "Expression"
+								},
+								"method": "GET",
+								"authentication": {
+									"type": "MSI",
+									"resource": "https://vault.azure.net"
+								}
+							}
+						},
+						{
+							"name": "get_functionapp_code_from_keyvault",
+							"description": "Get function code from key vault required as parameters to be used by the function.",
+							"type": "WebActivity",
+							"dependsOn": [
+								{
+									"activity": "get_redis_access_key_from_keyvault",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								},
+								{
+									"activity": "set_redis_acess_key",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": true,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"url": {
+									"value": "@{variables('keyvault_url')}/secrets/@{variables('functionapp_code_secret_name')}?@{pipeline().globalParameters.key_vault.general[pipeline().parameters.env.env].params.version}",
+									"type": "Expression"
+								},
+								"method": "GET",
+								"authentication": {
+									"type": "MSI",
+									"resource": "https://vault.azure.net"
+								}
+							}
+						},
+						{
+							"name": "call_functionapp_get_watermark",
+							"description": "Calls functionapp via https to retrieve watermark.\n\nResponse in complex in type and has to be evaluated according to possible to possible status_codes:\n\n- 200: OK\n- 410: Gone; means there's no watermark yet. Redis does no fail in this case, but returns null. This is not an error for the pipeline.\n- 510: Not implemented; this is an error. Must be treated like that in the if case that evaluates this output.\n\nExample of response from the functionapp:\n{\n 'status': 'OK',\n 'message': None,\n 'value': None,\n}\n",
+							"type": "WebActivity",
+							"dependsOn": [
+								{
+									"activity": "get_functionapp_code_from_keyvault",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": true
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"url": {
+									"value": "@{variables('functionapp_url')}/api/@{variables('watermark_function_name')}?code=@{activity('get_functionapp_code_from_keyvault').output.value}",
+									"type": "Expression"
+								},
+								"method": "POST",
+								"headers": {
+									"Content-Type": "application/json"
+								},
+								"body": {
+									"value": "{\n    \"host\": \"@{pipeline().globalParameters.redis.watermark[pipeline().parameters.env.env].host}\",\n    \"port\": @{pipeline().globalParameters.redis.watermark[pipeline().parameters.env.env].port},\n    \"database\": @{pipeline().globalParameters.redis.watermark[pipeline().parameters.env.env].database},\n    \"access_key\": \"@{activity('get_redis_access_key_from_keyvault').output.value}\",\n    \"action\": \"get\",\n    \"data\": {\n        \"key\": \"@{variables('watermark_key')}\"\n    }\n}",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "set_watermark_lowerbound_to_incremental_value",
+							"description": "Watermark does no exists. So we may get the value passed as min value in the table definition and move over.\n\nIf value is returned, then we use it.",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "call_functionapp_get_watermark",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								},
+								{
+									"activity": "set_functionapp_access_code",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "watermark_lowerbound",
+								"value": {
+									"value": "@if(\n    equals(\n        activity('call_functionapp_get_watermark').output.value\n        , null\n    )\n    ,json(pipeline().parameters.tables[0]).control_column_default_value\n    ,json(activity('call_functionapp_get_watermark').output.value).control_column_value\n)",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "set_functionapp_access_code",
+							"description": "Sets functionapp_access_code when incremental",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "get_functionapp_code_from_keyvault",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "functionapp_access_code",
+								"value": {
+									"value": "@{activity('get_functionapp_code_from_keyvault').output.value}",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "set_redis_acess_key",
+							"description": "Sets redis_access_key when incremental",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "get_redis_access_key_from_keyvault",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "redis_access_key",
+								"value": {
+									"value": "@{activity('get_redis_access_key_from_keyvault').output.value}",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "set_database_connection",
+				"description": "Checks for the key 'db_conn' under global variable 'databases'.",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "set_variables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "database_connection",
+					"value": {
+						"value": "@string(pipeline().globalParameters.databases[pipeline().parameters.env.env][json(pipeline().parameters.tables[0]).db_conn])",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_db_schema",
+				"description": "Get 'tables' parameter and checks for key 'schema'. If this is provided, use this value.\nIf not, uses 'default_schema' from 'db_conn'.\n\nThis just does not apply when database vendor is 'SQLServer'. Then we take 'db_name' as the schema. This is widely used in the project.",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "set_storage_url",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_container",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_keyvault_url",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_secret_name",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_function_url",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_functionapp_code_secret_name",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_database_connection",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "db_schema",
+					"value": {
+						"value": "@if(\n    equals(\n        toLower(json(variables('database_connection')).vendor),\n        'sqlserver'\n    ),\n    json(variables('database_connection')).db_name,\n    if(\n        contains(\n            json(pipeline().parameters.tables[0]),\n            'schema'        \n        ),\n        json(pipeline().parameters.tables[0]).schema,      \n        json(variables('database_connection')).default_schema\n    )\n)\n",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"default": "is_useless"
+				}
+			},
+			"tables": {
+				"type": "array",
+				"defaultValue": []
+			},
+			"adf": {
+				"type": "object",
+				"defaultValue": {
+					"default": "is_useless"
+				}
+			}
+		},
+		"variables": {
+			"container": {
+				"type": "String"
+			},
+			"storage_url": {
+				"type": "String"
+			},
+			"keyvault_url": {
+				"type": "String"
+			},
+			"watermark_key": {
+				"type": "String"
+			},
+			"client_id": {
+				"type": "String"
+			},
+			"functionapp_url": {
+				"type": "String"
+			},
+			"functionapp_code_secret_name": {
+				"type": "String"
+			},
+			"watermark_function_name": {
+				"type": "String",
+				"defaultValue": "RedisWatermark"
+			},
+			"watermark_kv_secret_name": {
+				"type": "String"
+			},
+			"watermark_lowerbound": {
+				"type": "String"
+			},
+			"redis_access_key": {
+				"type": "String"
+			},
+			"functionapp_access_code": {
+				"type": "String"
+			},
+			"database_connection": {
+				"type": "String"
+			},
+			"db_schema": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "templates/raw/bdo/raw_load_bdo_unified"
+		},
+		"annotations": []
+	}
+}

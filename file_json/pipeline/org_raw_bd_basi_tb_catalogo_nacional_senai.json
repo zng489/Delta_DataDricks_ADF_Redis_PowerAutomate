@@ -1,0 +1,54 @@
+{
+	"name": "org_raw_bd_basi_tb_catalogo_nacional_senai",
+	"properties": {
+		"activities": [
+			{
+				"name": "raw_load_bdo_unified__0__switch_env",
+				"description": "Run template pipeline to import tables",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "raw_load_dbo_unified__0__switch_env",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"tables": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\",  \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\",  \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"tables": {
+				"type": "array",
+				"defaultValue": [
+					"{'db_conn': 'BD_BASI', 'table':'TB_CATALOGO_NACIONAL_SENAI','load_type':'full', 'partition_column': 'null','columns': 'CD_CATALOGO_NACIONAL_SENAI,CD_CURSO_CATALOGO,CD_TIPO_CATALOGO_CURSO,NM_CURSO,DT_INICIO_VIGENCIA,DT_TERMINO_VIGENCIA,CD_PRODUTO_SERVICO,CD_AREA_ATUACAO,CD_CBO,CD_EIXO_TECNOLOGICO_MEC,FL_EXCLUIDO,DT_ATUALIZACAO,DT_CRIACAO,FL_ATIVO', 'raw': {'partition_by': [{'col_name': 'YEAR', 'implementation': 'df.withColumn(\\'YEAR\\', functions.year(functions.col(\\'DT_ATUALIZACAO\\')))'}, {'col_name': 'MONTH', 'implementation': 'df.withColumn(\\'MONTH\\', functions.month(functions.col(\\'DT_ATUALIZACAO\\')))'}]}}"
+				]
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "raw/bdo/bd_basi"
+		},
+		"annotations": []
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

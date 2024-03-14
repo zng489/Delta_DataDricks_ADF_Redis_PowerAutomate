@@ -1,0 +1,38 @@
+{
+	"name": "wkf_mentis_raw_pt2",
+	"properties": {
+		"activities": [
+			{
+				"name": "wkf_mentis_respostaTrabalhador_Q",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_mentis_respostaTrabalhador_Q",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "workflow/mentis"
+		},
+		"annotations": []
+	}
+}

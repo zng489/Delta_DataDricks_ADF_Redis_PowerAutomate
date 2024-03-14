@@ -1,0 +1,64 @@
+{
+	"name": "org_raw_89_me_comex_ncm_sh4_mun",
+	"properties": {
+		"description": "89 - ME/COMEX - EXPORTAÇÃO POR NCM E SH4",
+		"activities": [
+			{
+				"name": "import_uld_files__0__wrapper",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "import_uld_files__0__wrapper",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"files": {
+							"value": "@pipeline().parameters.files",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@pipeline().parameters.databricks",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\", \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\", \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"databricks": {
+				"type": "object",
+				"defaultValue": {
+					"notebook": "/fiesc/me/comex/export/org_raw_me_comex_export_ncm_sh4"
+				}
+			},
+			"files": {
+				"type": "array",
+				"defaultValue": [
+					"{'namespace':'fiesc','file_folder':'me/comex/export/mun/','extension':'parquet','column_delimiter':';','encoding':'UTF-8','null_value':'','schema':[{'COMPETENCIA': 'string', 'cd_ano': 'bigint', 'cd_mes': 'bigint', 'tipo_carga': 'string', 'cd_sh4': 'string', 'cd_pais': 'bigint', 'sg_uf_mun': 'string', 'nm_mun_min': 'string', 'sg_uf': 'string', 'cd_municipio': 'bigint', 'kg_liquido': 'bigint', 'nu_fob': 'bigint', 'cd_pais_ison3': 'bigint', 'cd_pais_isoa3': 'bigint', 'nm_pais': 'string', 'nm_pais_ing': 'string', 'nm_pais_esp': 'string', 'obs_cd_sh4': 'string', 'obs_nm_ncm': 'string', 'obs_nm_sh4': 'string', 'obs_nm_produto': 'string', 'obs_cd_classe': 'string', 'obs_nm_classe': 'string', 'obs_cd_grupo': 'string', 'obs_nm_grupo': 'string', 'obs_cd_div': 'string', 'obs_nm_div': 'string', 'obs_nm_sc_competitiva': 'string', 'obs_nm_vice_presidencia': 'string', 'obs_nm_gr_setor': 'string'}]"
+				]
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "raw/usr/fiesc/me/comex/export"
+		},
+		"annotations": []
+	}
+}

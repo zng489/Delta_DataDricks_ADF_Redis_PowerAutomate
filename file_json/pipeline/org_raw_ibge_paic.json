@@ -1,0 +1,64 @@
+{
+	"name": "org_raw_ibge_paic",
+	"properties": {
+		"description": "87 - IBGE - Pesquisa mensal do Comércio",
+		"activities": [
+			{
+				"name": "import_uld_files__0__wrapper",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "import_uld_files__0__wrapper",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"files": {
+							"value": "@pipeline().parameters.files",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@pipeline().parameters.databricks",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\", \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\", \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"databricks": {
+				"type": "object",
+				"defaultValue": {
+					"notebook": "fiesc/ibge/paic/org_raw_ibge_paic"
+				}
+			},
+			"files": {
+				"type": "array",
+				"defaultValue": [
+					"{'namespace':'fiesc','file_folder':'ibge/paic/is_sidra_paic','extension':'parquet','column_delimiter':';','encoding':'UTF-8','null_value':'','schema':[{'file_source': 'string', 'Nivel_Territorial_Codigo': 'bigint', 'Nivel_Territorial': 'string', 'Unidade_de_Medida_Codigo': 'bigint', 'Unidade_de_Medida': 'string', 'Valor': 'string', 'Brasil_Grande_Regiao_e_Unidade_da_Federacao_Codigo': 'bigint', 'Brasil_Grande_Regiao_e_Unidade_da_Federacao': 'string', 'Variavel_Codigo': 'string', 'Variavel': 'string', 'Ano_Codigo': 'bigint', 'Ano': 'string', 'Faixas_de_pessoal_ocupado_Codigo': 'string', 'Faixas_de_pessoal_ocupado': 'string', 'dt_atualizacao': 'timestamp'}]"
+				]
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "raw/usr/fiesc/ibge/paic"
+		},
+		"annotations": []
+	}
+}

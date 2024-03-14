@@ -1,0 +1,90 @@
+{
+	"name": "trs_biz_fta_relatorio_simulador_sti",
+	"properties": {
+		"description": "Pipeline responsável por consumir os resultados do hora_aluno e da producao_parcial e unieduca para gerar a producao_ebc completa que será usada pelas saídas da gratuidade",
+		"activities": [
+			{
+				"name": "trs_biz_fta_relatorio_simulador_sti",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "business__0__switch_env",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"table": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\",  \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\",  \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"user_parameters": {
+							"value": "@pipeline().parameters.user_parameters",
+							"type": "Expression"
+						},
+						"sqldw_copy": {
+							"value": "@pipeline().parameters.sqldw_copy",
+							"type": "Expression"
+						},
+						"sqldw_grant": {
+							"value": "@pipeline().parameters.sqldw_grant",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"tables": {
+				"type": "object",
+				"defaultValue": {
+					"origins": [
+						"/educacao_senai/analitico_ep/tb_atendimento",
+						"/evt/senai/sti/vw_valores_atendimento_sti_f",
+						"/educacao_senai/analitico_ep/tb_unidade_atendimento",
+						"/educacao_senai/analitico_ep/tb_entidade_regional",
+						"/educacao_senai/analitico_ep/tb_produto_servico",
+						"/evt/senai/sti/rl_atendimento_metrica_a"
+					],
+					"destination": "/producao/simulador_sti",
+					"databricks": {
+						"notebook": "/biz/sti_senai/simulador_sti/trs_biz_fta_relatorio_simulador_sti"
+					}
+				}
+			},
+			"user_parameters": {
+				"type": "object",
+				"defaultValue": "{\"ano\":'null', \"mes\":'null', \"limpeza\":'false'}"
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			},
+			"sqldw_copy": {
+				"type": "bool",
+				"defaultValue": false
+			},
+			"sqldw_grant": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "/biz/sti_senai/simulador_sti"
+		},
+		"annotations": []
+	}
+}

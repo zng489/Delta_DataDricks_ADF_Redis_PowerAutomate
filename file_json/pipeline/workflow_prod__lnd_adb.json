@@ -1,0 +1,38 @@
+{
+	"name": "workflow_prod__lnd_adb",
+	"properties": {
+		"activities": [
+			{
+				"name": "wkf_lnd__ms_adb",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_lnd__ms_adb",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "workflow"
+		},
+		"annotations": []
+	}
+}

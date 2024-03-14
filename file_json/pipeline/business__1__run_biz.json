@@ -1,0 +1,601 @@
+{
+	"name": "business__1__run_biz",
+	"properties": {
+		"activities": [
+			{
+				"name": "databricks_run_notebook",
+				"description": "Invokes the common template that calls Databricks' pipelines. This template is used in all layers.",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "set_notebook_path",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_test_path",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "databricks_run_notebook",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"databricks_notebook_path": {
+							"value": "@variables('notebook_path')",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@pipeline().parameters.adf",
+							"type": "Expression"
+						},
+						"dls": {
+							"value": "@pipeline().parameters.dls",
+							"type": "Expression"
+						},
+						"user_parameters": {
+							"value": "@pipeline().parameters.user_parameters",
+							"type": "Expression"
+						},
+						"tables": {
+							"value": "@string(pipeline().parameters.table)",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "if_sqldw_copy",
+				"description": "If false, copy table to sqldw. This condition was created evaluating things in reverse due to previous implementation.\n\nOnly copies to sqldw if:\n- tables has key \"copy_sql\"=true\n- tables has key \"copy_sql\"=true and user_params has key \"",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "if_run_datatest",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@if(\n    equals(pipeline().parameters.sqldw_copy, true),\n    false,\n    true\n)",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "run_copy_data_to_tmp_folder",
+							"description": "Copies biz data to tmp folder without any partitioning this. will be good to go to sqldw.",
+							"type": "DatabricksNotebook",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "02:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/KEYRUS/utils/copy_biz_to_tmp",
+								"baseParameters": {
+									"tables": {
+										"value": "@string(pipeline().parameters.table)",
+										"type": "Expression"
+									},
+									"adf_job_run_id": {
+										"value": "@string(pipeline().parameters.adf.adf_pipeline_run_id)",
+										"type": "Expression"
+									},
+									"dls": {
+										"value": "@string(pipeline().parameters.dls)",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "cnibigdatabricks_any_job_cluster",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"workspace_url": {
+										"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name].dev.workspace_url",
+										"type": "Expression"
+									},
+									"workspace_id": {
+										"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name].dev.workspace_id",
+										"type": "Expression"
+									},
+									"cluster_version": "12.2.x-scala2.12",
+									"cluster_node": "Standard_DS3_v2",
+									"worker": "1",
+									"tag": {
+										"value": "@if(\r\n    equals( \r\n        pipeline().parameters.env.env, \r\n        'dev' \r\n    ),\r\n    'Desenvolvimento',\r\n    'Producao'\r\n)\r\n",
+										"type": "Expression"
+									},
+									"policy_id": {
+										"value": "@pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].policy_id",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "copy_from_adls_to_sqldw",
+							"description": "Source is a parameterized ADLS and should be as generic as possible. Let's not keep anything related to paths in more than one parameter in this case. \n\nSink already checks for existing tables and drop it automatically in the pre-copy script! This makes things a lot cleaner and straight.\nNow we are using a reservation of sqldw which is below 400DWU, we have no guarantees of maintenance window. So, by this, we might apply a retry policy of 6 tries, once every 30 min, so we can guarantee to load it after the maintenance window.",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "run_copy_data_to_tmp_folder",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "02:00:00",
+								"retry": 6,
+								"retryIntervalInSeconds": 1860,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "ParquetSource",
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": true,
+										"wildcardFileName": "*.parquet",
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "ParquetReadSettings"
+									}
+								},
+								"sink": {
+									"type": "SqlDWSink",
+									"preCopyScript": {
+										"value": "IF OBJECT_ID('@{pipeline().parameters.sqldw.schema}.@{substring(pipeline().parameters.table.destination, add(lastindexof(string(pipeline().parameters.table.destination), '/'), 1) , sub(length(pipeline().parameters.table.destination), add(lastindexof(string(pipeline().parameters.table.destination), '/'), 1) ))}', 'U') IS NOT NULL DROP TABLE @{pipeline().parameters.sqldw.schema}.@{substring(pipeline().parameters.table.destination, add(lastindexof(string(pipeline().parameters.table.destination), '/'), 1) , sub(length(pipeline().parameters.table.destination), add(lastindexof(string(pipeline().parameters.table.destination), '/'), 1) ))};",
+										"type": "Expression"
+									},
+									"allowPolyBase": true,
+									"polyBaseSettings": {
+										"rejectValue": 0,
+										"rejectType": "value",
+										"useTypeDefault": true
+									},
+									"tableOption": "autoCreate",
+									"disableMetricsCollection": true
+								},
+								"enableStaging": true,
+								"stagingSettings": {
+									"linkedServiceName": {
+										"referenceName": "cnibigdatapolybasestg",
+										"type": "LinkedServiceReference"
+									},
+									"path": "tmp-data",
+									"enableCompression": true
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "adls_parameterized_tmp_to_sqldw",
+									"type": "DatasetReference",
+									"parameters": {
+										"filepath": {
+											"value": "@concat(pipeline().parameters.dls.folders.staging, '/', pipeline().parameters.adf.adf_pipeline_run_id, replace(pipeline().parameters.table.destination, '/', '_'))",
+											"type": "Expression"
+										},
+										"container": {
+											"value": "@pipeline().parameters.container",
+											"type": "Expression"
+										},
+										"url": {
+											"value": "@pipeline().parameters.url",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "sqldw_parameterized",
+									"type": "DatasetReference",
+									"parameters": {
+										"schema": {
+											"value": "@pipeline().parameters.sqldw.schema",
+											"type": "Expression"
+										},
+										"table": {
+											"value": "@substring(pipeline().parameters.table.destination, add(lastindexof(string(pipeline().parameters.table.destination), '/'), 1) , sub(length(pipeline().parameters.table.destination), add(lastindexof(string(pipeline().parameters.table.destination), '/'), 1) ))",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
+							"name": "delete_adls_gen1_tmp_data_0",
+							"description": "Deletes ADLS Gen1 data in tmp folder after writing it without partitions to sqldw.",
+							"type": "Delete",
+							"dependsOn": [
+								{
+									"activity": "copy_from_adls_to_sqldw",
+									"dependencyConditions": [
+										"Skipped",
+										"Completed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "00:10:00",
+								"retry": 3,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "adls_parameterized_tmp_to_sqldw",
+									"type": "DatasetReference",
+									"parameters": {
+										"filepath": {
+											"value": "@concat(pipeline().parameters.dls.folders.staging, '/', pipeline().parameters.adf.adf_pipeline_run_id, replace(pipeline().parameters.table.destination, '/', '_'))",
+											"type": "Expression"
+										},
+										"container": {
+											"value": "@pipeline().parameters.container",
+											"type": "Expression"
+										},
+										"url": {
+											"value": "@pipeline().parameters.url",
+											"type": "Expression"
+										}
+									}
+								},
+								"enableLogging": false,
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"maxConcurrentConnections": 8,
+									"recursive": true
+								}
+							}
+						},
+						{
+							"name": "delete_adls_gen1_tmp_data_1",
+							"description": "Deletes ADLS Gen1 data in tmp folder after writing it without partitions to sqldw.",
+							"type": "Delete",
+							"dependsOn": [
+								{
+									"activity": "run_copy_data_to_tmp_folder",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 3,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "adls_parameterized_tmp_to_sqldw",
+									"type": "DatasetReference",
+									"parameters": {
+										"filepath": {
+											"value": "@concat(pipeline().parameters.dls.folders.staging, '/', pipeline().parameters.adf.adf_pipeline_run_id, replace(pipeline().parameters.table.destination, '/', '_'))",
+											"type": "Expression"
+										},
+										"container": {
+											"value": "@pipeline().parameters.container",
+											"type": "Expression"
+										},
+										"url": {
+											"value": "@pipeline().parameters.url",
+											"type": "Expression"
+										}
+									}
+								},
+								"enableLogging": false,
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"maxConcurrentConnections": 8,
+									"recursive": true
+								}
+							}
+						},
+						{
+							"name": "Fail1",
+							"type": "Fail",
+							"dependsOn": [
+								{
+									"activity": "delete_adls_gen1_tmp_data_1",
+									"dependencyConditions": [
+										"Succeeded",
+										"Failed"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"message": "Falha na cópia de dados para o SQLDW",
+								"errorCode": "500"
+							}
+						},
+						{
+							"name": "switch_grant_on_sqldw",
+							"description": "Applies grant on SQLDW when that",
+							"type": "Switch",
+							"dependsOn": [
+								{
+									"activity": "copy_from_adls_to_sqldw",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"on": {
+									"value": "@if(\n    and(\n        contains(\n            string(pipeline().parameters.env), \n            'prod'\n        ),\n        greater(\n            length(\n                coalesce(pipeline().parameters.sqldw_grant, '')\n            ),\n            0\n        )\n    ), \n    'true',\n    'false'\n)",
+									"type": "Expression"
+								},
+								"cases": [
+									{
+										"value": "true",
+										"activities": [
+											{
+												"name": "parameter_grant_for_one_user",
+												"type": "Script",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"linkedServiceName": {
+													"referenceName": "cnibigdatasqldw",
+													"type": "LinkedServiceReference"
+												},
+												"typeProperties": {
+													"scripts": [
+														{
+															"type": "Query",
+															"text": {
+																"value": "GRANT SELECT ON @{pipeline().parameters.sqldw.schema}.@{substring(pipeline().parameters.table.destination, add(lastindexof(string(pipeline().parameters.table.destination), '/'), 1) , sub(length(pipeline().parameters.table.destination), add(lastindexof(string(pipeline().parameters.table.destination), '/'), 1) ))} TO @{pipeline().parameters.sqldw_grant} ",
+																"type": "Expression"
+															}
+														}
+													],
+													"scriptBlockExecutionTimeout": "02:00:00"
+												}
+											}
+										]
+									},
+									{
+										"value": "false",
+										"activities": [
+											{
+												"name": "skip_grant_on_sqldw",
+												"type": "Wait",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"waitTimeInSeconds": 1
+												}
+											}
+										]
+									}
+								]
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "skip_copy_table_to_sqldw",
+							"description": "Skips copy table to sqldw due to configuration",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "set_notebook_path",
+				"description": "Sets biz notebook path on Databricks workspace",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "notebook_path",
+					"value": {
+						"value": "@{pipeline().parameters.databricks.folder}@{pipeline().parameters.table.databricks.notebook}",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "if_run_datatest",
+				"description": "If run_datatest is true, then we perform the test. Else, skip it.",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "databricks_run_notebook",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(pipeline().parameters.run_datatest, true)",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "skip_datatest",
+							"description": "Databricks data test notebook run is skipped by the pipeline config.",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "databricks_run_datatest",
+							"description": "Invokes the common template that calls Databricks' pipelines. This template is used in all layers.",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "databricks_run_notebook",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"databricks_notebook_path": {
+										"value": "@variables('test_path')",
+										"type": "Expression"
+									},
+									"adf": {
+										"value": "@pipeline().parameters.adf",
+										"type": "Expression"
+									},
+									"dls": {
+										"value": "@pipeline().parameters.dls",
+										"type": "Expression"
+									},
+									"user_parameters": {
+										"value": "@pipeline().parameters.user_parameters",
+										"type": "Expression"
+									},
+									"tables": {
+										"value": "@string(pipeline().parameters.table)",
+										"type": "Expression"
+									},
+									"env": {
+										"value": "@pipeline().parameters.env.env",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "set_test_path",
+				"description": "Sets Databricks datatest notebook path in workspace",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "test_path",
+					"value": {
+						"value": "@{pipeline().parameters.databricks.folder}/@{pipeline().parameters.test_base_path}@{\n    substring(\n        pipeline().parameters.table.databricks.notebook,\n        0,\n        add(\n            lastIndexOf(\n                pipeline().parameters.table.databricks.notebook,\n                '/'\n            ),\n            1\n        )\n    )}@{pipeline().parameters.test_file_prefix}@{\n        last(\n            split(\n                pipeline().parameters.table.databricks.notebook,\n                '/'\n            )\n        )}",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object"
+			},
+			"table": {
+				"type": "object"
+			},
+			"dls": {
+				"type": "object"
+			},
+			"sqldw": {
+				"type": "object"
+			},
+			"databricks": {
+				"type": "object"
+			},
+			"adf": {
+				"type": "object"
+			},
+			"user_parameters": {
+				"type": "object"
+			},
+			"container": {
+				"type": "string"
+			},
+			"url": {
+				"type": "string"
+			},
+			"run_datatest": {
+				"type": "bool"
+			},
+			"test_base_path": {
+				"type": "string"
+			},
+			"test_file_prefix": {
+				"type": "string"
+			},
+			"sqldw_copy": {
+				"type": "bool",
+				"defaultValue": false
+			},
+			"sqldw_grant": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"notebook_path": {
+				"type": "String"
+			},
+			"test_path": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "templates/biz"
+		},
+		"annotations": []
+	}
+}

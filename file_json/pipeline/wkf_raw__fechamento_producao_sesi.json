@@ -1,0 +1,57 @@
+{
+	"name": "wkf_raw__fechamento_producao_sesi",
+	"properties": {
+		"activities": [
+			{
+				"name": "espera_final_fluxo",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "org_raw_inddesempenho_fechamento_producao",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "org_raw_inddesempenho_fechamento_producao",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_inddesempenho_fechamento_producao",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "workflow/educacao_sesi/raw"
+		},
+		"annotations": []
+	}
+}

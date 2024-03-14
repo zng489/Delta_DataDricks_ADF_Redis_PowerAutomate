@@ -1,0 +1,190 @@
+{
+	"name": "workflow_prod__lnd",
+	"properties": {
+		"activities": [
+			{
+				"name": "wkf_lnd__uniepro",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_lnd__uniepro",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "wkf_lnd__uniepro_pt2",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_lnd__uniepro_pt2",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "wkf_lnd__uniepro_more_4_hours",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wkf_lnd__uniepro_pt4",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_lnd__uniepro_more_4_hours",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "wkf_lnd__uniepro_pt3",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wkf_lnd__uniepro_pt2",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "wkf_lnd__uniepro",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_lnd__uniepro_pt3",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "wkf_lnd__uniepro_pt4",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_lnd__uniepro_pt4",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "wkf_lnd__uniepro_pt5",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wkf_lnd__uniepro_pt3",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_lnd__uniepro_pt5",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "start",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "workflow"
+		},
+		"annotations": []
+	}
+}

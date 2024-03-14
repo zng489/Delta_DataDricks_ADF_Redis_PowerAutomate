@@ -1,0 +1,236 @@
+{
+	"name": "raw_load_dbo_unified__3__db_postgres",
+	"properties": {
+		"description": "Implements the load types for Postgres databases.",
+		"activities": [
+			{
+				"name": "postgres__switch_load_type",
+				"description": "Will switch load type. This way we avoid to run the other load type executions when we know exactly what might be implemented.\n\n\"tables\" is downstreammed as a array. That's why you have to compare with element [0]",
+				"type": "Switch",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"on": {
+						"value": "@json(pipeline().parameters.tables[0]).load_type",
+						"type": "Expression"
+					},
+					"cases": [
+						{
+							"value": "full",
+							"activities": [
+								{
+									"name": "postgres_import_full__0__wrapped",
+									"description": "Invokes the  pipeline",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"policy": {
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "postgres_import_full__0__wrapper",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"db": {
+												"value": "@pipeline().parameters.db",
+												"type": "Expression"
+											},
+											"tables": {
+												"value": "@pipeline().parameters.tables",
+												"type": "Expression"
+											},
+											"dls": {
+												"value": "@pipeline().parameters.dls",
+												"type": "Expression"
+											},
+											"watermark": {
+												"value": "@pipeline().parameters.watermark",
+												"type": "Expression"
+											},
+											"databricks": {
+												"value": "@pipeline().parameters.databricks",
+												"type": "Expression"
+											},
+											"adf": {
+												"value": "@pipeline().parameters.adf",
+												"type": "Expression"
+											},
+											"container": {
+												"value": "@pipeline().parameters.container",
+												"type": "Expression"
+											},
+											"url": {
+												"value": "@pipeline().parameters.url",
+												"type": "Expression"
+											},
+											"keuvault_url": {
+												"value": "@pipeline().parameters.keyvault_url",
+												"type": "Expression"
+											},
+											"db_schema": {
+												"value": "@pipeline().parameters.db_schema",
+												"type": "Expression"
+											},
+											"env": {
+												"value": "@pipeline().parameters.env",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						},
+						{
+							"value": "incremental",
+							"activities": [
+								{
+									"name": "postgres_import_incremental__0__evaluator",
+									"description": "Invokes the pipeline",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"policy": {
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "postgres_import_incremental__0__evaluator",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"db": {
+												"value": "@pipeline().parameters.db",
+												"type": "Expression"
+											},
+											"tables": {
+												"value": "@pipeline().parameters.tables",
+												"type": "Expression"
+											},
+											"dls": {
+												"value": "@pipeline().parameters.dls",
+												"type": "Expression"
+											},
+											"watermark": {
+												"value": "@pipeline().parameters.watermark",
+												"type": "Expression"
+											},
+											"databricks": {
+												"value": "@pipeline().parameters.databricks",
+												"type": "Expression"
+											},
+											"adf": {
+												"value": "@pipeline().parameters.adf",
+												"type": "Expression"
+											},
+											"container": {
+												"value": "@pipeline().parameters.container",
+												"type": "Expression"
+											},
+											"url": {
+												"value": "@pipeline().parameters.url",
+												"type": "Expression"
+											},
+											"keyvault_url": {
+												"value": "@pipeline().parameters.keyvault_url",
+												"type": "Expression"
+											},
+											"functionapp_access_code": {
+												"value": "@pipeline().parameters.functionapp_access_code",
+												"type": "Expression"
+											},
+											"redis_access_key": {
+												"value": "@pipeline().parameters.redis_access_key",
+												"type": "Expression"
+											},
+											"functionapp_url": {
+												"value": "@pipeline().parameters.functionapp_url",
+												"type": "Expression"
+											},
+											"env": {
+												"value": "@pipeline().parameters.env",
+												"type": "Expression"
+											},
+											"db_schema": {
+												"value": "@pipeline().parameters.db_schema",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						}
+					],
+					"defaultActivities": [
+						{
+							"name": "load_type_not_implemented",
+							"description": "\"load_type\" is undefined, that's why you've reached the \"default\" condition in this switch. We are not assuming defaults. Please review your implementation.",
+							"type": "Fail",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"message": "Load type not implemented",
+								"errorCode": "2"
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"tables": {
+				"type": "array"
+			},
+			"dls": {
+				"type": "object"
+			},
+			"adf": {
+				"type": "object"
+			},
+			"watermark": {
+				"type": "object"
+			},
+			"databricks": {
+				"type": "object"
+			},
+			"db": {
+				"type": "object"
+			},
+			"container": {
+				"type": "string"
+			},
+			"url": {
+				"type": "string"
+			},
+			"keyvault_url": {
+				"type": "string"
+			},
+			"functionapp_access_code": {
+				"type": "securestring"
+			},
+			"redis_access_key": {
+				"type": "securestring"
+			},
+			"functionapp_url": {
+				"type": "string"
+			},
+			"env": {
+				"type": "object"
+			},
+			"db_schema": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "templates/raw/bdo/raw_load_bdo_unified"
+		},
+		"annotations": [
+			"raw",
+			"template",
+			"postgres"
+		]
+	}
+}

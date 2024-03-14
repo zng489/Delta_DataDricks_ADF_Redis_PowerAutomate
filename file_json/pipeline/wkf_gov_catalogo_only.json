@@ -1,0 +1,114 @@
+{
+	"name": "wkf_gov_catalogo_only",
+	"properties": {
+		"activities": [
+			{
+				"name": "wkf_catalogo",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_catalogo",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@pipeline().parameters.adf",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "wkf_adls_report_oni",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wkf_adls_report",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_adls_report_oni",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@pipeline().parameters.adf",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "wkf_adls_report",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wkf_catalogo",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_adls_report",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@pipeline().parameters.adf",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			},
+			"adf": {
+				"type": "object"
+			}
+		},
+		"folder": {
+			"name": "workflow/gov/catalogo_v2"
+		},
+		"annotations": []
+	}
+}

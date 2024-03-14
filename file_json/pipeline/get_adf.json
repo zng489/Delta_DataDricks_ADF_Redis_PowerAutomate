@@ -1,0 +1,57 @@
+{
+	"name": "get_adf",
+	"properties": {
+		"activities": [
+			{
+				"name": "cnibidatafactory",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@concat(\n    'https://management.azure.com/subscriptions/',pipeline().parameters.subscripition_id,'/resourceGroups/',pipeline().parameters.resource_group,'/providers/Microsoft.DataFactory/factories/',pipeline().parameters.adf_name,'/pipelines/',pipeline().parameters.pipeline_name,'/createRun?api-version=2018-06-01'\n)",
+						"type": "Expression"
+					},
+					"method": "POST",
+					"body": {
+						"value": "@pipeline().parameters.body",
+						"type": "Expression"
+					},
+					"turnOffAsync": false,
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://management.azure.com/"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"pipeline_name": {
+				"type": "string"
+			},
+			"adf_name": {
+				"type": "string"
+			},
+			"resource_group": {
+				"type": "string"
+			},
+			"subscripition_id": {
+				"type": "string"
+			},
+			"body": {
+				"type": "object"
+			}
+		},
+		"folder": {
+			"name": "templates/get_adf"
+		},
+		"annotations": []
+	}
+}

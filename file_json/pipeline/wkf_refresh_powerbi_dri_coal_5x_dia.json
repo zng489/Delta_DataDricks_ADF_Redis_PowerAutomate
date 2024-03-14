@@ -1,0 +1,75 @@
+{
+	"name": "wkf_refresh_powerbi_dri_coal_5x_dia",
+	"properties": {
+		"description": "Dev workflow.\nAll raw dependencies must be executed according to the necessity of synchrony. That's why structure has layer declaration and waits in between.",
+		"activities": [
+			{
+				"name": "wkf_orq_cni_coal_5x_dia",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_orq_cni_coal_5x_dia",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "get_adf",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wkf_orq_cni_coal_5x_dia",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "get_adf",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"pipeline_name": "wkf_refresh_powerbi_dri_coal_5x_dia",
+						"adf_name": "cnipowerbicorp",
+						"resource_group": "PowerBI-Corporativo",
+						"subscripition_id": "3e3a21e3-9551-4945-8c46-c02f558392ce",
+						"body": "{}"
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"variables": {
+			"execution_errors": {
+				"type": "Array",
+				"defaultValue": []
+			}
+		},
+		"folder": {
+			"name": "workflow/coal"
+		},
+		"annotations": [
+			"workflow"
+		]
+	}
+}

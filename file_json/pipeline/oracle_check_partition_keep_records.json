@@ -1,0 +1,196 @@
+{
+	"name": "oracle_check_partition_keep_records",
+	"properties": {
+		"description": "This step implements a verification, for sources of type Oracle Database, here we verify, for incremental loads, if the the count of records just considering the range for control_column is the same as after applying partitioning. If not, then we must raise an error. \n\nAs it is implemented inside the for_each loop, \"table\" might be downstreammed as \"object\", simplifying this step.",
+		"activities": [
+			{
+				"name": "count_records_control_column_range",
+				"description": "Sends a SELECT COUNT(*) for the table considering only control_columns's range.\n\nThis number will be later compared with the count considering the partition range.",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "02:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "OracleSource",
+						"oracleReaderQuery": {
+							"value": "SELECT COUNT(*) AS count_records\nFROM @{pipeline().parameters.db_schema}.@{pipeline().parameters.table.table} \nWHERE \nCAST(NVL(TO_CHAR(TO_TIMESTAMP(TRIM(REGEXP_REPLACE(@{pipeline().parameters.table.control_column}, '[^0-9:\\/\\s-]', '' )), '@{pipeline().parameters.table.control_column_mask_value}'), 'YYYYMMDDHH24MISS' ), '@{json(pipeline().parameters.query).filters.control_column.lowerbound}') AS INT) >= CAST('@{json(pipeline().parameters.query).filters.control_column.lowerbound}' AS INT) \nAND \nCAST(NVL(TO_CHAR(TO_TIMESTAMP(TRIM(REGEXP_REPLACE(@{pipeline().parameters.table.control_column}, '[^0-9:\\/\\s-]', '' )), '@{pipeline().parameters.table.control_column_mask_value}'), 'YYYYMMDDHH24MISS' ), '@{json(pipeline().parameters.query).filters.control_column.lowerbound}') AS INT) <= CAST(@{json(pipeline().parameters.query).filters.control_column.upperbound} AS INT) ",
+							"type": "Expression"
+						},
+						"partitionOption": "None",
+						"queryTimeout": "02:00:00"
+					},
+					"dataset": {
+						"referenceName": "oracle_table_parameterized",
+						"type": "DatasetReference",
+						"parameters": {
+							"db_host": {
+								"value": "@pipeline().parameters.db.host",
+								"type": "Expression"
+							},
+							"db_port": {
+								"value": "@pipeline().parameters.db.port",
+								"type": "Expression"
+							},
+							"db_service_name": {
+								"value": "@pipeline().parameters.db.service_name",
+								"type": "Expression"
+							},
+							"db_user": {
+								"value": "@pipeline().parameters.db.username",
+								"type": "Expression"
+							},
+							"keyvault_secret": {
+								"value": "@pipeline().parameters.db.secret",
+								"type": "Expression"
+							},
+							"keyvault_url": {
+								"value": "@pipeline().parameters.keyvault_url",
+								"type": "Expression"
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "count_records_with_partition_range",
+				"description": "Counts the records for the increment considering also the partition range.\n\nResults must be returned as \"first row\" and in a column name \"count_records\"",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "02:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "OracleSource",
+						"oracleReaderQuery": {
+							"value": "SELECT COUNT(*) AS count_records FROM @{pipeline().parameters.db_schema}.@{pipeline().parameters.table.table} WHERE CAST(NVL(TO_CHAR(TO_TIMESTAMP(TRIM(REGEXP_REPLACE(@{pipeline().parameters.table.control_column}, '[^0-9:\\/\\s-]', '' )), '@{pipeline().parameters.table.control_column_mask_value}'), 'YYYYMMDDHH24MISS' ), '@{json(pipeline().parameters.query).filters.control_column.lowerbound}') AS INT) >= CAST('@{json(pipeline().parameters.query).filters.control_column.lowerbound}' AS INT) AND CAST(NVL(TO_CHAR(TO_TIMESTAMP(TRIM(REGEXP_REPLACE(@{pipeline().parameters.table.control_column}, '[^0-9:\\/\\s-]', '' )), '@{pipeline().parameters.table.control_column_mask_value}'), 'YYYYMMDDHH24MISS' ), '@{json(pipeline().parameters.query).filters.control_column.lowerbound}') AS INT) <= CAST('@{json(pipeline().parameters.query).filters.control_column.upperbound}' AS INT) AND CAST(NVL(@{pipeline().parameters.table.partition_column}, '@{json(pipeline().parameters.query).filters.partition_column.lowerbound}') AS INT) >= CAST('@{json(pipeline().parameters.query).filters.partition_column.lowerbound}' AS INT) AND CAST(NVL(@{pipeline().parameters.table.partition_column}, '@{json(pipeline().parameters.query).filters.partition_column.lowerbound}') AS INT) <= CAST('@{json(pipeline().parameters.query).filters.partition_column.upperbound}' AS INT)",
+							"type": "Expression"
+						},
+						"partitionOption": "None",
+						"queryTimeout": "02:00:00"
+					},
+					"dataset": {
+						"referenceName": "oracle_table_parameterized",
+						"type": "DatasetReference",
+						"parameters": {
+							"db_host": {
+								"value": "@pipeline().parameters.db.host",
+								"type": "Expression"
+							},
+							"db_port": {
+								"value": "@pipeline().parameters.db.port",
+								"type": "Expression"
+							},
+							"db_service_name": {
+								"value": "@pipeline().parameters.db.service_name",
+								"type": "Expression"
+							},
+							"db_user": {
+								"value": "@pipeline().parameters.db.username",
+								"type": "Expression"
+							},
+							"keyvault_secret": {
+								"value": "@pipeline().parameters.db.secret",
+								"type": "Expression"
+							},
+							"keyvault_url": {
+								"value": "@pipeline().parameters.keyvault_url",
+								"type": "Expression"
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "if_counts_are_equal",
+				"description": "Checks if these counts are equal, wait 1 second and keep it going. This is the happy way.\n\nIf not, then raise the error. We'll later implement a table to keep these events.\n",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "count_records_with_partition_range",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "count_records_control_column_range",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(activity('count_records_control_column_range').output.firstRow.count_records, activity('count_records_with_partition_range').output.firstRow.count_records)\n",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "counts_before_and_after_partition_differ",
+							"description": "The number of records for the increment are different before and after applying partitioning. This means you will lose records. \n\nPlease review the implementation and also the data source. Something's really wrong about it.",
+							"type": "Fail",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"message": "Counts before and after applying partition differ. You will lose records if you apply partitioning.",
+								"errorCode": "1"
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "count_records_is_ok",
+							"description": "There was no record loss with partitioning.",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"table": {
+				"type": "object"
+			},
+			"query": {
+				"type": "string"
+			},
+			"db": {
+				"type": "object"
+			},
+			"adf": {
+				"type": "object"
+			},
+			"watermark": {
+				"type": "object"
+			},
+			"keyvault_url": {
+				"type": "string"
+			},
+			"db_schema": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "templates/raw/bdo/oracle"
+		},
+		"annotations": []
+	}
+}

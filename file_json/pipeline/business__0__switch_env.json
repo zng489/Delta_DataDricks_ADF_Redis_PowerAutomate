@@ -1,0 +1,355 @@
+{
+	"name": "business__0__switch_env",
+	"properties": {
+		"description": "Checks the parameter in \"env\" variable to decide which parameters and connections to use. This will avoid having to declare a full set of parameters like \"databricks\", \"sqldw\"\n\nNeeded parameters:\n- tables: dict; complete definition including the relative path for the databricks notebook. This is not an array, you need to provide one nd only one table for this execution.\n- env: dict type; simple key value definition\n- adf: dict type; complete definition taking the parameters the parent pipeline (the one that entitles the process)\n\n\"adf\" parameter may be passed as string all the \nThese NEEDED PARAMS will come from the most exposed (the outer layer) of the pipeline, the one that takes the process' name.\n",
+		"activities": [
+			{
+				"name": "set_email_users",
+				"description": "If there's users to be notified via email, then they must be set here.\n\nThe variable is type array, which is the one expected for the notification activity. ",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "check_params",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "email_user",
+					"value": {
+						"value": "@if(contains(pipeline().parameters.user_parameters, 'email'), array(pipeline().parameters.user_parameters.email), array(''))",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "triggered_by_databricks_wrapper__failed",
+				"description": "if this pipeline was triggered by databricks' wrapper for closing, email's in this level will not be sent. Users will most probably interact with the aggregated implementations.",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "business__1__run_biz",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@contains(pipeline().parameters.user_parameters, 'from_databricks_wrapper')",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "send_email_on_failure",
+							"description": "Calls the pipeline that send email on  failure. As this activity will be successfully executed, it will be necessary to force a fail in the downstream.",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "send_email",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"email_users": {
+										"value": "@variables('email_user')",
+										"type": "Expression"
+									},
+									"email_groups": {
+										"value": "@array('default')",
+										"type": "Expression"
+									},
+									"adf": {
+										"value": "@json(string(pipeline().parameters.adf))",
+										"type": "Expression"
+									},
+									"env": {
+										"value": "@pipeline().parameters.env",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "do_not_send_email",
+							"description": "Do not send emails Because this was triggered by databricks' wrapper for closing",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "triggered_by_databricks_wrapper__success",
+				"description": "If this was triggered by databricks' wrapper for closing.\n\nRemember that this double evaluation on success/failure is due to the 'execute pipeline' being unable to send a status of its execution.\n\nWill send email to STI but not for the user who started the process. Users must know just that the process finished successfully or not.",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "business__1__run_biz",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@contains(pipeline().parameters.user_parameters, 'from_databricks_wrapper')",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "success_but_no_email_not_closing",
+							"description": "Pipeline succeeded, but no email will be sent because this is not a 'closing' execution.",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "send_email_on_success",
+							"description": "Calls the pipeline that send email on  failure. As this activity will be successfully executed, it will be necessary to force a fail in the downstream.",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "send_email",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"status": "succeeded",
+									"email_users": {
+										"value": "@array('default')",
+										"type": "Expression"
+									},
+									"email_groups": {
+										"value": "@array('default')",
+										"type": "Expression"
+									},
+									"adf": {
+										"value": "@json(string(pipeline().parameters.adf))",
+										"type": "Expression"
+									},
+									"env": {
+										"value": "@pipeline().parameters.env",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "set_container",
+				"description": "Sets storage/adls container.",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "check_params",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "container",
+					"value": {
+						"value": "@pipeline().globalParameters.storage[pipeline().parameters.env.env].container",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "business__1__run_biz",
+				"description": "Executes the 'business__1__set_params' pipeline, passing 'dls' and 'databricks', and 'sqldw' parameters.\n\nAlso sets the complete databricks dict to pass for databricks execution.\n\nParam 'tables' will be downstreamed. \nParam 'adf' is downstreamed from the parent pipeline",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "set_email_users",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_container",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "business__1__run_biz",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"table": {
+							"value": "@pipeline().parameters.table",
+							"type": "Expression"
+						},
+						"dls": {
+							"value": "@pipeline().globalParameters.dls[pipeline().parameters.env.env]",
+							"type": "Expression"
+						},
+						"sqldw": {
+							"value": "@if(\n    equals(pipeline().parameters.env.env, 'prod')\n    , json('{\"schema\": \"biz\"}')\n    ,json('{\"schema\": \"dev\"}')\n)",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@json(concat('{\"folder\": \"', pipeline().globalParameters.databricks.notebook_base[pipeline().parameters.env.env],'\", \"workspace\": {\"id\": \"',pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_id,'\", \"url\": \"', pipeline().globalParameters.databricks[pipeline().parameters.adf.adf_factory_name][pipeline().parameters.env.env].workspace_url,'\"}}'))",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(string(pipeline().parameters.adf))",
+							"type": "Expression"
+						},
+						"user_parameters": {
+							"value": "@json(string(pipeline().parameters.user_parameters))",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@variables('container')",
+							"type": "Expression"
+						},
+						"url": {
+							"value": "@pipeline().globalParameters.storage[pipeline().parameters.env.env].url",
+							"type": "Expression"
+						},
+						"run_datatest": {
+							"value": "@pipeline().parameters.run_datatest",
+							"type": "Expression"
+						},
+						"test_base_path": {
+							"value": "@{pipeline().globalParameters.tests[pipeline().parameters.env.env].base_path}",
+							"type": "Expression"
+						},
+						"test_file_prefix": {
+							"value": "@{pipeline().globalParameters.tests[pipeline().parameters.env.env].file_prefix}",
+							"type": "Expression"
+						},
+						"sqldw_copy": {
+							"value": "@pipeline().parameters.sqldw_copy",
+							"type": "Expression"
+						},
+						"sqldw_grant": {
+							"value": "@pipeline().parameters.sqldw_grant",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "fail_pipeline",
+				"description": "Condition achieved to fail the pipeline.",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "triggered_by_databricks_wrapper__failed",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Pipeline has failed",
+					"errorCode": "4"
+				}
+			},
+			{
+				"name": "check_params",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "check_params",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"body": {
+							"value": "{\n    \"adf\": @{pipeline().parameters.adf},\n    \"env\": @{pipeline().parameters.env}, \n    \"tables\": @{pipeline().parameters.table}\n}",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object"
+			},
+			"table": {
+				"type": "object"
+			},
+			"adf": {
+				"type": "object"
+			},
+			"user_parameters": {
+				"type": "object"
+			},
+			"run_datatest": {
+				"type": "bool",
+				"defaultValue": false
+			},
+			"sqldw_copy": {
+				"type": "bool",
+				"defaultValue": false
+			},
+			"sqldw_grant": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"email_user": {
+				"type": "Array",
+				"defaultValue": []
+			},
+			"container": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "templates/biz"
+		},
+		"annotations": []
+	}
+}

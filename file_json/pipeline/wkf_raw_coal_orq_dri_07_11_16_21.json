@@ -1,0 +1,135 @@
+{
+	"name": "wkf_raw_coal_orq_dri_07_11_16_21",
+	"properties": {
+		"activities": [
+			{
+				"name": "wait 1 s",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "org_raw_coal_vw_rdr_perfilindividuo",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "org_raw_coal_vw_rdr_grupo",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "org_raw_coal_vw_rdr_grupo",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_coal_vw_rdr_grupo",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "org_raw_coal_vw_rdr_perfilindividuo",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_coal_vw_rdr_perfilindividuo",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "org_raw_coal_robo_legisdata_tableau_proposicoes_detail",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wait 1 s",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_coal_robo_legisdata_tableau_proposicoes_detail",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "org_raw_coal_robo_legisdata_vw_deliberacoes_agregadas",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wait 1 s",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_coal_robo_legisdata_vw_deliberacoes_agregadas",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "workflow/coal/raw"
+		},
+		"annotations": [
+			"workflow",
+			"raw"
+		]
+	}
+}

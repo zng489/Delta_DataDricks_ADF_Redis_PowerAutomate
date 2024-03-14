@@ -1,0 +1,163 @@
+{
+	"name": "check_params",
+	"properties": {
+		"activities": [
+			{
+				"name": "If Condition1",
+				"type": "IfCondition",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(\n    pipeline().parameters.env.env,\n    'prod'\n)",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "check_params",
+							"type": "AzureFunctionActivity",
+							"dependsOn": [
+								{
+									"activity": "set_function_url",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								},
+								{
+									"activity": "set_function_code_secret_name",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								},
+								{
+									"activity": "set_keyvault_url",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"functionName": {
+									"value": "@variables('function_name')",
+									"type": "Expression"
+								},
+								"method": "POST",
+								"body": {
+									"value": "@pipeline().parameters.body",
+									"type": "Expression"
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "Azure Function App",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"url_function": {
+										"value": "@variables('function_url')",
+										"type": "Expression"
+									},
+									"key_vault_url": {
+										"value": "@variables('keyvault_url')",
+										"type": "Expression"
+									},
+									"keyvault_secret_name": {
+										"value": "@variables('function_code_secret_name')",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "set_function_url",
+							"description": "Sets functions url",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "function_url",
+								"value": {
+									"value": "@pipeline().globalParameters.functions.proxy[pipeline().parameters.env.env].url",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "set_function_code_secret_name",
+							"description": "Sets function code's secret to get from key vault",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "function_code_secret_name",
+								"value": {
+									"value": "@pipeline().globalParameters.functions.proxy[pipeline().parameters.env.env].secret_name",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "set_keyvault_url",
+							"description": "Sets keyvault url",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "keyvault_url",
+								"value": {
+									"value": "@pipeline().globalParameters.key_vault.general[pipeline().parameters.env.env].url",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"body": {
+				"type": "object"
+			},
+			"env": {
+				"type": "object"
+			}
+		},
+		"variables": {
+			"function_url": {
+				"type": "String"
+			},
+			"keyvault_url": {
+				"type": "String"
+			},
+			"function_name": {
+				"type": "String",
+				"defaultValue": "AdfCheckParams"
+			},
+			"function_code_secret_name": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "templates/common"
+		},
+		"annotations": []
+	}
+}

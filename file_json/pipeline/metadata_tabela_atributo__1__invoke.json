@@ -1,0 +1,152 @@
+{
+	"name": "metadata_tabela_atributo__1__invoke",
+	"properties": {
+		"description": "Invoking Azure functionapp fot the implementation that loads info_tabela and info_atributo. ",
+		"activities": [
+			{
+				"name": "wait_15_minutes",
+				"description": "ADF has timeout of 230 seconds, no matter what you configure. With this, you wait 15 minutes, no matter why. Ou implementation for Function App is stable.",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "call_functionapp_metadata_AppMetadata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "get_function_code_from_keyvault",
+				"description": "Get function code from key vault required as parameters to be used by the function.",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": true,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@{pipeline().parameters.keyvault_url}/secrets/@{pipeline().parameters.function_code_secret_name}?@{pipeline().globalParameters.key_vault.general[pipeline().parameters.env.env].params.version}",
+						"type": "Expression"
+					},
+					"method": "GET",
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "call_functionapp_metadata_AppMetadata",
+				"description": "Calls functionapp via https",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "get_function_code_from_keyvault",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": true
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@{pipeline().parameters.function_url}/api/AppMetadata?code=@{activity('get_function_code_from_keyvault').output.value}",
+						"type": "Expression"
+					},
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/json"
+					},
+					"body": {
+						"value": "@string(json(pipeline().parameters.body))",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "call_functionapp_metadata_AppDataQualityLabel",
+				"description": "Calls functionapp via https",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "wait_15_minutes",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": true
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@{pipeline().parameters.function_url}/api/AppDataQualityLabel?code=@{activity('get_function_code_from_keyvault').output.value}",
+						"type": "Expression"
+					},
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/json"
+					},
+					"body": {
+						"value": "@string(pipeline().parameters.env)",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"body": {
+				"type": "string"
+			},
+			"env": {
+				"type": "object"
+			},
+			"function_code_secret_name": {
+				"type": "string"
+			},
+			"function_url": {
+				"type": "string"
+			},
+			"keyvault_url": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"function_url": {
+				"type": "String"
+			},
+			"function_secret": {
+				"type": "String"
+			},
+			"keyvault_url": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "metadata/tabela_atributo"
+		},
+		"annotations": []
+	}
+}

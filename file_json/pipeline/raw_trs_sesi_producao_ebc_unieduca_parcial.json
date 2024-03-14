@@ -1,0 +1,90 @@
+{
+	"name": "raw_trs_sesi_producao_ebc_unieduca_parcial",
+	"properties": {
+		"description": "Pipeline responsável por usar tabelas da raw para gerar na trs uma producao ebc e unieduca parcial que será usada para criar a producao  e unieducad definitiva na business",
+		"activities": [
+			{
+				"name": "sesi_producao_ebc_e_unieduca",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trusted__0__switch_env",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"tables": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@pipeline().parameters.databricks",
+							"type": "Expression"
+						},
+						"user_params": {
+							"value": "@pipeline().parameters.user_parameters",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\",  \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\",  \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"tables": {
+				"type": "object",
+				"defaultValue": {
+					"origins": [
+						"/evt/sesi_ebc_matriculas",
+						"/bdo/scae/matricula",
+						"/bdo/scae/ciclo_matricula",
+						"/bdo/corporativo/instituicao",
+						"/bdo/scae/departamento_instituicao",
+						"/bdo/scae/estudante",
+						"/bdo/scae/pessoa",
+						"/bdo/corporativo/endereco",
+						"/bdo/corporativo/municipio",
+						"/bdo/scae/modalidade",
+						"/bdo/oba/unidade_oba",
+						"/bdo/scae/nivel_escolaridade",
+						"/bdo/scae/matricula_situacao"
+					],
+					"destination": "/evt/sesi_producao_ebc_unieduca_parcial"
+				}
+			},
+			"databricks": {
+				"type": "object",
+				"defaultValue": {
+					"trs": {
+						"notebook": "/trs/educacao_sesi/gasto_ebc/raw_trs_sesi_producao_ebc_unieduca_parcial"
+					}
+				}
+			},
+			"user_parameters": {
+				"type": "object",
+				"defaultValue": {
+					"ano": "null"
+				}
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "trs/educacao_sesi/sesi_gratuidade"
+		},
+		"annotations": []
+	}
+}

@@ -1,0 +1,54 @@
+{
+	"name": "crawler_stop",
+	"properties": {
+		"activities": [
+			{
+				"name": "functionapp_call_stop_crawler",
+				"description": "Calls functionapp unified function to stop the crawler container. ",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "functionapp_call",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"resource": {
+							"value": "@json('{\"container\":[{\"service\": \"crawler\",\"action\":\"stop\"}, {\"service\": \"crawler_redis\",\"action\":\"stop\"},]}')",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"variables": {
+			"function_url": {
+				"type": "String"
+			},
+			"function_secret": {
+				"type": "String"
+			},
+			"keyvault_url": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "aut"
+		},
+		"annotations": []
+	}
+}

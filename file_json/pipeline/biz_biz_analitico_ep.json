@@ -1,0 +1,195 @@
+{
+	"name": "biz_biz_analitico_ep",
+	"properties": {
+		"activities": [
+			{
+				"name": "vw_pessoa_fisica_basi",
+				"description": "",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "business__0__switch_env",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"table": {
+							"value": "@pipeline().parameters.tables.vw_pessoa_fisica_basi",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\",  \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\",  \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"user_parameters": {
+							"value": "@pipeline().parameters.user_parameters",
+							"type": "Expression"
+						},
+						"sqldw_copy": {
+							"value": "@pipeline().parameters.sqldw_copy",
+							"type": "Expression"
+						},
+						"sqldw_grant": {
+							"value": "@pipeline().parameters.sqldw_grant",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "vw_matricula_basi",
+				"description": "",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "vw_pessoa_fisica_basi",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "business__0__switch_env",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"table": {
+							"value": "@pipeline().parameters.tables.vw_matricula_basi",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\",  \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\",  \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"user_parameters": {
+							"value": "@pipeline().parameters.user_parameters",
+							"type": "Expression"
+						},
+						"sqldw_copy": {
+							"value": "@pipeline().parameters.sqldw_copy",
+							"type": "Expression"
+						},
+						"sqldw_grant": {
+							"value": "@pipeline().parameters.sqldw_grant",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"tables": {
+				"type": "object",
+				"defaultValue": {
+					"vw_pessoa_fisica_basi": {
+						"origins": [
+							"/educacao_senai/analitico_ep/tb_pessoa_fisica",
+							"/educacao_senai/analitico_ep/tb_pessoa_fisica_ent_regional",
+							"/educacao_senai/analitico_ep/tb_entidade_regional"
+						],
+						"destination": "/producao/dim/vw_pessoa_fisica_basi",
+						"databricks": {
+							"notebook": "/biz/educacao_senai/trs_biz_vw_pessoa_fisica_basi"
+						}
+					},
+					"vw_matricula_basi": {
+						"origins": [
+							"/educacao_senai/analitico_ep/tb_atendimento",
+							"/educacao_senai/analitico_ep/tb_atendimento_matricula",
+							"/educacao_senai/analitico_ep/tb_unidade_atendimento",
+							"/educacao_senai/analitico_ep/tb_curso",
+							"/educacao_senai/analitico_ep/tb_catalogo_nacional_senai",
+							"/educacao_senai/analitico_ep/tb_entidade_regional",
+							"/educacao_senai/analitico_ep/tb_produto_servico",
+							"/educacao_senai/analitico_ep/tb_tipo_situacao_matricula",
+							"/producao/dim/vw_pessoa_fisica_basi"
+						],
+						"destination": "/producao/dim/vw_matricula_basi",
+						"databricks": {
+							"notebook": "/biz/educacao_senai/trs_biz_vw_matricula_basi"
+						}
+					},
+					"analitico_ep": {
+						"origins": [
+							"/educacao_senai/analitico_ep/ect_pais",
+							"/educacao_senai/analitico_ep/log_localidade",
+							"/educacao_senai/analitico_ep/tb_area_atuacao",
+							"/educacao_senai/analitico_ep/tb_atendimento",
+							"/educacao_senai/analitico_ep/tb_catalogo_nacional_senai",
+							"/educacao_senai/analitico_ep/tb_cbo",
+							"/educacao_senai/analitico_ep/tb_cnae",
+							"/educacao_senai/analitico_ep/tb_contratos_aprendizagem",
+							"/educacao_senai/analitico_ep/tb_curso",
+							"/educacao_senai/analitico_ep/tb_curso_mec",
+							"/educacao_senai/analitico_ep/tb_eixo_tecnologico_mec",
+							"/educacao_senai/analitico_ep/tb_entidade_regional",
+							"/educacao_senai/analitico_ep/tb_linha_acao_curso",
+							"/educacao_senai/analitico_ep/tb_pessoa_fisica",
+							"/educacao_senai/analitico_ep/tb_pessoa_fisica_ent_regional",
+							"/educacao_senai/analitico_ep/tb_pessoa_juridica",
+							"/educacao_senai/analitico_ep/tb_produto_servico",
+							"/educacao_senai/analitico_ep/tb_tipo_acao",
+							"/educacao_senai/analitico_ep/tb_tipo_ambiente",
+							"/educacao_senai/analitico_ep/tb_tipo_entrada_aluno",
+							"/educacao_senai/analitico_ep/tb_tipo_escola_origem",
+							"/educacao_senai/analitico_ep/tb_tipo_estado_civil",
+							"/educacao_senai/analitico_ep/tb_tipo_gratuidade",
+							"/educacao_senai/analitico_ep/tb_tipo_motivo_falta_cpf",
+							"/educacao_senai/analitico_ep/tb_tipo_necessidd_esp",
+							"/educacao_senai/analitico_ep/tb_tipo_niv_escolaridade",
+							"/educacao_senai/analitico_ep/tb_tipo_raca_cor",
+							"/educacao_senai/analitico_ep/tb_tipo_situacao_matricula",
+							"/educacao_senai/analitico_ep/tb_tipo_situacao_ocupacional",
+							"/educacao_senai/analitico_ep/tb_tipo_vinculo_pronatec",
+							"/educacao_senai/analitico_ep/tb_tmp_epmat_mes",
+							"/educacao_senai/analitico_ep/tb_unidade_atendimento",
+							"/educacao_senai/analitico_ep/tb_epmat_ch",
+							"/producao/dim/vw_matricula_basi"
+						],
+						"destination": "/producao/analitico_ep",
+						"databricks": {
+							"notebook": "/biz/educacao_senai/biz_biz_analitico_ep"
+						}
+					}
+				}
+			},
+			"user_parameters": {
+				"type": "object",
+				"defaultValue": {
+					"null": "null"
+				}
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			},
+			"sqldw_copy": {
+				"type": "bool",
+				"defaultValue": false
+			},
+			"sqldw_grant": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "biz/educacao_senai"
+		},
+		"annotations": []
+	}
+}

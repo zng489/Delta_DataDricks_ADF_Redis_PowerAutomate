@@ -1,0 +1,72 @@
+{
+	"name": "biz_biz_resultados_ssi",
+	"properties": {
+		"description": "Pipeline que gera a saída Resultados_SSI do monitoramento mensal a partir do Dados_Orc_SSI e Base_SSI",
+		"activities": [
+			{
+				"name": "resultados_ssi",
+				"description": "pipeline de biz_biz para o resultados_ssi",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "business__0__switch_env",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"table": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\",  \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\",  \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"user_parameters": {
+							"value": "@pipeline().parameters.user_parameters",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"tables": {
+				"type": "object",
+				"defaultValue": {
+					"origins": [
+						"/evt/sesi/dados_orc_ssi/",
+						"/orcamento/sesi/ssi/despesas_correntes_rateadas"
+					],
+					"destination": "/orcamento/sesi_resultados_ssi",
+					"databricks": {
+						"notebook": "/biz/visao_financeira_sesi_senai/biz_biz_sesi_resultados_ssi"
+					}
+				}
+			},
+			"user_parameters": {
+				"type": "object",
+				"defaultValue": {
+					"ano": "null",
+					"mes": "null"
+				}
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "biz/visao_financeira_sesi_senai/sesi_ebc"
+		},
+		"annotations": []
+	}
+}

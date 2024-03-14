@@ -1,0 +1,38 @@
+{
+	"name": "wkf_unitec",
+	"properties": {
+		"activities": [
+			{
+				"name": "lnd_org_raw_sgf_projetos_inovacao",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_sgf_projetos_inovacao",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "workflow/unitec"
+		},
+		"annotations": []
+	}
+}

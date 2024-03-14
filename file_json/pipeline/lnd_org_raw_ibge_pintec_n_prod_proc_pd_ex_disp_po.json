@@ -1,0 +1,121 @@
+{
+	"name": "lnd_org_raw_ibge_pintec_n_prod_proc_pd_ex_disp_po",
+	"properties": {
+		"activities": [
+			{
+				"name": "import_lnd__0__execute_crw",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "import_lnd__0__execute_crw",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"bot": {
+							"value": "@pipeline().parameters.bot",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\",  \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\",  \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"bot_params": {
+							"value": "@pipeline().parameters.bot_params",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "alerta_falha",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "import_lnd__0__execute_crw",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "send_email",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"email_users": {
+							"value": "@array('monitoramento_observatorio@cni.com.br')",
+							"type": "Expression"
+						},
+						"email_groups": {
+							"value": "@array('')",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\",  \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\",  \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "Falha",
+				"description": "500",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "alerta_falha",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Falha",
+					"errorCode": "500"
+				}
+			}
+		],
+		"parameters": {
+			"bot": {
+				"type": "string",
+				"defaultValue": "org_raw_ibge_pintec_n_prod_proc_pd_ex_disp_po"
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			},
+			"bot_params": {
+				"type": "string",
+				"defaultValue": {
+					"location": "brazilsouth",
+					"reload": "false",
+					"reset": "false",
+					"override": "false",
+					"memory_in_gb": "8",
+					"cpu": "4.0"
+				}
+			}
+		},
+		"folder": {
+			"name": "lnd/crw/oni/ibge/pintec"
+		},
+		"annotations": []
+	}
+}

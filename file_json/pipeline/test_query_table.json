@@ -1,0 +1,60 @@
+{
+	"name": "test_query_table",
+	"properties": {
+		"description": "This is a simple implementation of a lookup query. \n\nDB is the required param. All the other params are decalred explicitly in the query itself. ",
+		"activities": [
+			{
+				"name": "query",
+				"description": "This is the query itself. Source is \"oracle_parameterized\". You have to declare \"db\" dict as pipeline param. ",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "OracleSource",
+						"oracleReaderQuery": "Select * from scae.vw_smd_materializada",
+						"partitionOption": "None",
+						"queryTimeout": "02:00:00"
+					},
+					"dataset": {
+						"referenceName": "oracle_metadata_parameterized",
+						"type": "DatasetReference",
+						"parameters": {
+							"db_host": "informe",
+							"db_port": "informe",
+							"db_service_name": "informe",
+							"db_user": "informe",
+							"keyvault_secret": "informe",
+							"keyvault_url": "informe"
+						}
+					},
+					"firstRowOnly": true
+				}
+			}
+		],
+		"parameters": {
+			"db": {
+				"type": "object",
+				"defaultValue": {
+					"host": "scan-ensirac.sistema-cni.org.br",
+					"port": "1521",
+					"service_name": "ensi_rac.sistemacni.org.br",
+					"username": "usr_bigdata",
+					"secret": "oracledbpass",
+					"vendor": "Oracle"
+				}
+			}
+		},
+		"folder": {
+			"name": "test"
+		},
+		"annotations": []
+	}
+}

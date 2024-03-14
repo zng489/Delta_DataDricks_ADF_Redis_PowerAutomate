@@ -1,0 +1,285 @@
+{
+	"name": "import_crw__1__check_files",
+	"properties": {
+		"activities": [
+			{
+				"name": "check_new_files",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "get_function_code_from_keyvault",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.00:01:30",
+					"retry": 3,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": true
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@{pipeline().parameters.function_url}/api/@{variables('function_name')}?code=@{activity('get_function_code_from_keyvault').output.value}",
+						"type": "Expression"
+					},
+					"method": "POST",
+					"body": {
+						"value": "@json(concat('{', '\"method\":\"GET\"', ',', '\"adl_path\"', ':', \n'\"', pipeline().parameters.dls.folders.landing, '/crw/', pipeline().parameters.tables.schema, '__', pipeline().parameters.tables.table, '\"', ',', '\"env\"', ':', \n'\"', pipeline().parameters.env.env, '\"', '}'))",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "has_new_files",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "check_new_files",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(activity('check_new_files').output.status_code, 200)",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "no_new_files_available",
+							"description": "There are not new files available. Skip it.",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "import_crw__2__load_raw",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "new_files_found",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "import_crw__2__load_raw",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"tables": {
+										"value": "@pipeline().parameters.tables",
+										"type": "Expression"
+									},
+									"dls": {
+										"value": "@pipeline().parameters.dls",
+										"type": "Expression"
+									},
+									"databricks": {
+										"value": "@pipeline().parameters.databricks",
+										"type": "Expression"
+									},
+									"adf": {
+										"value": "@pipeline().parameters.adf",
+										"type": "Expression"
+									},
+									"ach_tables": {
+										"value": "@pipeline().parameters.ach_tables",
+										"type": "Expression"
+									},
+									"env": {
+										"value": "@pipeline().parameters.env",
+										"type": "Expression"
+									},
+									"container": {
+										"value": "@pipeline().parameters.container",
+										"type": "Expression"
+									},
+									"url": {
+										"value": "@pipeline().parameters.url",
+										"type": "Expression"
+									},
+									"function_url": {
+										"value": "@pipeline().parameters.function_url",
+										"type": "Expression"
+									},
+									"function_secret": {
+										"value": "@pipeline().parameters.function_secret",
+										"type": "Expression"
+									},
+									"keyvault_url": {
+										"value": "@pipeline().parameters.keyvault_url",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "new_files_found",
+							"description": "Simple implementation of a flux fork.",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						},
+						{
+							"name": "send_email_to_notify_new_files",
+							"description": "Will notify users for group ANALISTA_UNIEPRO about this execution presensting the message that the crawler collected new files and they are available at raw level.",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "import_crw__2__load_raw",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "send_email",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"status": "succeeded",
+									"email_users": {
+										"value": "@array('default')",
+										"type": "Expression"
+									},
+									"email_groups": {
+										"value": "@array('default')",
+										"type": "Expression"
+									},
+									"adf": {
+										"value": "@pipeline().parameters.adf",
+										"type": "Expression"
+									},
+									"env": {
+										"value": "@pipeline().parameters.env",
+										"type": "Expression"
+									},
+									"message": {
+										"value": "Ha novos arquivos disponiveis para @{pipeline().parameters.adf.adf_pipeline_name}",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "get_function_code_from_keyvault",
+				"description": "Get function code from key vault required as parameters to be used by the function.",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "set_function_code_secret_name",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": true,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@{pipeline().parameters.keyvault_url}/secrets/@{variables('function_code_secret_name')}?@{pipeline().globalParameters.key_vault.general[pipeline().parameters.env.env].params.version}",
+						"type": "Expression"
+					},
+					"method": "GET",
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "set_function_code_secret_name",
+				"description": "Sets function code's secret to get from key vault",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "function_code_secret_name",
+					"value": {
+						"value": "@pipeline().globalParameters.functions.proxy[pipeline().parameters.env.env].secret_name",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"tables": {
+				"type": "object"
+			},
+			"dls": {
+				"type": "object"
+			},
+			"databricks": {
+				"type": "object"
+			},
+			"adf": {
+				"type": "object"
+			},
+			"ach_tables": {
+				"type": "array"
+			},
+			"env": {
+				"type": "object"
+			},
+			"container": {
+				"type": "string"
+			},
+			"url": {
+				"type": "string"
+			},
+			"function_url": {
+				"type": "string"
+			},
+			"function_secret": {
+				"type": "string"
+			},
+			"keyvault_url": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"function_code_secret_name": {
+				"type": "String"
+			},
+			"function_name": {
+				"type": "String",
+				"defaultValue": "RawControl"
+			}
+		},
+		"folder": {
+			"name": "templates/raw/crw"
+		},
+		"annotations": []
+	}
+}

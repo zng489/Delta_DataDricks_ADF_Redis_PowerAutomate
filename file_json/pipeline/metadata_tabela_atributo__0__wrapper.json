@@ -1,0 +1,131 @@
+{
+	"name": "metadata_tabela_atributo__0__wrapper",
+	"properties": {
+		"description": "Wrapper for governance metadata for populating:\ninfo_tabela\ninfo_atributo",
+		"activities": [
+			{
+				"name": "metadata_tabela_atributo__1__invoke",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "set_function_url",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_function_code_secret_name",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_keyvault_url",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "metadata_tabela_atributo__1__invoke",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"body": {
+							"value": "{'adf': {'adf_factory_name': '@{pipeline().DataFactory}', 'adf_pipeline_name': '@{pipeline().Pipeline}', 'adf_pipeline_run_id': '@{pipeline().RunId}',  'adf_trigger_id': '@{pipeline().TriggerId}', 'adf_trigger_name': '@{pipeline().TriggerName}', 'adf_trigger_time': '@{pipeline().TriggerTime}',  'adf_trigger_type': '@{pipeline().TriggerType}'}, 'adl': '@{pipeline().parameters.adl}','env': '@{pipeline().parameters.env}'}",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"function_code_secret_name": {
+							"value": "@variables('function_code_secret_name')",
+							"type": "Expression"
+						},
+						"function_url": {
+							"value": "@variables('function_url')",
+							"type": "Expression"
+						},
+						"keyvault_url": {
+							"value": "@variables('keyvault_url')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "set_function_url",
+				"description": "Sets functions url.",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "function_url",
+					"value": {
+						"value": "@pipeline().globalParameters.functions.mtd[pipeline().parameters.env.env].url",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_function_code_secret_name",
+				"description": "Sets function secret_name",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "function_code_secret_name",
+					"value": {
+						"value": "@pipeline().globalParameters.functions.mtd[pipeline().parameters.env.env].secret_name",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_keyvault_url",
+				"description": "Sets keyvault url",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "keyvault_url",
+					"value": {
+						"value": "@pipeline().globalParameters.key_vault.general[pipeline().parameters.env.env].url",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"adl": {
+				"type": "string",
+				"defaultValue": "/tmp/dev/gov/metadata"
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"variables": {
+			"function_url": {
+				"type": "String"
+			},
+			"function_code_secret_name": {
+				"type": "String"
+			},
+			"keyvault_url": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "metadata/tabela_atributo"
+		},
+		"annotations": []
+	}
+}

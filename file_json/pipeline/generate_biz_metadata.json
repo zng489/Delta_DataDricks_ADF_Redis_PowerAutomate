@@ -1,0 +1,400 @@
+{
+	"name": "generate_biz_metadata",
+	"properties": {
+		"activities": [
+			{
+				"name": "biz_source",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "switch_env_done",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "/KEYRUS/@{pipeline().parameters.env}/gov/catalog/infer/generate_infer_source",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@pipeline().parameters.env.env",
+							"type": "Expression"
+						},
+						"source_name": "biz",
+						"source_type": "bigdata"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnigovdatabricks",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@variables('databricks_workspace_url')",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@variables('databricks_workspace_id')",
+							"type": "Expression"
+						},
+						"existing_cluster_id": {
+							"value": "@variables('databricks_cluster')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "biz_schema",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "switch_env_done",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "/KEYRUS/@{pipeline().parameters.env}/gov/catalog/infer/generate_infer_schema",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@pipeline().parameters.env.env",
+							"type": "Expression"
+						},
+						"source_name": "biz",
+						"source_type": "bigdata"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnigovdatabricks",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@variables('databricks_workspace_url')",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@variables('databricks_workspace_id')",
+							"type": "Expression"
+						},
+						"existing_cluster_id": {
+							"value": "@variables('databricks_cluster')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "biz_field",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "switch_env_done",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "/KEYRUS/@{pipeline().parameters.env}/gov/catalog/infer/generate_infer_field",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@pipeline().parameters.env.env",
+							"type": "Expression"
+						},
+						"source_name": "biz",
+						"source_type": "bigdata"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnigovdatabricks",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@variables('databricks_workspace_url')",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@variables('databricks_workspace_id')",
+							"type": "Expression"
+						},
+						"existing_cluster_id": {
+							"value": "@variables('databricks_cluster')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "biz_table",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "switch_env_done",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "/KEYRUS/@{pipeline().parameters.env}/gov/catalog/infer/generate_infer_table",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"env": {
+							"value": "@pipeline().parameters.env.env",
+							"type": "Expression"
+						},
+						"source_name": "biz",
+						"source_type": "bigdata"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "cnigovdatabricks",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"workspace_url": {
+							"value": "@variables('databricks_workspace_url')",
+							"type": "Expression"
+						},
+						"workspace_id": {
+							"value": "@variables('databricks_workspace_id')",
+							"type": "Expression"
+						},
+						"existing_cluster_id": {
+							"value": "@variables('databricks_cluster')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "finished_success",
+				"description": "Finished with success",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "biz_schema",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "biz_field",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "biz_source",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "biz_table",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "set_adf_variable",
+				"description": "Sets adf variable",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "adf",
+					"value": {
+						"value": "@coalesce(pipeline().parameters.adf, concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\",  \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\",  \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_databricks_workspace_url",
+				"description": "Sets databricks workspace url",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "set_adf_variable",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "databricks_workspace_url",
+					"value": {
+						"value": "@pipeline().globalParameters.databricks[json(variables('adf')).adf_factory_name][pipeline().parameters.env.env].workspace_url",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_databricks_workspace_id",
+				"description": "Sets databricks workspace id ",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "set_adf_variable",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "databricks_workspace_id",
+					"value": {
+						"value": "@pipeline().globalParameters.databricks[json(variables('adf')).adf_factory_name][pipeline().parameters.env.env].workspace_id",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "switch_env_done",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "set_databricks_workspace_url",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_databricks_workspace_id",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_databricks_cluster",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "set_databricks_cluster",
+				"description": "Sets databricks cluster",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "set_adf_variable",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "databricks_cluster",
+					"value": {
+						"value": "@pipeline().globalParameters.databricks[json(variables('adf')).adf_factory_name][pipeline().parameters.env.env].existing_cluster_id",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			},
+			"adf": {
+				"type": "object"
+			}
+		},
+		"variables": {
+			"databricks_workspace_id": {
+				"type": "String"
+			},
+			"databricks_workspace_url": {
+				"type": "String"
+			},
+			"databricks_cluster": {
+				"type": "String"
+			},
+			"adf": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "gov/infer_schema"
+		},
+		"annotations": []
+	}
+}

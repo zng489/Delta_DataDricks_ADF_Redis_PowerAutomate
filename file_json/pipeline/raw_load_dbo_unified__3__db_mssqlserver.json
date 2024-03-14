@@ -1,0 +1,379 @@
+{
+	"name": "raw_load_dbo_unified__3__db_mssqlserver",
+	"properties": {
+		"description": "This sublevel implements the basic call of the templates, avoiding to recreate all this all the time for all database definitions.",
+		"activities": [
+			{
+				"name": "mssqlserver__switch_load_type",
+				"description": "Switches load_type for MS SQL Server.\n\n\"tables\" is downstreammed as a array. That's why you have to compare with element [0]",
+				"type": "Switch",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"on": {
+						"value": "@json(pipeline().parameters.tables[0]).load_type",
+						"type": "Expression"
+					},
+					"cases": [
+						{
+							"value": "full",
+							"activities": [
+								{
+									"name": "mssql_import_full",
+									"description": "Executes them template for type_load = full for MS SQL Server instances.",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"policy": {
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "mssqlserver_import_full",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"db": {
+												"value": "@pipeline().parameters.db",
+												"type": "Expression"
+											},
+											"tables": {
+												"value": "@pipeline().parameters.tables",
+												"type": "Expression"
+											},
+											"dls": {
+												"value": "@pipeline().parameters.dls",
+												"type": "Expression"
+											},
+											"watermark": {
+												"value": "@pipeline().parameters.watermark",
+												"type": "Expression"
+											},
+											"databricks": {
+												"value": "@pipeline().parameters.databricks",
+												"type": "Expression"
+											},
+											"adf": {
+												"value": "@pipeline().parameters.adf",
+												"type": "Expression"
+											},
+											"container": {
+												"value": "@pipeline().parameters.container",
+												"type": "Expression"
+											},
+											"url": {
+												"value": "@pipeline().parameters.url",
+												"type": "Expression"
+											},
+											"keyvault_url": {
+												"value": "@pipeline().parameters.keyvault_url",
+												"type": "Expression"
+											},
+											"db_schema": {
+												"value": "@pipeline().parameters.db_schema",
+												"type": "Expression"
+											},
+											"env": {
+												"value": "@pipeline().parameters.env",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						},
+						{
+							"value": "year_overwrite",
+							"activities": [
+								{
+									"name": "mssqlserver_import_year_overwrite",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"policy": {
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "mssqlserver_import_year_overwrite",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"db": {
+												"value": "@pipeline().parameters.db",
+												"type": "Expression"
+											},
+											"tables": {
+												"value": "@pipeline().parameters.tables",
+												"type": "Expression"
+											},
+											"dls": {
+												"value": "@pipeline().parameters.dls",
+												"type": "Expression"
+											},
+											"watermark": {
+												"value": "@pipeline().parameters.watermark",
+												"type": "Expression"
+											},
+											"databricks": {
+												"value": "@pipeline().parameters.databricks",
+												"type": "Expression"
+											},
+											"adf": {
+												"value": "@pipeline().parameters.adf",
+												"type": "Expression"
+											},
+											"container": {
+												"value": "@pipeline().parameters.container",
+												"type": "Expression"
+											},
+											"url": {
+												"value": "@pipeline().parameters.url",
+												"type": "Expression"
+											},
+											"keyvault_url": {
+												"value": "@pipeline().parameters.keyvault_url",
+												"type": "Expression"
+											},
+											"db_schema": {
+												"value": "@pipeline().parameters.db_schema",
+												"type": "Expression"
+											},
+											"env": {
+												"value": "@pipeline().parameters.env",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						},
+						{
+							"value": "incremental",
+							"activities": [
+								{
+									"name": "mssqlserver_import_incremental__0__evaluator",
+									"description": "Invokes the template to load incrementally from MSSQLserver.",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"policy": {
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "mssqlserver_import_incremental__0__evaluator",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"db": {
+												"value": "@pipeline().parameters.db",
+												"type": "Expression"
+											},
+											"tables": {
+												"value": "@pipeline().parameters.tables",
+												"type": "Expression"
+											},
+											"dls": {
+												"value": "@pipeline().parameters.dls",
+												"type": "Expression"
+											},
+											"watermark": {
+												"value": "@pipeline().parameters.watermark",
+												"type": "Expression"
+											},
+											"databricks": {
+												"value": "@pipeline().parameters.databricks",
+												"type": "Expression"
+											},
+											"adf": {
+												"value": "@pipeline().parameters.adf",
+												"type": "Expression"
+											},
+											"container": {
+												"value": "@pipeline().parameters.container",
+												"type": "Expression"
+											},
+											"url": {
+												"value": "@pipeline().parameters.url",
+												"type": "Expression"
+											},
+											"keyvault_url": {
+												"value": "@pipeline().parameters.keyvault_url",
+												"type": "Expression"
+											},
+											"env": {
+												"value": "@pipeline().parameters.env",
+												"type": "Expression"
+											},
+											"functionapp_access_code": {
+												"value": "@pipeline().parameters.functionapp_access_code",
+												"type": "Expression"
+											},
+											"redis_access_key": {
+												"value": "@pipeline().parameters.redis_access_key",
+												"type": "Expression"
+											},
+											"functionapp_url": {
+												"value": "@pipeline().parameters.functionapp_url",
+												"type": "Expression"
+											},
+											"db_schema": {
+												"value": "@pipeline().parameters.db_schema",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						},
+						{
+							"value": "incremental_with_join",
+							"activities": [
+								{
+									"name": "mssqlserver_import_incremental_with_join__0__evaluator",
+									"description": "Exactly as said. Parameter mapping is direct and straight.",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"policy": {
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "mssqlserver_import_incremental_with_join__0__evaluator",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"db": {
+												"value": "@pipeline().parameters.db",
+												"type": "Expression"
+											},
+											"tables": {
+												"value": "@pipeline().parameters.tables",
+												"type": "Expression"
+											},
+											"dls": {
+												"value": "@pipeline().parameters.dls",
+												"type": "Expression"
+											},
+											"watermark": {
+												"value": "@pipeline().parameters.watermark",
+												"type": "Expression"
+											},
+											"databricks": {
+												"value": "@pipeline().parameters.databricks",
+												"type": "Expression"
+											},
+											"adf": {
+												"value": "@pipeline().parameters.adf",
+												"type": "Expression"
+											},
+											"container": {
+												"value": "@pipeline().parameters.container",
+												"type": "Expression"
+											},
+											"url": {
+												"value": "@pipeline().parameters.url",
+												"type": "Expression"
+											},
+											"keyvault_url": {
+												"value": "@pipeline().parameters.keyvault_url",
+												"type": "Expression"
+											},
+											"functionapp_access_code": {
+												"value": "@pipeline().parameters.functionapp_access_code",
+												"type": "Expression"
+											},
+											"redis_access_key": {
+												"value": "@pipeline().parameters.redis_access_key",
+												"type": "Expression"
+											},
+											"functionapp_url": {
+												"value": "@pipeline().parameters.functionapp_url",
+												"type": "Expression"
+											},
+											"env": {
+												"value": "@pipeline().parameters.env",
+												"type": "Expression"
+											},
+											"db_schema": {
+												"value": "@pipeline().parameters.db_schema",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						}
+					],
+					"defaultActivities": [
+						{
+							"name": "load_type_not_implemented",
+							"description": "\"load_type\" is undefined, that's why you've reached the \"default\" condition in this switch. We are not assuming defaults. Please review your implementation.",
+							"type": "Fail",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"message": "Load type not implemented",
+								"errorCode": "2"
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"tables": {
+				"type": "array"
+			},
+			"dls": {
+				"type": "object"
+			},
+			"adf": {
+				"type": "object"
+			},
+			"watermark": {
+				"type": "object"
+			},
+			"databricks": {
+				"type": "object"
+			},
+			"db": {
+				"type": "object"
+			},
+			"container": {
+				"type": "string"
+			},
+			"url": {
+				"type": "string"
+			},
+			"keyvault_url": {
+				"type": "string"
+			},
+			"env": {
+				"type": "object"
+			},
+			"functionapp_access_code": {
+				"type": "securestring"
+			},
+			"redis_access_key": {
+				"type": "securestring"
+			},
+			"functionapp_url": {
+				"type": "string"
+			},
+			"db_schema": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "templates/raw/bdo/raw_load_bdo_unified"
+		},
+		"annotations": []
+	}
+}

@@ -1,0 +1,64 @@
+{
+	"name": "org_raw_71_mec_inep_ies",
+	"properties": {
+		"description": "71 - MEC/INEP - Censo da Educação Superior\nIES",
+		"activities": [
+			{
+				"name": "import_uld_files__0__wrapper",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "import_uld_files__0__wrapper",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"files": {
+							"value": "@pipeline().parameters.files",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@pipeline().parameters.databricks",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\", \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\", \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"databricks": {
+				"type": "object",
+				"defaultValue": {
+					"notebook": "/fiesc/mec/inep/org_raw_mec_inep_cursos_ies"
+				}
+			},
+			"files": {
+				"type": "array",
+				"defaultValue": [
+					"{'namespace':'fiesc','file_folder':'MEC/INEP/CENSO_ES/IES','extension':'parquet','column_delimiter':';','encoding':'UTF-8','null_value':'','schema':[{'file_source': 'string', 'NU_ANO_CENSO': 'string', 'NO_REGIAO_IES': 'string', 'CO_REGIAO_IES': 'string', 'NO_UF_IES': 'string', 'SG_UF_IES': 'string', 'CO_UF_IES': 'string', 'NO_MUNICIPIO_IES': 'string', 'CO_MUNICIPIO_IES': 'string', 'IN_CAPITAL_IES': 'string', 'NO_MESORREGIAO_IES': 'string', 'CO_MESORREGIAO_IES': 'string', 'NO_MICRORREGIAO_IES': 'string', 'CO_MICRORREGIAO_IES': 'string', 'TP_ORGANIZACAO_ACADEMICA': 'string', 'TP_CATEGORIA_ADMINISTRATIVA': 'string', 'NO_MANTENEDORA': 'string', 'CO_MANTENEDORA': 'string', 'CO_IES': 'string', 'NO_IES': 'string', 'SG_IES': 'string', 'DS_ENDERECO_IES': 'string', 'DS_NUMERO_ENDERECO_IES': 'string', 'DS_COMPLEMENTO_ENDERECO_IES': 'string', 'NO_BAIRRO_IES': 'string', 'NU_CEP_IES': 'string', 'QT_TEC_TOTAL': 'bigint', 'QT_TEC_FUNDAMENTAL_INCOMP_FEM': 'bigint', 'QT_TEC_FUNDAMENTAL_INCOMP_MASC': 'bigint', 'QT_TEC_FUNDAMENTAL_COMP_FEM': 'bigint', 'QT_TEC_FUNDAMENTAL_COMP_MASC': 'bigint', 'QT_TEC_MEDIO_FEM': 'bigint', 'QT_TEC_MEDIO_MASC': 'bigint', 'QT_TEC_SUPERIOR_FEM': 'bigint', 'QT_TEC_SUPERIOR_MASC': 'bigint', 'QT_TEC_ESPECIALIZACAO_FEM': 'bigint', 'QT_TEC_ESPECIALIZACAO_MASC': 'bigint', 'QT_TEC_MESTRADO_FEM': 'bigint', 'QT_TEC_MESTRADO_MASC': 'bigint', 'QT_TEC_DOUTORADO_FEM': 'bigint', 'QT_TEC_DOUTORADO_MASC': 'bigint', 'IN_ACESSO_PORTAL_CAPES': 'string', 'IN_ACESSO_OUTRAS_BASES': 'string', 'IN_ASSINA_OUTRA_BASE': 'string', 'IN_REPOSITORIO_INSTITUCIONAL': 'string', 'IN_BUSCA_INTEGRADA': 'string', 'IN_SERVICO_INTERNET': 'string', 'IN_PARTICIPA_REDE_SOCIAL': 'string', 'IN_CATALOGO_ONLINE': 'string', 'QT_PERIODICO_ELETRONICO': 'bigint', 'QT_LIVRO_ELETRONICO': 'bigint', 'QT_DOC_TOTAL': 'bigint', 'QT_DOC_EXE': 'bigint', 'QT_DOC_EX_FEMI': 'bigint', 'QT_DOC_EX_MASC': 'bigint', 'QT_DOC_EX_SEM_GRAD': 'bigint', 'QT_DOC_EX_GRAD': 'bigint', 'QT_DOC_EX_ESP': 'bigint', 'QT_DOC_EX_MEST': 'bigint', 'QT_DOC_EX_DOUT': 'bigint', 'QT_DOC_EX_INT': 'bigint', 'QT_DOC_EX_INT_DE': 'bigint', 'QT_DOC_EX_INT_SEM_DE': 'bigint', 'QT_DOC_EX_PARC': 'bigint', 'QT_DOC_EX_HOR': 'bigint', 'QT_DOC_EX_0_29': 'bigint', 'QT_DOC_EX_30_34': 'bigint', 'QT_DOC_EX_35_39': 'bigint', 'QT_DOC_EX_40_44': 'bigint', 'QT_DOC_EX_45_49': 'bigint', 'QT_DOC_EX_50_54': 'bigint', 'QT_DOC_EX_55_59': 'bigint', 'QT_DOC_EX_60_MAIS': 'bigint', 'QT_DOC_EX_BRANCA': 'bigint', 'QT_DOC_EX_PRETA': 'bigint', 'QT_DOC_EX_PARDA': 'bigint', 'QT_DOC_EX_AMARELA': 'bigint', 'QT_DOC_EX_INDIGENA': 'bigint', 'QT_DOC_EX_COR_ND': 'bigint', 'QT_DOC_EX_BRA': 'bigint', 'QT_DOC_EX_EST': 'bigint', 'QT_DOC_EX_COM_DEFICIENCIA': 'bigint', 'CO_PROJETO': 'string', 'CO_LOCAL_OFERTA': 'string', 'NO_LOCAL_OFERTA': 'string', 'dt_atualizacao': 'timestamp'}]"
+				]
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "raw/usr/fiesc/mec/inep"
+		},
+		"annotations": []
+	}
+}

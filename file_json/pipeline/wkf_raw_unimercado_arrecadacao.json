@@ -1,0 +1,38 @@
+{
+	"name": "wkf_raw_unimercado_arrecadacao",
+	"properties": {
+		"activities": [
+			{
+				"name": "org_raw_unimercado_arrecadacao",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_unimercado_arrecadacao",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "workflow/unimercado/raw"
+		},
+		"annotations": []
+	}
+}

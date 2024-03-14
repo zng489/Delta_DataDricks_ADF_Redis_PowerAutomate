@@ -1,0 +1,342 @@
+{
+	"name": "wkf_gov_catalogo",
+	"properties": {
+		"activities": [
+			{
+				"name": "wkf_inferencia",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wkf_optimize",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_inferencia",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(variables('adf'))",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "wkf_acl",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wkf_inferencia",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_acl",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(variables('adf'))",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "wkf_size",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wkf_inferencia",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_size",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(variables('adf'))",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "wkf_optimize",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "set_adf",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_optimize",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(variables('adf'))",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "wkf_acl_ach",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wkf_acl_log",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_acl_ach",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(variables('adf'))",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "wkf_size_ach",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wkf_size",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_size_ach",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(variables('adf'))",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "wkf_acl_log",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wkf_acl",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_acl_log",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(variables('adf'))",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "wkf_gov_catalogo_only",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wkf_acl_ach",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_gov_catalogo_only",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(variables('adf'))",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "wkf_size_agragado",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "wkf_size_ach",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "wkf_size_agragado",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(variables('adf'))",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "set_adf",
+				"description": "Sets adf value",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "adf",
+					"value": {
+						"value": "@concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\",  \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\",  \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}')",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			},
+			"adf": {
+				"type": "object"
+			}
+		},
+		"variables": {
+			"adf": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "workflow/gov/catalogo_v2"
+		},
+		"annotations": []
+	}
+}

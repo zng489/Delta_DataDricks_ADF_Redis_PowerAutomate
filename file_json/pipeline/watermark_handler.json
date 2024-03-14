@@ -1,0 +1,256 @@
+{
+	"name": "watermark_handler",
+	"properties": {
+		"description": "Sets and gets watermarks in Redis\nThis one serves as a template to implement this in all needed pipelines since we won't be able to call this one from other pipelines cause pipelines can return no outputs. So keep this template and wisely implement this where it",
+		"activities": [
+			{
+				"name": "set_secret_name",
+				"description": "Sets secret name to get from key vault",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "secret_name",
+					"value": {
+						"value": "@pipeline().globalParameters.redis.watermark[pipeline().parameters.env.env].secret_name",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_keyvault_url",
+				"description": "Sets keyvault url",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "keyvault_url",
+					"value": {
+						"value": "@pipeline().globalParameters.key_vault.general[pipeline().parameters.env.env].url",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "get_redis_access_key_from_keyvault",
+				"description": "Gets redis access key from key vault. This is Required as parameters to be used by the function.",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "variables_set_done",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": true,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@{variables('keyvault_url')}/secrets/@{variables('secret_name')}?@{pipeline().globalParameters.key_vault.general[pipeline().parameters.env.env].params.version}",
+						"type": "Expression"
+					},
+					"method": "GET",
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "call_functionapp",
+				"description": "Calls functionapp via https",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "get_redis_access_key_from_keyvault",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "get_function_code_from_keyvault",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": true
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@{variables('function_url')}/api/@{pipeline().parameters.function_name}?code=@{activity('get_function_code_from_keyvault').output.value}",
+						"type": "Expression"
+					},
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/json"
+					},
+					"body": {
+						"value": "{\n    \"host\": \"@{pipeline().globalParameters.redis.watermark[pipeline().parameters.env.env].host}\",\n    \"port\": @{pipeline().globalParameters.redis.watermark[pipeline().parameters.env.env].port},\n    \"database\": @{pipeline().globalParameters.redis.watermark[pipeline().parameters.env.env].database},\n    \"access_key\": \"@{activity('get_redis_access_key_from_keyvault').output.value}\",\n    \"action\": \"@{pipeline().parameters.redis_action}\",\n    \"data\": {\n        \"key\": \"@{pipeline().parameters.redis_key}\",\n        \"value\": \"@{pipeline().parameters.redis_value}\"\n    }\n}",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_function_url",
+				"description": "Sets functions url",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "function_url",
+					"value": {
+						"value": "@pipeline().globalParameters.functions.functionapp[pipeline().parameters.env.env].url",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_function_code_secret_name",
+				"description": "Sets function code's secret to get from key vault",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "function_code_secret_name",
+					"value": {
+						"value": "@pipeline().globalParameters.functions.functionapp[pipeline().parameters.env.env].secret_name",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "get_function_code_from_keyvault",
+				"description": "Get function code from key vault required as parameters to be used by the function.",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "variables_set_done",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": true,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@{variables('keyvault_url')}/secrets/@{variables('function_code_secret_name')}?@{pipeline().globalParameters.key_vault.general[pipeline().parameters.env.env].params.version}",
+						"type": "Expression"
+					},
+					"method": "GET",
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "variables_set_done",
+				"description": "Done setting variables",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "set_function_url",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_function_code_secret_name",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_keyvault_url",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_secret_name",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			},
+			"function_name": {
+				"type": "string",
+				"defaultValue": "RedisWatermark"
+			},
+			"redis_action": {
+				"type": "string",
+				"defaultValue": "get"
+			},
+			"redis_key": {
+				"type": "string",
+				"defaultValue": "test"
+			},
+			"redis_value": {
+				"type": "object",
+				"defaultValue": {
+					"table_name": "test",
+					"vendor": "test"
+				}
+			}
+		},
+		"variables": {
+			"keyvault_url": {
+				"type": "String"
+			},
+			"secret_name": {
+				"type": "String"
+			},
+			"client_id": {
+				"type": "String"
+			},
+			"function_url": {
+				"type": "String"
+			},
+			"function_code_secret_name": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "templates/common"
+		},
+		"annotations": [
+			"watermark",
+			"redis",
+			"template"
+		]
+	}
+}

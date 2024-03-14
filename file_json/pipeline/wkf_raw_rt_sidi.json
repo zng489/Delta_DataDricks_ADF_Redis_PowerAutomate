@@ -1,0 +1,38 @@
+{
+	"name": "wkf_raw_rt_sidi",
+	"properties": {
+		"activities": [
+			{
+				"name": "org_raw_vw_rel_timesheet",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "org_raw_vw_rel_timesheet",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "workflow/rt"
+		},
+		"annotations": []
+	}
+}

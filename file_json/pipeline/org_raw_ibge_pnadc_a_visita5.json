@@ -1,0 +1,68 @@
+{
+	"name": "org_raw_ibge_pnadc_a_visita5",
+	"properties": {
+		"activities": [
+			{
+				"name": "import_crw__0__switch_env",
+				"description": "",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "import_crw__0__switch_env",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\",  \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\",  \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"tables": {
+							"value": "@pipeline().parameters.tables",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@pipeline().parameters.databricks",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"tables": {
+				"type": "object",
+				"defaultValue": {
+					"schema": "ibge",
+					"table": "pnadc_a_visita5"
+				}
+			},
+			"databricks": {
+				"type": "object",
+				"defaultValue": {
+					"notebook": "/ibge/org_raw_pnadc_a_visita5"
+				}
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			},
+			"ach_tables": {
+				"type": "string",
+				"defaultValue": "{'schema':'ibge','table':'pnadc_a_visita5'}"
+			}
+		},
+		"folder": {
+			"name": "raw/crw/ibge"
+		},
+		"annotations": []
+	}
+}
