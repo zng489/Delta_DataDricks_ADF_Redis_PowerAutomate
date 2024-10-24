@@ -1,0 +1,313 @@
+NCM;DESC_NCM;CATEGORIA
+10011100;Trigo duro, para semeadura;SEMENTES
+10019010;Trigo (exceto trigo duro) para semeadura;SEMENTES
+10019090;Trigo (exceto trigo duro ou para semeadura), e trigo com centeio;SEMENTES
+10019100;Outrros trigos e misturas de trigo com centeio, para semeadura;SEMENTES
+10020010;Centeio para semeadura;SEMENTES
+10021000;Centeio, para semeadura;SEMENTES
+10030098;Cevada em grão, exceto cervejeira ou para semeadura;SEMENTES
+10031000;Cevada, para semeadura;SEMENTES
+10040010;Aveia para semeadura;SEMENTES
+10041000;Aveia, para semeadura;SEMENTES
+10051000;Milho para semeadura;SEMENTES
+10061010;Arroz com casca (arroz paddy), para semeadura;SEMENTES
+10070010;Sorgo em grão para semeadura;SEMENTES
+10071000;Sorgo de grão, para semeadura;SEMENTES
+10082010;Painço para semeadura;SEMENTES
+10082110;Milheto (Pennisetum glaucum), para semeadura;SEMENTES
+10082190;Outros painços, para semeadura;SEMENTES
+10083010;Alpiste para semeadura;SEMENTES
+10085010;Quinoa (Chenopodium quinoa), para semeadura;SEMENTES
+10089010;Outros cereais para semeadura;SEMENTES
+12010010;Soja para semeadura;SEMENTES
+12011000;Soja, mesmo triturada, para semeadura;SEMENTES
+12022010;Amendoins descascados, para semeadura;SEMENTES
+12023000;Amendoins, não torrados nem cozidos, para semeadura;SEMENTES
+12040010;Sementes de linho (linhaça) para semeadura;SEMENTES
+12050010;Sementes de nabo silvestre ou de colza, para semeadura;SEMENTES
+12051010;Sementes de nabo silvestre, baixo teor, para semeadura;SEMENTES
+12059010;Outras sementes de nabo silvestre, para semeadura;SEMENTES
+12060010;Sementes de girassol, para semeadura;SEMENTES
+12071010;"Nozes e """"palmiste"""", para semeadura";SEMENTES
+12072010;Sementes de algodão, para semeadura;SEMENTES
+12072100;Sementes de algodão, para semeadura;SEMENTES
+12073010;Sementes de rícino, para semeadura;SEMENTES
+12074010;Sementes de gergelim, para semeadura;SEMENTES
+12075010;Sementes de mostarda, para semeadura;SEMENTES
+12077010;Sementes de melão, para semeadura;SEMENTES
+12079110;Sementes de dormideira ou papoula, para semeadura;SEMENTES
+12079910;Outras sementes e frutos oleaginosos, para semeadura;SEMENTES
+12079919;Outras sementes e frutos oleaginosos, mesmo triturados, para semeadura;SEMENTES
+12091000;Sementes de beterraba sacarina, para semeadura;SEMENTES
+12091100;Sementes de beterraba sacarina, para semeadura;SEMENTES
+12091900;Sementes de outras beterrabas, para semeadura;SEMENTES
+12092100;Sementes de alfafa (luzerna), para semeadura;SEMENTES
+12092200;Sementes de trevo (Trifolium spp), para semeadura;SEMENTES
+12092300;Sementes de festuca, para semeadura;SEMENTES
+12092400;Sementes de pasto dos prados do Kentucky, para semeadura;SEMENTES
+12092500;Sementes de azevém, para semeadura;SEMENTES
+12092900;Outras sementes forrageiras, para semeadura;SEMENTES
+12093000;Sementes de plantas herbáceas, cultivadas para flores, para semeadura;SEMENTES
+12099100;Sementes de produtos hortícolas, para semeadura;SEMENTES
+12099900;Outras sementes, frutos e esporos, para semeadura;SEMENTES
+31010000;"Adubos (fertilizantes) de origem animal ou vegetal, mesmo misturados entre si ou tratados quimicamente; adubos (fertilizantes) resultantes da mistura ou do tratamento químico de produtos de origem animal ou vegetal";FERTILIZANTES
+31021010;Ureia, mesmo em solução aquosa, com teor de nitrogênio (azoto) superior a 45 %, em peso, calculado sobre o produto anidro no estado seco;FERTILIZANTES
+31021090;Outra ureia, mesmo em solução aquosa;FERTILIZANTES
+31022100;Sulfato de amônio;FERTILIZANTES
+31022910;Sulfonitrato de amônio;FERTILIZANTES
+31022990;Outros sais duplos e misturas, de sulfato de amônio e nitrato de amônio:;FERTILIZANTES
+31023000;Nitrato de amônio, mesmo em solução aquosa;FERTILIZANTES
+31024000;Misturas de nitrato de amônio com carbonato de cálcio ou com outras matérias inorgânicas desprovidas de poder fertilizante;FERTILIZANTES
+31025011;Nitrato de sódio, natural, com teor de nitrogênio (azoto) não superior a 16,3 %, em peso;FERTILIZANTES
+31025019;Outros nitratos de sódio, naturais;FERTILIZANTES
+31025090;Outros nitratos de sódio;FERTILIZANTES
+31026000;Sais duplos e misturas de nitrato de cálcio e nitrato de amônio;FERTILIZANTES
+31027000;Cianamida cálcica;FERTILIZANTES
+31028000;Misturas de ureia com nitrato de amônio em soluções aquosas ou amoniacais;FERTILIZANTES
+31029000;Outros adubos ou fertilizantes minerais/químicos, nitrogenados, incluindo as misturas não mencionadas nas subposições precedentes;FERTILIZANTES
+31031010;Superfosfatos, com teor de pentóxido de fósforo (P2O5) não superior a 22 %, em peso;FERTILIZANTES
+31031020;Superfosfatos, com teor de pentóxido de fósforo (P2O5) superior a 22 % mas não superior a 45 %, em peso;FERTILIZANTES
+31031030;Superfosfatos, com teor de pentóxido de fósforo (P2O5) superior a 45 %, em peso;FERTILIZANTES
+31031100;Superfosfatos, que contenham, em peso, 35 % ou mais de pentóxido de difósforo (P2O5);FERTILIZANTES
+31031900;Outros superfosfatos;FERTILIZANTES
+31039011;Hidrogeno-ortofosfato de cálcio, com teor de pentóxido de fósforo (P2O5) não superior a 46 %, em peso;FERTILIZANTES
+31039019;Outros hidrogenos-ortofosfatos de cálcio;FERTILIZANTES
+31039090;Outros adubos ou fertilizantes minerais/químicos, fosfatados;FERTILIZANTES
+31041000;Carnalita e outros sais de potássio, naturais, em bruto;FERTILIZANTES
+31042010;Cloreto de potássio, com teor de óxido de potássio (K2O) não superior a 60 %, em peso;FERTILIZANTES
+31042090;Outros cloretos de potássio;FERTILIZANTES
+31043010;Sulfato de potássio, com teor de óxido de potássio (K2O) não superior a 52 %, em peso;FERTILIZANTES
+31043090;Outros sulfatos de potássio;FERTILIZANTES
+31049010;Sulfato duplo de potássio e magnésio, com teor de óxido de potássio (K2O) superior a 30 %, em peso;FERTILIZANTES
+31049090;Outros adubos ou fertilizantes minerais/químicos, potássicos;FERTILIZANTES
+31051000;Produtos do presente Capítulo (adubos ou fertilizantes) apresentados em tabletes ou formas semelhantes, ou ainda em embalagens com peso bruto não superior a 10 kg;FERTILIZANTES
+31052000;Adubos (fertilizantes) minerais ou químicos, que contenham os três elementos fertilizantes: nitrogênio (azoto), fósforo e potássio;FERTILIZANTES
+31053000;Hidrogeno-ortofosfato de diamônio (fosfato diamônico ou diamoniacal);FERTILIZANTES
+31053010;Hidrogeno-ortofosfato de diamônio (fosfato diamônico ou diamoniacal), com teor de arsênio superior ou igual a 6 mg/kg;FERTILIZANTES
+31053090;Outros hidrogeno-ortofosfato de diamônio (fosfato diamônico ou diamoniacal);FERTILIZANTES
+31054000;Diidrogeno-ortofosfato de amônio (fosfato monoamônico ou monoamoniacal), mesmo misturado com hidrogeno-ortofosfato de diamônio (fosfato diamônico ou diamoniacal);FERTILIZANTES
+31055100;Adubos ou fertilizantes que contenham nitratos e fosfatos;FERTILIZANTES
+31055900;Outros adubos/fertilizantes minerais químicos, com nitrogênio e fósforo;FERTILIZANTES
+31056000;Adubos (fertilizantes) minerais ou químicos, que contenham os dois elementos fertilizantes: fósforo e potássio;FERTILIZANTES
+31059011;Nitrato de sódio potássico, com teor de nitrogênio (azoto) não superior a 15 %, em peso, e de óxido de potássio (K2O) não superior a 15 %, em peso;FERTILIZANTES
+31059019;Outros nitratos de sódio potássico;FERTILIZANTES
+31059090;Outros adubos/fertilizantes minerais químicos com nitrogênio e potássio;FERTILIZANTES
+38081010;Inseticidas para uso domissanitário direto;DEFENSIVOS
+38081021;"Inseticida à base de acefato/""""Bacillus thuringiensis""""";DEFENSIVOS
+38081022;Inseticida à base de cipermetrinas ou de permetrina;DEFENSIVOS
+38081023;Inseticida à base de monocrotofos ou de dicrotofos;DEFENSIVOS
+38081025;Inseticida à base de fosfeto de alumínio;DEFENSIVOS
+38081026;Inseticida à base de triclorfon ou de diclorvos;DEFENSIVOS
+38081027;Inseticida à base de oleo mineral;DEFENSIVOS
+38081029;Outros inseticidas apresentados de outro modo;DEFENSIVOS
+38082010;Fungicidas para uso domissanitário direto;DEFENSIVOS
+38082021;Fungicida à base de hidróxido de cobre, etc.;DEFENSIVOS
+38082022;Fungicida à base de ziram ou de enxofre;DEFENSIVOS
+38082023;Fungicida à base de mancozeb ou de maneb;DEFENSIVOS
+38082025;Fungicida à base de compostos de cromo/cobre ou arsênio;DEFENSIVOS
+38082026;Fungicida à base de thiram;DEFENSIVOS
+38082029;Outros fungicidas apresentados de outro modo;DEFENSIVOS
+38083010;Herbicidas para uso domissanitario direto;DEFENSIVOS
+38083021;Herbicida à base de 2, 4-d/de 2, 4-db/seus derivados/de mcpa;DEFENSIVOS
+38083022;Herbicida à base de atrazina, alaclor, diuron ou ametrina;DEFENSIVOS
+38083023;Herbicida à base glifosato, seus sais, de imazaquim, etc;DEFENSIVOS
+38083024;Herbicida à base de dicloreto de paraquat, propanil, etc.;DEFENSIVOS
+38083025;Herbicida à base de pentaclorofenol/seus sais, etc.;DEFENSIVOS
+38083026;Herbicida à base de imazetapir;DEFENSIVOS
+38083029;Outros herbicidas apresentados de outro modo;DEFENSIVOS
+38083031;Inibidores de germinação para uso domissanitario direto;DEFENSIVOS
+38083032;Outros inibidores de germinação apresentados de outro modo;DEFENSIVOS
+38083040;Reguladores de crescimento de plantas, para uso domissanitário direto;DEFENSIVOS
+38083059;Outros reguladores de crescimento de plantas, apresentados de outro modo;DEFENSIVOS
+38084010;Desinfetantes para uso domissanitário direto;DEFENSIVOS
+38084021;Desinfetante à base de thiram;DEFENSIVOS
+38084022;Desinfetante à base de 2-(tiocianometiltio)benzotiazol;DEFENSIVOS
+38084029;Outros desinfetantes apresentados de outro modo;DEFENSIVOS
+38085010;Inseticidas, rodenticidas, fungicidas, herbicidas, apresentados em formas ou embalagens exclusivamente para uso direto em aplicações domissanitárias;DEFENSIVOS
+38085021;Inseticida à base de metamidofós ou monocrotofós;DEFENSIVOS
+38085029;Outros inseticidas, apresentados de outro modo;DEFENSIVOS
+38085910;Outras mercadorias mencionadas na Nota de subposições 1 do presente Capítulo, apresentadas em formas ou embalagens exclusivamente para uso direto em aplicações domissanitárias;DEFENSIVOS
+38085929;Mercadorias à base de outras substâncias, apresentadas de outro modo;DEFENSIVOS
+38086100;Mercadorias mencionadas na Nota de subposições 2 do presente Capítulo, acondicionadas em embalagens com um conteúdo de peso líquido não superior a 300 g;DEFENSIVOS
+38086210;Mercadorias mencionadas na Nota de subposições 2 do presente Capítulo, acondicionadas em embalagens com um conteúdo de peso líquido superior a 300 g, mas não superior a 7,5 kg, à base de alfa-cipermetrina (ISO);DEFENSIVOS
+38086290;Outras mercadorias mencionadas na Nota de subposições 2 do presente Capítulo, acondicionadas em embalagens com um conteúdo de peso líquido não superior a 300 g;DEFENSIVOS
+38086910;Outras mercadorias mencionadas na Nota de subposições 2 do presente Capítulo, à base de alfa-cipermetrina (ISO);DEFENSIVOS
+38086990;Outras mercadorias mencionadas na Nota de subposições 2 do presente Capítulo,;DEFENSIVOS
+38089010;Rodenticidas/outros produtos semelhante, para uso domissanitário direto;DEFENSIVOS
+38089021;Acaricidas à base amitraz, clorfenvinfos, metamidofos, etc;DEFENSIVOS
+38089022;Acaricidas à base de ciexatin, óxido de fembutatin, etc.;DEFENSIVOS
+38089023;Outros acaricidas apresentados de outro modo;DEFENSIVOS
+38089025;Outros nematicidas apresentados de outro modo;DEFENSIVOS
+38089026;Raticidas apresentados de outro modo;DEFENSIVOS
+38089029;Outros rodenticidas/produtos semelhantes, apresentados de outro modo;DEFENSIVOS
+38089110;Inseticidas embalagens para uso domissanitário direto;DEFENSIVOS
+38089119;Outros inseticidas apresentados em formas ou embalagens exclusivamente para uso direto em aplicações domissanitárias;DEFENSIVOS
+38089120;Inseticidas apresentados de outro modo, contendo bromometano (brometo de metila) ou bromoclorometano;DEFENSIVOS
+38089121;Inseticidas à base de acefato;DEFENSIVOS
+38089122;Inseticidas à base de cipermetrinas ou permetrina;DEFENSIVOS
+38089125;Inseticida à base de fosfeto de alumínio;DEFENSIVOS
+38089126;Inseticida à base de triclorfon ou diclorvós;DEFENSIVOS
+38089127;Inseticida à base de óleo mineral ou tiometon;DEFENSIVOS
+38089129;Outros inseticidas, apresentados de outro modo;DEFENSIVOS
+38089191;Inseticida à base de acefato ou de Bacillus thuringiensis, apresentado de outro modo;DEFENSIVOS
+38089192;Inseticida à base de cipermetrinas ou de permetrina, apresentado de outro modo;DEFENSIVOS
+38089195;Inseticida à base de fosfeto de alumínio, apresentado de outro modo;DEFENSIVOS
+38089196;Inseticida à base de diclorvós ou de triclorfon, apresentado de outro modo;DEFENSIVOS
+38089197;Inseticida à base de óleo mineral ou de tiometon, apresentado de outro modo;DEFENSIVOS
+38089199;Outros inseticidas, apresentados de outro modo;DEFENSIVOS
+38089210;Fungicidas embalados para uso domissanitário direto;DEFENSIVOS
+38089219;Outros fungicidas, apresentados em formas ou embalagens exclusivamente para uso direto em aplicações domissanitárias;DEFENSIVOS
+38089220;Fungicidas apresentados de outro modo, contendo bromometano (brometo de metila) ou bromoclorometano;DEFENSIVOS
+38089221;Fungicidas à base de hidróxido de cobre, óxido cuproso;DEFENSIVOS
+38089222;Fungicida à base de ziram ou de enxofre;DEFENSIVOS
+38089223;Fungicida à base de mancozeb ou maneb;DEFENSIVOS
+38089225;Fungicida à base de composto de cromo, cobre, arsênio;DEFENSIVOS
+38089226;Fungicida à base de thiram;DEFENSIVOS
+38089229;Outros fungicidas apresentados de outro modo;DEFENSIVOS
+38089291;Fungicidas à base de hidróxido de cobre, de oxicloreto de cobre ou de óxido cuproso;DEFENSIVOS
+38089292;Fungicida à base de enxofre ou de ziram;DEFENSIVOS
+38089293;Fungicida à base de mancozeb ou de maneb;DEFENSIVOS
+38089295;Fungicida à base de compostos de arsênio, cobre ou cromo, exceto os produtos do subitem 3808.92.91;DEFENSIVOS
+38089296;Fungicida à base de thiram;DEFENSIVOS
+38089297;Fungicida à base de propiconazol;DEFENSIVOS
+38089299;Outros fungicidas apresentados de outro modo;DEFENSIVOS
+38089310;Herbicidas embalados para uso domissanitário direto;DEFENSIVOS
+38089311;Herbicidas apresentados em formas ou embalagens exclusivamente para uso direto em aplicações domissanitárias, que contenham bromometano (brometo de metila) ou bromoclorometano;DEFENSIVOS
+38089319;Outros herbicidas apresentados em formas ou embalagens exclusivamente para uso direto em aplicações domissanitárias;DEFENSIVOS
+38089321;Herbicidas apresentados de outro modo, que contenham bromometano (brometo de metila) ou bromoclorometano;DEFENSIVOS
+38089322;Outros herbicidas apresentados de outro modo, à base de ácido 2,4-diclorofenoxiacético (2,4-D), de ácido 4-(2,4-diclorofenoxi)butírico (2,4-DB), de ácido (4-cloro-2-metil)fenoxiacético (MCPA) ou de derivados de 2,4-D ou 2,4-DB;DEFENSIVOS
+38089323;Herbicida à base de alaclor, de ametrina, de atrazina ou de diuron;DEFENSIVOS
+38089324;Herbicida à base de glifosato ou seus sais, de imazaquim ou de lactofen;DEFENSIVOS
+38089325;Herbicida à base de dicloreto de paraquat, de propanil ou de simazina;DEFENSIVOS
+38089326;Herbicida à base de trifluralina;DEFENSIVOS
+38089327;Herbicida à base de imazetapir;DEFENSIVOS
+38089328;Herbicidas à base de hexazinona;DEFENSIVOS
+38089329;Outros herbicidas apresentados de outro modo;DEFENSIVOS
+38089331;Inibidores de germinação, que contenham bromometano (brometo de metila) ou bromoclorometano;DEFENSIVOS
+38089333;Outros inibidores de germinação apresentados de outro modo;DEFENSIVOS
+38089349;Outros reguladores de crescimento das plantas apresentados em formas ou embalagens exclusivamente para uso direto em aplicações domissanitárias;DEFENSIVOS
+38089352;Reguladores de crescimento das plantas, apresentados de outro modo, à base de hidrazida maléica;DEFENSIVOS
+38089359;Outros reguladores de crescimento das plantas, apresentados de outro modo;DEFENSIVOS
+38089410;Desinfetantes embalados para venda a retalho;DEFENSIVOS
+38089411;Desinfetantes, apresentados em formas ou embalagens exclusivamente para uso direto em aplicações domissanitárias, que contenham bromometano (brometo de metila) ou bromoclorometano;DEFENSIVOS
+38089419;Outros desinfetantes, apresentados em formas ou embalagens exclusivamente para uso direto em aplicações domissanitárias;DEFENSIVOS
+38089421;Desinfetantes apresentados de outro modo, que contenham bromometano (brometo de metila) ou bromoclorometano;DEFENSIVOS
+38089422;Desinfetantes apresentados de outro modo, à base de 2-(tiocianometiltio) benzotiazol;DEFENSIVOS
+38089429;Outros desinfetantes apresentados de outro modo;DEFENSIVOS
+38089910;Outros rodenticidas e semelhantes, embalados para uso domissanitário direto;DEFENSIVOS
+38089911;Rodenticidas apresentados em formas ou embalagens exclusivamente para uso direto em aplicações domissanitárias, que contenham bromometano (brometo de metila) ou bromoclorometano;DEFENSIVOS
+38089919;Outros rodenticidas apresentados em formas ou embalagens exclusivamente para uso direto em aplicações domissanitárias;DEFENSIVOS
+38089920;Outros rodenticidas apresentados de outro modo, contendo bromometano (brometo de metila) ou bromoclorometano;DEFENSIVOS
+38089921;Acaricidas à base de amitraz, clorfenvinfós, etc;DEFENSIVOS
+38089923;Outros acaricidas não apresentados para venda a varejo;DEFENSIVOS
+38089926;Raticidas não apresentados para venda a varejo;DEFENSIVOS
+38089929;Outros rodenticidas e preparações semelhantes, não apresentados para venda a varejo;DEFENSIVOS
+38089991;Acaricidas à base de amitraz, de clorfenvinfós ou de propargite;DEFENSIVOS
+38089993;Outros acaricidas;DEFENSIVOS
+38089994;Nematicidas à base de metam sódio;DEFENSIVOS
+38089995;Outros nematicidas apresentados de outro modo;DEFENSIVOS
+38089996;Raticidas apresentados de outro modo;DEFENSIVOS
+38089999;Outros rodenticidas apresentados de outro modo;DEFENSIVOS
+7011000;Batatas, frescas ou refrigeradas, para semeadura;SEMENTES
+7031011;Cebolas, frescas ou refrigeradas, para semeadura;SEMENTES
+7031021;Chalotas, frescas ou refrigeradas, para semeadura;SEMENTES
+7032010;Alhos, frescos ou refrigerados, para semeadura;SEMENTES
+7039010;Alhos-porros e outros produtos hortícolas aliáceos, frescos ou refrigerados, para semeadura;SEMENTES
+7099011;Milho doce, para semeadura;SEMENTES
+7131010;Ervilhas (Pisum sativum), secos, em grão, mesmo pelados ou partidos, para semeadura;SEMENTES
+7132010;Grão-de-bico, seco, para semeadura;SEMENTES
+7133110;Feijões (vigna mungo ou radiata) secos, para semeadura;SEMENTES
+7133210;Feijão-adzuki (Phaseolus ou Vigna angularis), seco, para semeadura;SEMENTES
+7133311;Feijão comum ((Phaseolus vulgaris), preto, seco, para semeadura;SEMENTES
+7133321;Feijão comum, branco, seco, para semeadura;SEMENTES
+7133391;Outros feijões comuns, secos, para semeadura;SEMENTES
+7133510;Feijão-fradinho (Vigna unguiculata), para semeadura;SEMENTES
+7133910;Outros feijões (Vigna ou Phaseolus), secos, para semeadura;SEMENTES
+7134010;Lentilhas secas, para semeadura;SEMENTES
+7135010;Favas (Vicia faba var. major) e fava forrageira (Vicia faba var. equina, Vicia faba var. minor), secas, para semeadura;SEMENTES
+7139010;Outros legumes de vagem, secos, em grãos, para semeadura;SEMENTES
+82019000;Outras ferramentas manuais para agricultura, horticultura e silvicultura;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+82084000;Facas e lâminas cortantes, para máquinas ou para aparelhos mecânicos, para máquinas de agricultura, horticultura ou silvicultura;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84244100;Pulverizadores portáteis, para agricultura ou horticultura;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84244900;Outros pulverizadores, para a agricultura ou horticultura;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84248111;Aparelhos manuais para projetar, dispersar ou pulverizar fungicidas, inseticidas e outros produtos para combate a pragas;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84248119;Outros aparelhos para pulverizar fungicidas/inseticidas, etc.;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84248121;Irrigadores e sistemas de irrigação, por aspersão;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84248129;Outros aparelhos irrigadores e sistemas de irrigação;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84248190;Outros aparelhos para agricultura ou horticultura;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84248221;Irrigadores e sistemas de irrigação por aspersão, para agricultura ou horticultura;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84248229;Irrigadores e sistemas de irrigação para a agricultura ou horticultura, exceto por aspersão;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84248290;Outros aparelhos para agricultura ou horticultura;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84321000;Arados e charruas;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84322100;Grades de discos, de uso agrícola, hortícola ou florestal, para preparação ou trabalho do solo ou para cultura;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84322900;Outras grades, escarificadores, cultivadores, enxadas, etc.;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84323010;Semeadores-adubadores;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84323090;Outros semeadores, plantadores e transplantadores;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84323110;Semeadores-adubadores, de plantio direto;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84323190;Plantadores e transplantadores, de plantio direto;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84323910;Semeadores-adubadores, exceto para plantio direto;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84323990;Plantadores e transplantadores, exceto de plantio direto;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84324000;Espalhadores de estrume e distribuidores de adubos (fertilizantes);MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84324100;Espalhadores de estrume;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84324200;Distribuidores de adubos (fertilizantes);MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84328000;Outras máquinas e aparelhos de uso agrícola, hortícola ou florestal, para preparação ou trabalho do solo;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84329000;Partes de máquinas e aparelhos de uso agrícola, hortícola ou florestal, para preparação ou trabalho do solo;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84331100;Cortadores de grama, motorizados, cujo dispositivo de corte gira num plano horizontal;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84331900;Outros cortadores de grama;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84332010;Ceifeiras, incluindo as barras de corte para montagem em tratores, com dispositivo de acondicionamento em fileiras constituído por rotor de dedos e pente;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84332090;Outras ceifeiras, incluindo as barras de corte para montagem em tratores;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84333000;Outras máquinas e aparelhos para colher e dispor o feno;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84334000;Enfardadeiras de palha ou de forragem, incluindo as enfardadeiras-apanhadeiras;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84335100;Colheitadeiras combinadas com debulhadoras;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84335200;Outras máquinas e aparelhos para debulha;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84335300;Máquinas para colheita de raízes ou tubérculos;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84335911;Colheitadeiras de algodão, com capacidade para trabalhar até dois sulcos de colheita e potência no volante inferior ou igual a 59,7 kW (80 HP);MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84335919;Outras colheitadeiras de algodão;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84335990;Outras máquinas e aparelhos para colheita;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84336010;Selecionadores de frutas;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84336021;Máquinas para limpar ou selecionar ovos, com capacidade superior ou igual a 250.000 ovos por hora;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84336029;Outras máquinas para limpar ou selecionar ovos;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84336090;Máquinas para limpar/selecionar ovos e outros produtos agricolas;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84339010;Partes de cortadores de grama;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84339090;Partes de outras máquinas e aparelhos para colheita, debulha, etc.;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84341000;Máquinas de ordenhar;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84342010;Máquinas e aparelhos para tratamento do leite;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84342090;Outras máquinas e aparelhos para a indústria de lacticínios;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84349000;Partes de máquinas e aparelhos de ordenhar/indústria de laticínios;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84351000;Máquinas e aparelhos para fabricação de vinho, sidra, suco de frutas, etc.;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84359000;Partes de máquinas e aparelhos para fabricação de vinho, sidra, etc.;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84361000;Máquinas e aparelhos para preparação de alimentos ou rações para animais;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84362100;Chocadeiras e criadeiras, para avicultura;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84362900;Outras máquinas e aparelhos para avicultura;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84368000;Outras máquinas e aparelhos para agricultura, horticultura, etc;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84369100;Partes de máquinas e aparelhos para avicultura;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84369900;Partes de máquinas e aparelhos para agricultura, horticultura, etc.;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84371000;Máquinas para limpeza, seleção, etc, de grãos, produtos hortícolas, secos;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84378010;Máquinas e aparelhos para trituração ou moagem de grãos;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84378090;Outras máquinas e aparelhos para a indústria de moagem, tratamento de cereais, etc;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84379000;Partes de máquinas e aparelhos para limpeza, seleção, etc, de grãos;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+87079010;"Carrocerias pata """"dumpers""""/tratores, exceto rodoviário, inclusive cabina";MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+87082912;"Grades de radiadores para """"dumpers""""/tratores, exceto de uso rodoviário";MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+87082913;"Portas para """"dumpers"""" e tratores exceto os rodoviários";MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+87083011;"Guarnições de freios, montadas, para tratores e """"dumpers""""";MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+87083110;"Guarnições de freios montadas para """"dumpers"""" e tratores";MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+87084010;"Caixas de marchas para """"dumpers""""/tratores, exceto rodoviários";MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+87084011;"Servo-assistidas, próprias para torques de entrada superiores ou iguais a 750 Nm, de tratores/""""dumpers""""";MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+87084019;"Outras caixas de marchas para tratores ou """"dumpers""""";MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+87085010;"Eixos de transmissão com diferencial para """"dumpers""""/tratores";MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+87085012;"Eixos e partes, exceto de transmissão, para tratores/""""dumpers""""";MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+87085019;"Eixos de transmissão com diferencial para """"dumpers""""/tratores";MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+87085091;"Eixos e partes, exceto de transmissão, para tratores/""""dumpers""""";MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+87086010;"Outros eixos e suas partes, para """"dumpers""""/tratores, exceto rodoviário";MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+87087010;"Rodas de eixos propulsor, suas partes, para """"dumpers""""/tratores";MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+87089411;"Volante de direção para """"dumpers"""" e tratores, exceto rodoviário";MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+87089412;"Barra de direção para """"dumpers"""" e tratores, exceto rodoviários";MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+87089413;"Caixa de direção para """"dumpers"""" e tratores, exceto rodoviários";MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+87089990;Outras partes e acessórios para tratores e veículos automóveis;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+87162000;Reboques/semi-reboques autocarregáveis, etc, para uso agrícola;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+38249077;Adubos (fertilizantes) foliares contendo zinco ou manganês;FERTILIZANTES
+38249977;Adubos (fertilizantes) foliares contendo zinco ou manganês;FERTILIZANTES
+84248900;Outros aparelhos mecânicos, para projetar, etc, líquidos/pós;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84248910;Aparelho de pulverização constituído por botão de pressão com bocal,válvula tipo aerossol,junta de estanqueidade e tubo de imersão,montado sobre um corpo metálico,utilizado para ser montado no gargalo de recipientes,para projetar líquidos,pós ou espumas;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84248920;Aparelhos automáticos para projetar lubrificantes sobre pneumáticos, contendo uma estação de secagem por ar pré-aquecido e dispositivos para agarrar e movimentar pneumáticos;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
+84248990;Outros aparelhos mecânicos, para projetar, etc, líquidos, pós;MÁQUINAS, EQUIPAMENTOS E ACESSÓRIOS
