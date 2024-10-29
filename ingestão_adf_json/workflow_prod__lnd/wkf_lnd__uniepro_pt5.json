@@ -1,0 +1,1469 @@
+{
+	"name": "wkf_lnd__uniepro_pt5",
+	"properties": {
+		"activities": [
+			{
+				"name": "PINTEC_PO",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd_org_raw_ibge_pintec_efei_pand_rel_sust_po",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "PINTEC_PO",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_ibge_pintec_efei_pand_rel_sust_po",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_ibge_pintec_grau_nov_prod_po",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "PINTEC_PO",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_ibge_pintec_grau_nov_prod_po",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_ibge_pintec_grau_obst_po",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "PINTEC_PO",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_ibge_pintec_grau_obst_po",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_ibge_pintec_n_grau_obst_po",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "PINTEC_PO",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_ibge_pintec_n_grau_obst_po",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_ibge_pintec_n_prod_proc_pd_ex_disp_po",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "PINTEC_PO",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_ibge_pintec_n_prod_proc_pd_ex_disp_po",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_ibge_pintec_proc_neg_func_po",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "PINTEC_PO",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_ibge_pintec_proc_neg_func_po",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_ibge_pintec_prod_proc_disp_pd_po",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "PINTEC_PO",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_ibge_pintec_prod_proc_disp_pd_po",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_ibge_pintec_prod_proc_evolu_disp_po",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "PINTEC_PO",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_ibge_pintec_prod_proc_evolu_disp_po",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_ibge_pintec_prod_proc_rel_coop_po",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "PINTEC_PO",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_ibge_pintec_prod_proc_rel_coop_po",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_ibge_pintec_inov_prod_proces_po",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "PINTEC_PO",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_ibge_pintec_inov_prod_proces_po",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "completed",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "lnd_org_raw_ibge_pintec_efei_pand_rel_sust_po",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_ibge_pintec_grau_nov_prod_po",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_ibge_pintec_grau_obst_po",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_ibge_pintec_n_grau_obst_po",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_ibge_pintec_n_prod_proc_pd_ex_disp_po",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_ibge_pintec_proc_neg_func_po",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_ibge_pintec_prod_proc_disp_pd_po",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_ibge_pintec_prod_proc_evolu_disp_po",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_ibge_pintec_prod_proc_rel_coop_po",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_ibge_pintec_inov_prod_proces_po",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_camara_dep_dados_abertos_votacoes",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_un_comtrade_partner",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_un_comtrade_reporter",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_un_comtrade_comer_wld_commodity_annual",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_un_comtrade_comer_wld_service_annual",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_un_comtrade_comer_wld_commodity_monthly",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_inpi_badepi_patentes",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_bacen_estban_mensal_municipios",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_capes_cursos_pos_graduacao",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_capes_publicacoes",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_mcti_inovadata_companies",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_abstartups_lista_startups",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_anprotec_mapa_associados",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_mcti_empresas_lei_do_bem",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_bndes_operacoes_indiretas_automaticas",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_bndes_operacoes_nao_automaticas",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_mcti_pnipe_laboratorios",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_embrapa_unidade_embrapa_brasil",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_finep_atlas_fin_nao_reembolsavel",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_finep_indicadores_finaciamento",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_cgu_transparencia_contratacoes",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "lnd_org_raw_cgu_transparencia_notas_fiscais",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd_org_raw_camara_dep_dados_abertos_votacoes",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "CAMARA_DEP",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_camara_dep_dados_abertos_votacoes",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "CAMARA_DEP",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd_org_raw_camara_dep_dados_abertos_proposicoes",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "CAMARA_DEP",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_camara_dep_dados_abertos_proposicoes",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_camara_dep_dados_abertos_eventos",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "CAMARA_DEP",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_camara_dep_dados_abertos_eventos",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_camara_dep_dados_abertos_orgaos",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "CAMARA_DEP",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_camara_dep_dados_abertos_orgaos",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_camara_dep_dados_abertos_frentes_parlament",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "CAMARA_DEP",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_camara_dep_dados_abertos_frentes_parlamentares",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_camara_dep_dados_abertos_atividade_parlamen",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "CAMARA_DEP",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_camara_dep_dados_abertos_atividade_parlamentar",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_camara_dep_dados_abertos_funcionarios",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "CAMARA_DEP",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_camara_dep_dados_abertos_funcionarios",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_camara_dep_dados_abertos_tesauro",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "CAMARA_DEP",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_camara_dep_dados_abertos_tesauro",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_un_comtrade_partner",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "COMTRADE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_un_comtrade_partner",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "COMTRADE",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd_org_raw_un_comtrade_reporter",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "COMTRADE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_un_comtrade_reporter",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_un_comtrade_comer_wld_commodity_annual",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "COMTRADE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_un_comtrade_comer_wld_commodity_annual",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_un_comtrade_comer_wld_commodity_monthly",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "COMTRADE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_un_comtrade_comer_wld_commodity_monthly",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_un_comtrade_comer_wld_service_annual",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "COMTRADE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_un_comtrade_comer_wld_service_annual",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "INPI",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd_org_raw_inpi_badepi_patentes",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "INPI",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_inpi_badepi_patentes",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "BACEN",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd_org_raw_bacen_estban_mensal_municipios",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "BACEN",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_bacen_estban_mensal_municipios",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "CAPES",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd_org_raw_capes_cursos_pos_graduacao",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "CAPES",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_capes_cursos_pos_graduacao",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_capes_publicacoes",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "CAPES",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_capes_publicacoes",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "MCTI",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "ABSTARTUPS",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "ANPROTEC",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd_org_raw_abstartups_lista_startups",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "ABSTARTUPS",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_abstartups_lista_startups",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_anprotec_mapa_associados",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "ANPROTEC",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_anprotec_mapa_associados",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_mcti_inovadata_companies",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "MCTI",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_mcti_inovadata_companies",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_mcti_empresas_lei_do_bem",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "MCTI",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_mcti_empresas_lei_do_bem",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "BNDES",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd_org_raw_bndes_operacoes_indiretas_automaticas",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "BNDES",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_bndes_operacoes_indiretas_automaticas",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_bndes_operacoes_nao_automaticas",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "BNDES",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_bndes_operacoes_nao_automaticas",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "EMBRAPA",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "FINEP",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd_org_raw_mcti_pnipe_laboratorios",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "MCTI",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_mcti_pnipe_laboratorios",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_embrapa_unidade_embrapa_brasil",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "EMBRAPA",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_embrapa_unidade_embrapa_brasil",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_finep_atlas_fin_nao_reembolsavel",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "FINEP",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_finep_atlas_fin_nao_reembolsavel",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_finep_indicadores_finaciamento",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "FINEP",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_finep_indicadores_finaciamento",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "CGU",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "lnd_org_raw_cgu_transparencia_contratacoes",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "CGU",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_cgu_transparencia_contratacoes",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "lnd_org_raw_cgu_transparencia_notas_fiscais",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "CGU",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "lnd_org_raw_cgu_transparencia_notas_fiscais",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "workflow/uniepro/lnd"
+		},
+		"annotations": []
+	}
+}

@@ -1,0 +1,67 @@
+{
+	"name": "org_raw_mte_rais_estabelecimentos_2018_2023",
+	"properties": {
+		"description": "Paramas for system OBA, implemented via user updated files.",
+		"activities": [
+			{
+				"name": "import_uld_files__0__wrapper",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "import_uld_files__0__wrapper",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"files": {
+							"value": "@pipeline().parameters.files",
+							"type": "Expression"
+						},
+						"databricks": {
+							"value": "@pipeline().parameters.databricks",
+							"type": "Expression"
+						},
+						"adf": {
+							"value": "@json(concat('{\"adf_factory_name\": \"', pipeline().DataFactory, '\", \"adf_pipeline_name\": \"', pipeline().Pipeline, '\", \"adf_pipeline_run_id\": \"', pipeline().RunId, '\", \"adf_trigger_id\": \"', pipeline().TriggerId, '\", \"adf_trigger_name\": \"', pipeline().TriggerName, '\", \"adf_trigger_time\": \"', pipeline().TriggerTime, '\", \"adf_trigger_type\": \"', pipeline().TriggerType, '\"}'))",
+							"type": "Expression"
+						},
+						"env": {
+							"value": "@pipeline().parameters.env",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"databricks": {
+				"type": "object",
+				"defaultValue": {
+					"notebook": "/oni/mte/org_raw_mte_rais_estabelecimentos_2018_2023"
+				}
+			},
+			"files": {
+				"type": "array",
+				"defaultValue": [
+					"{'namespace':'/oni','type_raw':'/usr', 'file_folder':'/mte/rais', 'file_subfolder':'/rais_estabelecimentos_2018_2023', 'prm_path': '/prm/usr/me/KC2332_ME_RAIS_ESTABELECIMENTO_mapeamento_raw.xlsx', 'extension':'txt','column_delimiter':'','encoding':'','null_value':''}"
+				]
+			},
+			"env": {
+				"type": "object",
+				"defaultValue": {
+					"env": "dev"
+				}
+			}
+		},
+		"folder": {
+			"name": "raw/usr/oni/mte/rais"
+		},
+		"annotations": []
+	}
+}
