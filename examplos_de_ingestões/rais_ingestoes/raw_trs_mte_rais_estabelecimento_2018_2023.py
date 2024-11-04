@@ -54,6 +54,8 @@ print(raw)
 trusted = dls['folders']['trusted']
 print(trusted)
 
+prm_path = tables['prm_path']
+
 usr = dls['systems']['raw']
 print(usr)
 
