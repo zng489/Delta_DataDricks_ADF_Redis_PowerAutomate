@@ -212,4 +212,4 @@ df = spark.sql(select_query)
 # COMMAND ----------
 
 df = tcf.add_control_fields(df, adf)
-df.write.mode('overwrite').partitionBy('NR_ANO').parquet(path=adl_trs)
+df.write.mode('overwrite').partitionBy('NR_ANO').parquet(path=adl_trusted)
