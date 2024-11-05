@@ -1,5 +1,5 @@
 # Databricks notebook source
-tables = {"schema":"", "table":"", "raw_path":"/usr/oni/mte/rais/rais_estabelecimentos_2018_2023/","trusted_path":"/oni/mte/rais/rais_estabelecimentos_2018_2023/", "prm_path": "/prm/usr/oni/mte/rais_publica_estabelecimento/FIEC_mte_rais_publica_estabelecimento_mapeamento_unificado_trusted.xlsx"}
+tables =  {"schema":"","table":"","raw_path":"/usr/oni/mte/rais/rais_estabelecimentos_2018_2023/","trusted_path":"/oni/mte/rais/rais_estabelecimentos_2018_2023/","prm_path":"/tmp/dev/prm/usr/oni/mte/rais_estabelecimento_2018_2023/mte_rais_estabelecimento_mapeamento_unificado_trusted.xlsx"}
 
 adf = { "adf_factory_name": "cnibigdatafactory", "adf_pipeline_name": "raw_trs_tb_email", "adf_pipeline_run_id": "61fc4f3c-c592-426d-bb36-c85cb184bb82", "adf_trigger_id": "92abb4ec-2b1f-44e0-8245-7bc165f91016", "adf_trigger_name": "92abb4ec-2b1f-44e0-8245-7bc165f91016", "adf_trigger_time": "2024-05-07T00:58:48.0960873Z", "adf_trigger_type": "PipelineActivity" }
 
@@ -79,6 +79,9 @@ prm_path
 
 # COMMAND ----------
 
+headers = {'name_header':'Campo Origem','pos_header':'C','pos_org':'C','pos_dst':'E','pos_type':'F'}
+var_prm_dict = cf.parse_ba_doc_spark(dbutils, prm_path, headers=headers, sheet_names='RAIS_Identifiad_ESTABELECIMENTO')
+
 headers = {
   'name_header': 'Campo Origem',
   'pos_header': 'C',
@@ -86,7 +89,7 @@ headers = {
   'pos_dst': 'E',
   'pos_type': 'F'
 }
-var_prm_dict = cf.parse_ba_doc(dbutils, prm_path, headers=headers)
+var_prm_dict = cf.parse_ba_doc(dbutils, prm_path, headers=headers, sheet_names='RAIS_Identifiad_ESTABELECIMENTO')
 
 # COMMAND ----------
 
