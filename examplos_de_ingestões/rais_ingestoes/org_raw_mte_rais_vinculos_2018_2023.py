@@ -79,9 +79,9 @@ print(adl_raw)
 # COMMAND ----------
 
 # Path sem {var_adls_uri} e cuidado com /tmp/dev
-prm_path = "{path_prefix}{prm_path}".format(path_prefix=dls['path_prefix'], prm_path=file['prm_path'])
+# prm_path = "{path_prefix}{prm_path}".format(path_prefix=dls['path_prefix'], prm_path=file['prm_path'])
+prm_path = "{prm_path}".format(prm_path=file['prm_path'])
 prm_path
-
 # COMMAND ----------
 
 cf.list_adl_files(spark, dbutils, uld_path)
