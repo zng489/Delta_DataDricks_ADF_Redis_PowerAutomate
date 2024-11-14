@@ -161,3 +161,8 @@ df = df.withColumn('dh_insercao_raw', f.lit(dh_insercao_raw).cast('timestamp'))
 # COMMAND ----------
 
 df.repartition(40).write.partitionBy('ANO').parquet(path=adl_raw, mode='overwrite')
+
+
+numbers_list = re.findall(r'\d+', path)
+numbers = ''.join(numbers_list)
+
