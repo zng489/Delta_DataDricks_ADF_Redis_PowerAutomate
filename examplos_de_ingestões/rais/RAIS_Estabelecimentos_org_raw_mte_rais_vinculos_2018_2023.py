@@ -1,4 +1,26 @@
 # Databricks notebook source
+file = {"namespace":"/oni", "file_folder":"/mte/rais", 
+        "file_subfolder":"/rais_vinculo_2018_2023/", 
+        "raw_path":"/usr/oni/mte/rais/rais_vinculo_2018_2023/",
+        "prm_path": "/tmp/dev/prm/usr/oni/mte/rais_vinculos_2018_2023/prm_rais_vinculo_2018_2023.xlsx", 
+        "extension":"txt","column_delimiter":"","encoding":"","null_value":""}
+                                                                            # file_subfolder: "mte/rais/publica/vinculos/2022/" sempre deixar a "/" para a leitura dos diretorios da funcao cf
+# ["{'namespace':'oni','file_folder':'mte/rais/publica/vinculos/2022','prm_path':'/prm/usr/oni/mte/rais_publica_vinculos/MTE_RAIS_PUBLICA_VINCULO_mapeamento_raw.xlsx', 'extension':'TXT', 'column_delimiter': ';', 'encoding': 'UTF-8', 'null_value': ''}"]
+
+adf = { "adf_factory_name": "cnibigdatafactory", "adf_pipeline_name": "raw_trs_tb_email", "adf_pipeline_run_id": "61fc4f3c-c592-426d-bb36-c85cb184bb82", "adf_trigger_id": "92abb4ec-2b1f-44e0-8245-7bc165f91016", "adf_trigger_name": "92abb4ec-2b1f-44e0-8245-7bc165f91016", "adf_trigger_time": "2024-05-07T00:58:48.0960873Z", "adf_trigger_type": "PipelineActivity" }
+
+dls = { "folders": { "landing": "/tmp/dev/uld", "error": "/tmp/dev/err", "staging": "/tmp/dev/stg", "log": "/tmp/dev/log", "raw": "/tmp/dev/raw", "archive": "/tmp/dev/ach" }, "systems": { "raw": "usr" }, "path_prefix": "" }
+
+
+dbutils.widgets.text("user_parameters", '{"null": "null"}')
+
+dbutils.widgets.text("env", 'dev')
+
+dbutils.widgets.text("storage", '{"url": "https://cnibigdatadlsgen2.dfs.core.windows.net", "container": "datalake"}')
+
+# COMMAND ----------
+
+# Databricks notebook source
 # Biblioteca cni_connectors, que dá acesso aos dados no datalake
 from cni_connectors import adls_connector as adls_conn
 
