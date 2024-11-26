@@ -37,6 +37,12 @@ from pyspark.sql.functions import concat, lit, col, substring
 
 # COMMAND ----------
 
+tables = notebook_params.var_tables
+dls = notebook_params.var_dls
+adf = notebook_params.var_adf
+
+# COMMAND ----------
+
 raw = dls['folders']['raw']
 print(raw)
 
