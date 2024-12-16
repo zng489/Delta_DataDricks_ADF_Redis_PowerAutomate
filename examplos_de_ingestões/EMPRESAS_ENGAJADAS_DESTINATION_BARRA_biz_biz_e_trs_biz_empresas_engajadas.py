@@ -14,7 +14,7 @@ tables = {"schema":"", "table":"",
           "business_path_3":"/oni/base_unica_cnpjs/cnpjs_rfb_rais/", 
           "business_path_4":"/oni/bases_referencia/cnae_20/cnae_divisao/",          
           "destination":"/oni/painel_de_inteligencia_de_mercado_B_P", 
-          "databricks":{"notebook":"/biz/oni/painel_de_inteligencia_de_mercado_B_P/trs_biz_empresas_engajadas"}, 
+          "databricks":{"notebook":"/biz/oni/painel_de_inteligencia_de_mercado_B_P/trs_biz_e_biz_biz_empresas_engajadas"}, 
           "prm_path":""}
 
 adf = { "adf_factory_name": "cnibigdatafactory", "adf_pipeline_name": "raw_trs_tb_email", "adf_pipeline_run_id": "61fc4f3c-c592-426d-bb36-c85cb184bb82", "adf_trigger_id": "92abb4ec-2b1f-44e0-8245-7bc165f91016", "adf_trigger_name": "92abb4ec-2b1f-44e0-8245-7bc165f91016", "adf_trigger_time": "2024-05-07T00:58:48.0960873Z", "adf_trigger_type": "PipelineActivity" }
