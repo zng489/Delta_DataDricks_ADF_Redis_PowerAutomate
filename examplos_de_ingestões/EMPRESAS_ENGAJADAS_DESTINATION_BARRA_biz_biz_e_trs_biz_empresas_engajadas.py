@@ -37,6 +37,7 @@ from pyspark.sql.functions import (
     regexp_replace, round, format_number
 )
 from pyspark.sql.types import StructType, StructField, StringType, FloatType, DecimalType
+from trs_control_field import trs_control_field as tcf
 from functools import reduce
 import pandas as pd
 import re
@@ -979,4 +980,8 @@ base_final_brasil_mais_produtivo_tratada_impressao = base_final_brasil_mais_prod
 
 # COMMAND ----------
 
-base_final_brasil_mais_produtivo_tratada_impressao.write.mode('overwrite').parquet(adl_destination_path, compression='snappy')
+final_df = tcf.add_control_fields(base_final_brasil_mais_produtivo_tratada_impressao, adf, layer="biz")
+
+# COMMAND ----------
+
+final_df.write.mode('overwrite').parquet(adl_destination_path, compression='snappy')
