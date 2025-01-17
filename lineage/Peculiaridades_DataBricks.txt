@@ -1,0 +1,75 @@
+https://medium.com/databricks-unity-catalog-sme/volumes-in-unity-catalog-fbf3254f63ef
+
+- Procedures
+https://medium.com/@24chynoweth/converting-stored-procedures-to-databricks-73fe4ab64ed0
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+https://medium.com/@jaywang.recsys/data-lineage-with-databricks-unity-catalog-0c179d31e0c2
+
+- A linhagem das tabelas só é possível se elas forem salvas diretamente no Unity Catalog, preferencialmente no formato de tabela (table).
+- Ou seja, objetos salvos em outros ambientes não poderão ser refletidos ou rastreados no Unity Catalog.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+- Only Works in SQL clusters
+DROP SCHEMA IF EXISTS 1_2_3 CASCADE
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+- Parameters in Databricks
+https://medium.com/@kiransreekumar/why-should-you-start-using-databricks-workflows-for-your-lakehouse-945d43069bd
+
+
+CREATE SCHEMA IF NOT EXISTS 1_2_3;
+
+DROP SCHEMA IF EXISTS 1_2_3 CASCADE;
+
+
+CREATE TABLE 1_2_3.monitor_investimento
+USING csv
+LOCATION 'dbfs:/unity_catalog/part-00000-tid-1264803248273638215-77888519-02f0-40a9-8eef-35480bc0de79-12347-1-c000.csv';
+
+
+[UC_FILE_SCHEME_FOR_TABLE_CREATION_NOT_SUPPORTED] Creating table in Unity Catalog with file scheme dbfs is not supported.
+Instead, please create a federated data source connection using the CREATE CONNECTION command for the same table provider, then create a catalog based on the connection with a CREATE FOREIGN CATALOG command to reference the tables therein. SQLSTATE: 0AKUC
+
+
+
+CREATE OR REPLACE VIEW monitor_investimento AS
+SELECT
+  *
+FROM
+  csv.`/Volumes/oni_lab/default/uds_oni_observatorio_nacional/unity_catalog/`;
+
+
+
+
+
+CREATE CONNECTION my_dbfs_connection
+    TYPE 'delta'
+    OPTIONS (
+        'dbfs:/unity_catalog/part-00000-tid-1264803248273638215-77888519-02f0-40a9-8eef-35480bc0de79-12347-1-c000.csv'
+    );
+
+
+DROP SCHEMA IF EXISTS 1_2_3 CASCADE;
+
+
+
+CREATE TABLE IF NOT EXISTS my_table (
+    id INT,
+    name STRING,
+    age INT
+) USING DELTA LOCATION 'dbfs:/unity_catalog/part-00000-tid-1264803248273638215-77888519-02f0-40a9-8eef-35480bc0de79-12347-1-c000.csv';
+
+
+CREATE TABLE IF NOT EXISTS my_table (
+    id INT,
+    name STRING,
+    age INT
+) USING DELTA
+LOCATION 'dbfs:/unity_catalog/part-00000-tid-1264803248273638215-77888519-02f0-40a9-8eef-35480bc0de79-12347-1-c000.csv';
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
