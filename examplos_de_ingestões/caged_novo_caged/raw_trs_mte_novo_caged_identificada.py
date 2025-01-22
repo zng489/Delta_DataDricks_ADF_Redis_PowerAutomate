@@ -132,6 +132,7 @@ df_caged.columns
 
 # COMMAND ----------
 
+df_caged = tcf.add_control_fields(df_caged, adf)
 df_caged.write.partitionBy('CD_ANO_COMPETENCIA','CD_ANO_MES_COMPETENCIA_MOVIMENTACAO').mode('overwrite', ).parquet(path=adl_trusted, mode='overwrite')
 
 # COMMAND ----------
