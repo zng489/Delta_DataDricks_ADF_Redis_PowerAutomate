@@ -138,7 +138,7 @@ cnaes20_divisao = spark.read.parquet('abfss://datalake@cnibigdatadlsgen2.dfs.cor
 
 # COMMAND ----------
 
-'''
+
 brasil_mais_produtivo = spark.read.parquet('abfss://datalake@cnibigdatadlsgen2.dfs.core.windows.net/trs/oni/observatorio_nacional/plataforma_produtividade/empresas_engajadas/')
 
 df_municipios = spark.read.parquet('abfss://datalake@cnibigdatadlsgen2.dfs.core.windows.net/biz/oni/bases_referencia/municipios/')
@@ -151,7 +151,7 @@ base_unica = spark.read.parquet('abfss://datalake@cnibigdatadlsgen2.dfs.core.win
 cnaes20_divisao = spark.read.parquet('abfss://datalake@cnibigdatadlsgen2.dfs.core.windows.net/biz/oni/bases_referencia/cnae/cnae_20/cnae_divisao/')
 
 #abfss://datalake@cnibigdatadlsgen2.dfs.core.windows.net/tmp/dev/biz/oni/brasil_mais_produtivo/
-'''
+
 
 # COMMAND ----------
 
@@ -215,6 +215,11 @@ cnaes20_divisao = spark.read.parquet(adl_business_4)
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC # para baixo
+
+# COMMAND ----------
+
 # IMPORTAR DIMENSÕES CNAE 
 #Preparando tabelas das CNAEs
 cnaes20_divisao = cnaes20_divisao.select('cd_cnae_divisao', 'nm_cnae_divisao').dropDuplicates(['cd_cnae_divisao'])
@@ -237,6 +242,11 @@ base_unica_ativos = base_unica \
 # COMMAND ----------
 
 #base_unica_ativos.count()
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC # Foi realizado o ajuste, pois a coluna "CD_CNAE20_DIVISAO" teve seu nome alterado para "CD_CNAE20_DIVISAO_RFB".
 
 # COMMAND ----------
 
@@ -281,7 +291,7 @@ base_unica_Industria = base_unica.filter((f.col('CD_CNAE20_SUBCLASSE_SECUNDARIA'
                                     | (f.col('CD_CNAE20_SUBCLASSE_SECUNDARIA').startswith('41')) | ((f.col('CD_CNAE20_SUBCLASSE_SECUNDARIA').contains(',41')))
                                     | (f.col('CD_CNAE20_SUBCLASSE_SECUNDARIA').startswith('42')) | ((f.col('CD_CNAE20_SUBCLASSE_SECUNDARIA').contains(',42')))
                                     | (f.col('CD_CNAE20_SUBCLASSE_SECUNDARIA').startswith('43')) | ((f.col('CD_CNAE20_SUBCLASSE_SECUNDARIA').contains(',43')))
-                                    | f.col('CD_CNAE20_DIVISAO').between('05', '43'))
+                                    | f.col('CD_CNAE20_DIVISAO_RFB').between('05', '43'))
 display(base_unica_Industria)
 
 # COMMAND ----------
@@ -296,11 +306,18 @@ base_unica_Industria_ativas = base_unica_Industria \
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC # Foi realizado o ajuste, pois as colunas foram alteradas:
+# MAGIC # - "CD_OPCAO_MEI" teve seu nome alterado para "CD_OPCAO_MEI_RFB"
+# MAGIC # - "QT_VINC_ATIV" teve seu nome alterado para "NR_QTD_VINCULOS_ATIVOS"
+
+# COMMAND ----------
+
 ## FILTRANDO LINHA COM CD_OPCAO_MEI == NÃO MEI
 ## FILTRANDO MAIS DE 4 FUNCIONÁRIOS
 base_unica_Industria_ativas_smei_vinc = base_unica_Industria_ativas \
-  .filter((f.col('CD_OPCAO_MEI') == 0) | (f.col('CD_OPCAO_MEI').isNull())) \
-  .filter(f.col('QT_VINC_ATIV') > 4)
+  .filter((f.col('CD_OPCAO_MEI_RFB') == 0) | (f.col('CD_OPCAO_MEI_RFB').isNull())) \
+  .filter(f.col('NR_QTD_VINCULOS_ATIVOS') > 4)
 
 # COMMAND ----------
 
