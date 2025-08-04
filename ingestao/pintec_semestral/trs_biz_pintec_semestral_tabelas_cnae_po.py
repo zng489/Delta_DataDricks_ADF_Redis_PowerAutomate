@@ -36,6 +36,9 @@ import re
 import os
 
 # COMMAND ----------
+tables = notebook_params.var_tables
+dls = notebook_params.var_dls
+adf = notebook_params.var_adf
 
 trusted = dls['folders']['trusted']
 business = dls['folders']['business']
