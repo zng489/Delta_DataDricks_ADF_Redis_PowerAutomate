@@ -1,3 +1,73 @@
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import expr
+
+
+spark = SparkSession.builder.getOrCreate()
+
+# Define catálogo e schema
+catalog = "datalake__trs"
+schema = "oni"
+
+# Usar o catálogo e schema corretamente
+spark.sql(f"USE CATALOG {catalog}")
+spark.sql(f"USE SCHEMA {schema}")
+
+# Obter tabelas no schema
+tables_df = spark.sql("SHOW TABLES IN oni")
+
+# Construir nomes completos no formato desejado
+full_table_names = tables_df.withColumn(
+    "full_table_name",
+    expr(f"'{catalog}.{schema}.' || tableName")
+).select("full_table_name")
+
+# Exibir resultado
+full_table_names.display()
+
+# COMMAND ----------
+
+table_names = [row['full_table_name'] for row in full_table_names.collect()]
+print(table_names)
+
+
+
+
+
+
+
+
+
+# Concessão de acesso em ativos de dados via script Python
+from unity_grants import unity_grants
+ 
+# Lista de ativos para os quais o acesso será concedido e revogado
+#ativos = ["datalake__raw_usr.oni.oni_observatorio_nacional_oferta_demanda_senai__relacao_cursos_cbo","datalake__trs.oni.oni_observatorio_nacional_oferta_demanda_senai__relacao_cursos_cbo","datalake__biz.oni.oni_bases_referencia__relacao_cursos_cbo"]
+ativos = table_names
+# Lista de usuários para os quais o acesso será concedido e revogado
+users = [
+      "johnny.william@senaicni.com.br",
+
+      "vitor.prado@sesicni.com.br"
+    #"t-franciele.padoan@cni.com.br"
+]
+ 
+# Loop através de cada ativo
+for ativo in ativos:
+    print(ativo)
+    # Loop através de cada usuário
+    for user in users:
+      try:
+        print(user)
+        # Concede acesso ao ativo para o usuário
+        unity_grants.grant_access(ativo, user)
+        # REVOGA acesso ao ativo para o usuário
+        # unity_grants.revoke_access(ativo, user)
+      except:
+        pass
+
+
+
+
 # Databricks notebook source
 spark.sql("""
 ALTER TABLE oni_dev.ambiente_teste.tabela_de_teste
