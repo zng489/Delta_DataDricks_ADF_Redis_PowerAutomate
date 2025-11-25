@@ -152,7 +152,7 @@ import os
 connection = sql.connect(
                         server_hostname = "adb-6523536500265509.9.azuredatabricks.net",
                         http_path = "/sql/1.0/warehouses/5eeec6f85950ced2",
-                        access_token = "dapifc4e498f71be8912e5da8dce4642bf1d")
+                        access_token = " ")
 
 cursor = connection.cursor()
 
